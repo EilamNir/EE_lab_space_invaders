@@ -1,10 +1,10 @@
 module  objects_mux (   
     input logic clk,
     input logic resetN,
-    input logic draw_requests [0:NUMBER_OF_OBJECTS - 1],
-    input logic [RGB_WIDTH - 1:0] obj_RGB [0:NUMBER_OF_OBJECTS - 1],
+    input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
+    input logic [0:NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB,
     input logic [RGB_WIDTH - 1:0] background_RGB,
-    output logic [7:0] RGBOut
+    output logic [RGB_WIDTH - 1:0] RGBOut
 );
 
     parameter unsigned NUMBER_OF_OBJECTS = 2;

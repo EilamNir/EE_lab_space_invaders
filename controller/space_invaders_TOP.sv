@@ -20,6 +20,10 @@ module space_invaders_TOP
     parameter unsigned AUDIO_WIDTH = 8;
     parameter unsigned HEX_WIDTH = 7;
 
+
+    // TODO: Maybe remove this?
+    parameter unsigned PIXEL_WIDTH = 11;
+
     logic clk;
 
     clock_divider clock_div_inst (.refclk(CLOCK_50), .rst(~resetN), .outclk_0(clk));
@@ -31,22 +35,32 @@ module space_invaders_TOP
     background background_inst ();
 
     logic startOfFrame;
-    logic pixelX;
-    logic pixelY;
+    logic [PIXEL_WIDTH - 1:0] pixelX;
+    logic [PIXEL_WIDTH - 1:0] pixelY;
 
     // TODO: Remove all of this, it is here only as a placeholder until there is something to draw
-    logic [7:0] obj_RGB [0:1];
-    assign obj_RGB = '{8'b00000011, 8'b11100000};
-    logic draw_requests [0:1];
-    assign draw_requests = '{1'b1, 1'b1};
-
+    logic [0:1] [7:0] obj_RGB;
+    assign obj_RGB = {8'b11100000, 8'b00000011};
+    logic [0:1] draw_requests;
+    always_comb begin
+        draw_requests = {1'b0, 1'b0};
+        if (pixelX < 8'd50) begin
+            draw_requests = {1'b1, 1'b1};
+        end else if (pixelX < 8'd100) begin
+            draw_requests = {1'b0, 1'b1};
+        end else if (pixelX < 8'd150) begin
+            draw_requests = {1'b0, 1'b0};
+        end else begin
+            draw_requests = {pixelX[0], pixelX[1]};
+        end
+    end
 
     video_unit video_unit_inst (
     .clk            (clk),
     .resetN         (resetN),
     .draw_requests  (draw_requests),
     .obj_RGB        (obj_RGB),
-    .background_RGB (8'b11100000),
+    .background_RGB (8'b00011100),
     .PixelX         (pixelX),
     .PixelY         (pixelY),
     .startOfFrame   (startOfFrame),

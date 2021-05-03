@@ -2,8 +2,8 @@ module video_unit
 (
     input logic clk,
     input logic resetN,
-    input logic draw_requests [0:NUMBER_OF_OBJECTS - 1],
-    input logic [RGB_WIDTH - 1:0] obj_RGB [0:NUMBER_OF_OBJECTS - 1],
+    input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
+    input logic [0:NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB,
     input logic [RGB_WIDTH - 1:0] background_RGB,
     output logic [PIXEL_WIDTH - 1:0] PixelX,
     output logic [PIXEL_WIDTH - 1:0] PixelY,
@@ -16,7 +16,7 @@ module video_unit
     parameter unsigned VGA_WIDTH = 29;
 
 
-    logic RGBOut;
+    logic [RGB_WIDTH - 1:0] RGBOut;
 
     // TODO: Pass the amount of objects as parameter
     objects_mux objects_mux_inst (
