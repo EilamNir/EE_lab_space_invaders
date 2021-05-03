@@ -20,9 +20,6 @@ module space_invaders_TOP
     parameter unsigned AUDIO_WIDTH = 8;
     parameter unsigned HEX_WIDTH = 7;
     parameter unsigned RGB_WIDTH = 8;
-
-
-    // TODO: Maybe remove this?
     parameter unsigned PIXEL_WIDTH = 11;
 
     logic clk;
