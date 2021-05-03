@@ -7,28 +7,45 @@ module  objects_mux (
     output logic [RGB_WIDTH - 1:0] RGBOut
 );
 
+    // Note: This parameter is used in a for loop, that is unrolled at compilation.
+    // If this parameter ever gets too large, it may take a lot space, and we might
+    // want to move to some other way to check for the first object to draw.
     parameter unsigned NUMBER_OF_OBJECTS = 2;
     parameter unsigned RGB_WIDTH = 8;
 
-always_ff@(posedge clk or negedge resetN)
-begin
-    if(!resetN) begin
-        RGBOut  <= 8'b0;
+    logic [9:0] first_draw_request_index;
+    logic any_draw_request;
+
+    // Go over the draw requests and draw the first object that wants to be drawn
+    always_comb begin
+        first_draw_request_index = 10'b0;
+        any_draw_request = 1'b0;
+        for (int i = 0; i < NUMBER_OF_OBJECTS; i++) begin
+            if (draw_requests[i] == 1'b1) begin
+                first_draw_request_index = i;
+                any_draw_request = 1'b1;
+                break;
+            end
+        end
     end
 
-    else begin
-        // Go over the draw requests and draw the first object that wants to be drawn
-        // TODO: Change this into a for loop
-        if (draw_requests[0] == 1'b1 )   
-            RGBOut <= obj_RGB[0];
+    // Save the RGB value for this index of the object to draw
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            // Reset RGB to zeros on reset
+            RGBOut  <= RGB_WIDTH'('b0);
+        end
 
-        else if (draw_requests[1] == 1'b1 )   
-            RGBOut <= obj_RGB[1];
-        
-        // If we didn't draw any object, draw the background
-        else 
-            RGBOut <= background_RGB ;
-        end ; 
+        else begin
+            if (any_draw_request == 1'b1) begin
+                // Draw the object with the highest priority 
+                RGBOut = obj_RGB[first_draw_request_index];
+            end else begin
+                // If no object wants to be drawn, draw the background
+                RGBOut <= background_RGB ;
+            end
+        end
     end
 
 endmodule
