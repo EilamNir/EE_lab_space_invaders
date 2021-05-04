@@ -1,17 +1,15 @@
 module missiles(
 	
-	 input logic clk,
-	 input logic resetN,
-	 input logic PS2_CLK,
-	 input logic PS2_DAT,
-	 input logic startOfFrame,
-	 input logic [10:0] PixelX,	
-	 input logic [10:0] PixelY,	
-    input logic [10:0] spaceShip_X,
-	 input logic [10:0] spaceShip_Y,
-	
-	 output logic missleDR,
-	 output logic [7:0] missleRGB	
+	input logic clk,
+	input logic resetN,
+	input logic PS2_CLK,
+	input logic PS2_DAT,
+	input logic startOfFrame,
+	input logic PixelX[10:0],	
+	input logic PixelY[10:0],	
+
+	output logic missleDR,
+	output logic missleRGB[7:0]	
 );
 
 	logic keyCode[8:0];
@@ -48,8 +46,7 @@ module missiles(
 		.resetN(resetN),      
 		.startOfFrame(startOfFrame), 
 		.playerShot(shotKeyIsPress),
-		.spaceShip_X(spaceShip_X),
-		.spaceShip_Y(spaceShip_Y),
+		.enemyShot(0),     		
 		.topLeftX(topLeftX),
 		.topLeftY(topLeftY)
 		);	
