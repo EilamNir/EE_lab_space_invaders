@@ -7,28 +7,17 @@ module  player (
 	input logic PS2_CLK,
 	input logic PS2_DAT,
 	input logic startOfFrame,
-	input logic [10:0]PixelX,	
-	input logic [10:0]PixelY,	
+	input logic PixelX[10:0],	
+	input logic PixelY[10:0],	
 
-	output logic signed [10:0] topLeftX,
-	output logic signed [10:0] topLeftY,
 	output logic playerDR,
-	output logic [7:0] playerRGB	
+	output logic playerRGB[7:0]	
 );
 
 	logic keyCode[8:0];
 	logic make;
 	logic brake;
-	
-	keyboard_interface kbd_inst(
-		.clk(clk),
-		.resetN(resetN),
-		.PS2_CLK(PS2_CLK),
-		.PS2_DAT(PS2_DAT),
-		.keyCode(keyCode),
-		.make(make),
-		.brake(brake)
-		);
+	KBDINTE kbd_inst (.clk(clk), .resetN(resetN), .PS2_CLK(PS2_CLK), .PS2_DAT(PS2_DAT), .keyCode(keyCode), .make(make), .brake(brake));
 	
 	parameter UP    = 9'h075; // digit 8
 	parameter DOWN  = 9'h073; // digit 5
@@ -41,7 +30,7 @@ module  player (
 		.resetN(resetN),
 		.keyCode(keyCode),
 		.make(make),
-		.brakee(brake),
+		.brake(brake),
 		.keyIsPressed(upIsPress)
 		);
 	
@@ -51,7 +40,7 @@ module  player (
 		.resetN(resetN),
 		.keyCode(keyCode),
 		.make(make),
-		.brakee(brake),
+		.brake(brake),
 		.keyIsPressed(downIsPress)
 		);
 	logic RightIsPress;
@@ -60,7 +49,7 @@ module  player (
 		.resetN(resetN),
 		.keyCode(keyCode),
 		.make(make),
-		.brakee(brake),
+		.brake(brake),
 		.keyIsPressed(RightIsPress)
 		);	
 	
@@ -70,9 +59,12 @@ module  player (
 		.resetN(resetN),
 		.keyCode(keyCode),
 		.make(make),
-		.brakee(brake),
+		.brake(brake),
 		.keyIsPressed(LeftIsPress)
 		);
+	
+	logic signed [10:0]	topLeftX;
+	logic signed [10:0]	topLeftY;
 	
 	player_move player_move_inst(
 		.clk(clk),         
