@@ -86,11 +86,14 @@ module  player (
         );
 
 
+    logic [10:0] offsetX;
+    logic [10:0] offsetY;
+    logic drawingRequest;
     square_object square_object_inst(
         .clk(clk),
         .resetN(resetN),
-        .pixelX(pixelX),
-        .pixelY(pixelY),
+        .pixelX(PixelX),
+        .pixelY(PixelY),
         .topLeftX(topLeftX),
         .topLeftY(topLeftY),
         .offsetX(offsetX),
@@ -107,7 +110,8 @@ module  player (
         .offsetY(offsetY),
         .InsideRectangle(drawingRequest),
         .drawingRequest(playerDR),
-        .RGBout(playerRGB)
+        .RGBout(playerRGB),
+        .HitEdgeCode(HitEdgeCode)
     );
 
 

@@ -19,8 +19,8 @@ module	square_object	(
     output logic [7:0]	 RGBout //optional color output for mux 
 );
 
-    parameter int OBJECT_WIDTH_X = 100;
-    parameter int OBJECT_HEIGHT_Y = 100;
+    parameter int OBJECT_WIDTH_X = 32;
+    parameter int OBJECT_HEIGHT_Y = 32;
     parameter logic [7:0] OBJECT_COLOR = 8'h5b ; 
     localparam logic [7:0] TRANSPARENT_ENCODING = 8'hFF ;// bitmap  representation for a transparent pixel 
  

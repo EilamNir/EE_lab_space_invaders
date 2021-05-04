@@ -31,7 +31,13 @@ module space_invaders_TOP
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
 
-    clock_divider clock_div_inst (.refclk(CLOCK_50), .rst(~resetN), .outclk_0(clk));
+    clock_divider clock_div_inst (
+        .refclk(CLOCK_50),
+        .rst(~resetN),
+        .outclk_0(clk));
+
+    logic playerDR;
+    logic [7:0] playerRGB;
 
     player player_inst (
     .clk            (clk),

@@ -14,19 +14,18 @@ module  player_move (
 
 );
 
-    parameter int INITIAL_X = 240;
-    parameter int INITIAL_Y = 580;
-    parameter int X_SPEED = 10;
-    parameter int Y_SPEED = 10;
+    parameter int INITIAL_X = 300;
+    parameter int INITIAL_Y = 400;
+    // TODO: Decide on a speed. If we use a multiplication of 64, the speed will be a multiplication
+    // of a full pixel, so if we decide to change the speed to such a multiplication, we should also
+    // change this module to not use enhanced precision and just work with pixels directly.
+    parameter int X_SPEED = 128;
+    parameter int Y_SPEED = 128;
 
     const int   FIXED_POINT_MULTIPLIER  =   64;
     // FIXED_POINT_MULTIPLIER is used to enable working with integers in high resolution so that
     // we do all calculations with topLeftX_FixedPoint to get a resolution of 1/64 pixel in calcuatuions,
     // we devide at the end by FIXED_POINT_MULTIPLIER which must be 2^n, to return to the initial proportions
-    const int   x_FRAME_SIZE    =   639 * FIXED_POINT_MULTIPLIER; // note it must be 2^n
-    const int   y_FRAME_SIZE    =   479 * FIXED_POINT_MULTIPLIER;
-    const int   bracketOffset = 30;
-    const int   OBJECT_WIDTH_X = 64;
 
     int Xspeed, topLeftX_FixedPoint; // local parameters
     int Yspeed, topLeftY_FixedPoint;
@@ -42,19 +41,23 @@ module  player_move (
 
         end else begin
 
-            if (move_up)          Yspeed <= -Y_SPEED;
-            else if (~move_up)    Yspeed <= 0;
+            // Control the speed in the Y direction
+            if ((move_up ^ move_down) == 1'b0)
+                Yspeed <= 0;
+            else if (move_down)
+                Yspeed <= Y_SPEED;
+            else
+                Yspeed <= -Y_SPEED;
 
-            if (move_down)        Yspeed <= Y_SPEED;
-            else if (~move_down)  Yspeed <= 0;
+            // Control the speed in the X direction
+            if ((move_left ^ move_right) == 1'b0)
+                Xspeed <= 0;
+            else if (move_right)
+                Xspeed <= X_SPEED;
+            else
+                Xspeed <= -X_SPEED;
 
-            if (move_left)        Xspeed <= -X_SPEED;
-            else if (~move_left)  Xspeed <= 0;
-
-            if (move_right)       Xspeed <= -X_SPEED;
-            else if (~move_right) Xspeed <= 0;
-
-
+            // Change the location according to the speed
             if (startOfFrame == 1'b1) begin
                 topLeftX_FixedPoint  <= topLeftX_FixedPoint + Xspeed;
                 topLeftY_FixedPoint  <= topLeftY_FixedPoint + Yspeed;
