@@ -15,7 +15,7 @@ module  player (
     output logic [7:0] playerRGB
 );
 
-    logic keyCode[8:0];
+    logic [8:0] keyCode;
     logic make;
     logic brake;
 

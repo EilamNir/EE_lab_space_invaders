@@ -4,26 +4,26 @@
 
 
 module keyToggle_decoder 	
- ( 
-   input	 logic     clk,
-	input	 logic     resetN, 
-   input  logic[8:0]	keyCode,	
-   input  logic 	  make,	
-   input  logic 	  brakee,  // warning "break" is a reserved SYSVerilog word 
-	
-   output logic  keyLatch, // toggle this output every time the key is pressed   
-   output logic  keyRisingEdgePulse,	//  valid for one clock after presing the key 
-   output logic  keyIsPressed	// valid while the key is pressed
+( 
+    input logic clk,
+    input logic resetN, 
+    input logic [8:0]keyCode,	
+    input logic make,	
+    input logic brakee,  // warning "break" is a reserved SYSVerilog word 
+	 
+    output logic keyLatch, // toggle this output every time the key is pressed   
+    output logic keyRisingEdgePulse,	//  valid for one clock after presing the key 
+    output logic keyIsPressed	// valid while the key is pressed
  	 
   ) ;
 
 
-   parameter KEY_VALUE = 9'h029 ; // space is the default 
- 	
-	logic keyIsPressed_d ; //  _d == delay of one clock 
- 
-   assign keyRisingEdgePulse = ( keyIsPressed_d == 1'b0 ) && ( keyIsPressed == 1'b1 ) ; // detects a rising edge (change) in the input
- 
+    parameter KEY_VALUE = 9'h029 ; // space is the default 
+    
+    logic keyIsPressed_d ; //  _d == delay of one clock 
+    
+    assign keyRisingEdgePulse = ( keyIsPressed_d == 1'b0 ) && ( keyIsPressed == 1'b1 ) ; // detects a rising edge (change) in the input
+    
   
 	always_ff @(posedge clk or negedge resetN)
 		begin: fsm_sync_proc
