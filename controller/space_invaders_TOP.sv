@@ -46,9 +46,25 @@ module space_invaders_TOP
     .playerDR       (playerDR),
     .playerRGB      (playerRGB));
 
+    logic missleDR;
+    logic [7:0] missleRGB;
+
     monsters monsters_inst ();
     hit_detection hit_detection_inst ();
-    missiles missiles_inst ();
+
+    missiles missiles_inst (
+        .clk(clk),
+        .resetN(resetN),
+        .PS2_CLK(PS2_CLK),
+        .PS2_DAT(PS2_DAT),
+        .startOfFrame(startOfFrame),
+        .pixelX(pixelX),
+        .pixelY(pixelY),
+        .spaceShip_X(topLeftX),
+        .spaceShip_Y(topLeftY),
+        .missleDR(missleDR),
+        .missleRGB(missleRGB));
+
     obstacles obstacles_inst ();
 
     background background_inst (
@@ -61,9 +77,9 @@ module space_invaders_TOP
 
     // TODO: Remove all of this, it is here only as a placeholder until there is something to draw
     logic [0:1] [7:0] obj_RGB;
-    assign obj_RGB = {playerRGB, 8'b00000011};
+    assign obj_RGB = {playerRGB, missleRGB};
     logic [0:1] draw_requests;
-    assign draw_requests = {playerDR, 1'b0};
+    assign draw_requests = {playerDR, missleDR};
 
 
     video_unit video_unit_inst (

@@ -92,7 +92,7 @@ module  player (
 
 
 
-    square_object square_object_inst(
+    square_object #(.OBJECT_WIDTH_X(32), .OBJECT_HEIGHT_Y(32)) square_object_inst(
         .clk(clk),
         .resetN(resetN),
         .pixelX(pixelX),
