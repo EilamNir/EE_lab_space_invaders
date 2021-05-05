@@ -6,55 +6,58 @@ module  missile_movement
     input logic startOfFrame,  // short pulse every start of frame 30Hz
     input logic shotKeyIsPress,
 
-    input logic [10:0] spaceShip_X,
-    input logic [10:0] spaceShip_Y,
+    input logic [PIXEL_WIDTH - 1:0] spaceShip_X,
+    input logic [PIXEL_WIDTH - 1:0] spaceShip_Y,
 
-    output logic signed [10:0]  topLeftX, // output the top left corner
-    output logic signed [10:0]  topLeftY  // can be negative , if the object is partliy outside
+    output logic signed [PIXEL_WIDTH - 1:0]  topLeftX, // output the top left corner
+    output logic signed [PIXEL_WIDTH - 1:0]  topLeftY  // can be negative , if the object is partliy outside
 );
     parameter int X_SPEED = 0;
-    parameter int Y_SPEED = 80;
+    parameter int Y_SPEED = -256;
+    parameter unsigned PIXEL_WIDTH = 11;
 
     const int   FIXED_POINT_MULTIPLIER  =   64;
     // FIXED_POINT_MULTIPLIER is used to enable working with integers in high resolution so that
     // we do all calculations with topLeftX_FixedPoint to get a resolution of 1/64 pixel in calcuatuions,
     // we devide at the end by FIXED_POINT_MULTIPLIER which must be 2^n, to return to the initial proportions
-    const int   x_FRAME_SIZE    =   639 * FIXED_POINT_MULTIPLIER; // note it must be 2^n
-    const int   y_FRAME_SIZE    =   479 * FIXED_POINT_MULTIPLIER;
-    const int   bracketOffset = 30;
-    const int   OBJECT_WIDTH_X = 64;
 
-    int Xspeed, topLeftX_FixedPoint; // local parameters
-    int Yspeed, topLeftY_FixedPoint;
-
+    logic shot_fired;
+    int topLeftX_FixedPoint;
+    int topLeftY_FixedPoint;
 
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
-            Xspeed  <= 0;
-            Yspeed  <= 0;
-            topLeftX_FixedPoint <= spaceShip_X * FIXED_POINT_MULTIPLIER;
-            topLeftY_FixedPoint <= spaceShip_Y * FIXED_POINT_MULTIPLIER;
+            topLeftX_FixedPoint <= 0;
+            topLeftY_FixedPoint <= 0;
+            shot_fired <= 1'b0;
 
         end else begin
 
-            if (shotKeyIsPress) begin
-                Yspeed <= -Y_SPEED;
-                Xspeed <= X_SPEED;
-                topLeftX_FixedPoint <= spaceShip_X * FIXED_POINT_MULTIPLIER;
-                topLeftY_FixedPoint <= spaceShip_Y * FIXED_POINT_MULTIPLIER;
-                end
+            // If a shot is fired, raise a flag for the next frame
+            if (shotKeyIsPress == 1'b1) begin
+                shot_fired <= 1'b1;
+            end
 
             if (startOfFrame == 1'b1) begin
-                topLeftX_FixedPoint  <= topLeftX_FixedPoint + Xspeed;
-                topLeftY_FixedPoint  <= topLeftY_FixedPoint + Yspeed;
+                // Reset the shot fired for the next frame
+                shot_fired <= 1'b0;
+                if (shot_fired == 1'b1) begin
+                    // If a shot was fired, move the missile to the player location
+                    topLeftX_FixedPoint <= spaceShip_X * FIXED_POINT_MULTIPLIER;
+                    topLeftY_FixedPoint <= spaceShip_Y * FIXED_POINT_MULTIPLIER;
+                end else begin
+                    // If no shot was fired, move the missile according to its speed
+                    topLeftX_FixedPoint  <= topLeftX_FixedPoint + X_SPEED;
+                    topLeftY_FixedPoint  <= topLeftY_FixedPoint + Y_SPEED;
+                end
             end
         end
     end
 
     //get a better (64 times) resolution using integer
-    assign  topLeftX = topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER ;
-    assign  topLeftY = topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER ;
+    assign  topLeftX = PIXEL_WIDTH'(topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER);
+    assign  topLeftY = PIXEL_WIDTH'(topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER);
 
 
 endmodule

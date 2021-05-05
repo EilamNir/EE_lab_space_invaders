@@ -1,3 +1,4 @@
+
 module missiles(
     input logic clk,
     input logic resetN,
@@ -21,6 +22,11 @@ module missiles(
     logic [10:0] offsetY;
     logic squareDR;
     logic [7:0] squareRGB;
+    logic signed [10:0] topLeftX;
+    logic signed [10:0] topLeftY;
+
+    parameter STR_SHOT_KEY = 9'h070; // digit 0
+    logic strShotKeyIsPress;
 
     keyboard_interface kbd_inst(
         .clk(clk),
@@ -32,9 +38,6 @@ module missiles(
         .brake(brake)
         );
 
-    parameter STR_SHOT_KEY = 9'h070; // digit 0
-    logic strShotKeyIsPress;
-
     keyToggle_decoder #(.KEY_VALUE(STR_SHOT_KEY)) control_strShot_inst (
         .clk(clk),
         .resetN(resetN),
@@ -44,8 +47,6 @@ module missiles(
         .keyIsPressed(strShotKeyIsPress)
         );
 
-    logic signed [10:0] topLeftX;
-    logic signed [10:0] topLeftY;
 
     missile_movement missle_move_inst(
         .clk(clk),

@@ -1,5 +1,4 @@
 
-
 module  player (
     input logic clk,
     input logic resetN,

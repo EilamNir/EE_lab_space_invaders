@@ -75,7 +75,6 @@ module space_invaders_TOP
         .background_RGB (background_RGB));
 
 
-    // TODO: Remove all of this, it is here only as a placeholder until there is something to draw
     logic [0:1] [7:0] obj_RGB;
     assign obj_RGB = {playerRGB, missleRGB};
     logic [0:1] draw_requests;
