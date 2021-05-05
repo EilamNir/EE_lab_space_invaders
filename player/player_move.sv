@@ -9,8 +9,8 @@ module  player_move (
     input logic move_up,
     input logic move_down,
 
-    output logic signed [10:0] topLeftX, // output the top left corner
-    output logic signed [10:0] topLeftY  // can be negative , if the object is partliy outside
+    output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
+    output logic signed [PIXEL_WIDTH - 1:0] topLeftY  // can be negative , if the object is partliy outside
 
 );
 
@@ -21,6 +21,7 @@ module  player_move (
     // change this module to not use enhanced precision and just work with pixels directly.
     parameter int X_SPEED = 128;
     parameter int Y_SPEED = 128;
+    parameter unsigned PIXEL_WIDTH = 11;
 
     const int   FIXED_POINT_MULTIPLIER  =   64;
     // FIXED_POINT_MULTIPLIER is used to enable working with integers in high resolution so that
@@ -66,8 +67,8 @@ module  player_move (
     end
 
     //get a better (64 times) resolution using integer
-    assign  topLeftX = topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER ;
-    assign  topLeftY = topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER ;
+    assign  topLeftX = PIXEL_WIDTH'(topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER);
+    assign  topLeftY = PIXEL_WIDTH'(topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER);
 
 
 endmodule

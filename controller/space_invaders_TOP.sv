@@ -7,13 +7,7 @@ module space_invaders_TOP
     input logic AUD_ADCDAT,
 
     output logic [VGA_WIDTH - 1:0] OVGA,
-    output logic [AUDIO_WIDTH - 1:0] AUDOUT,
-    output logic [HEX_WIDTH-1:0] HEX0,
-    output logic [HEX_WIDTH-1:0] HEX1,
-    output logic [HEX_WIDTH-1:0] HEX2,
-    output logic [HEX_WIDTH-1:0] HEX3,
-    output logic [HEX_WIDTH-1:0] HEX4,
-    output logic [HEX_WIDTH-1:0] HEX5
+    output logic [AUDIO_WIDTH - 1:0] AUDOUT
 );
 
     parameter unsigned VGA_WIDTH = 29;
@@ -45,8 +39,8 @@ module space_invaders_TOP
     .PS2_CLK        (PS2_CLK),
     .PS2_DAT        (PS2_DAT),
     .startOfFrame   (startOfFrame),
-    .PixelX         (pixelX),
-    .PixelY         (pixelY),
+    .pixelX         (pixelX),
+    .pixelY         (pixelY),
     .topLeftX       (topLeftX),
     .topLeftY       (topLeftY),
     .playerDR       (playerDR),
@@ -78,11 +72,13 @@ module space_invaders_TOP
     .draw_requests  (draw_requests),
     .obj_RGB        (obj_RGB),
     .background_RGB (background_RGB),
-    .PixelX         (pixelX),
-    .PixelY         (pixelY),
+    .pixelX         (pixelX),
+    .pixelY         (pixelY),
     .startOfFrame   (startOfFrame),
     .oVGA           (OVGA));
-    
-    sound_unit sound_unit_inst ();
+
+    sound_unit sound_unit_inst (
+        .AUD_ADCDAT(AUD_ADCDAT),
+        .AUDOUT(AUDOUT));
 
 endmodule

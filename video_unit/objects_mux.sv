@@ -1,4 +1,4 @@
-module  objects_mux (   
+module  objects_mux (
     input logic clk,
     input logic resetN,
     input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
@@ -13,12 +13,12 @@ module  objects_mux (
     parameter unsigned NUMBER_OF_OBJECTS = 2;
     parameter unsigned RGB_WIDTH = 8;
 
-    logic [9:0] first_draw_request_index;
+    int first_draw_request_index;
     logic any_draw_request;
 
     // Go over the draw requests and draw the first object that wants to be drawn
     always_comb begin
-        first_draw_request_index = 10'b0;
+        first_draw_request_index = 0;
         any_draw_request = 1'b0;
         for (int i = 0; i < NUMBER_OF_OBJECTS; i++) begin
             if (draw_requests[i] == 1'b1) begin
@@ -39,7 +39,7 @@ module  objects_mux (
 
         else begin
             if (any_draw_request == 1'b1) begin
-                // Draw the object with the highest priority 
+                // Draw the object with the highest priority
                 RGBOut = obj_RGB[first_draw_request_index];
             end else begin
                 // If no object wants to be drawn, draw the background
@@ -49,5 +49,3 @@ module  objects_mux (
     end
 
 endmodule
-
-

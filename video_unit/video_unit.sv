@@ -5,8 +5,8 @@ module video_unit
     input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
     input logic [0:NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB,
     input logic [RGB_WIDTH - 1:0] background_RGB,
-    output logic [PIXEL_WIDTH - 1:0] PixelX,
-    output logic [PIXEL_WIDTH - 1:0] PixelY,
+    output logic [PIXEL_WIDTH - 1:0] pixelX,
+    output logic [PIXEL_WIDTH - 1:0] pixelY,
     output logic startOfFrame,
     output logic [VGA_WIDTH - 1:0] oVGA
 );
@@ -29,8 +29,8 @@ module video_unit
 
     VGA_Controller VGA_Controller_inst (
         .RGBIn       (RGBOut),
-        .PixelX      (PixelX),
-        .PixelY      (PixelY),
+        .pixelX      (pixelX),
+        .pixelY      (pixelY),
         .startOfFrame(startOfFrame),
         .oVGA        (oVGA),
         .clk         (clk),
