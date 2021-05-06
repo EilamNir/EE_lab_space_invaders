@@ -4,7 +4,7 @@ module  monsters_move (
     input logic clk,
     input logic resetN,
     input logic startOfFrame,  // short pulse every start of frame 30Hz
-	input logic collision,
+	input logic [3:0] collision,
 	input logic [3:0] HitEdgeCode,
 
 	output logic monsterIsHit,
@@ -47,27 +47,27 @@ module  monsters_move (
 			end else begin
 				Xspeed  <= 0;
 				Yspeed  <= 0;
-			end if (collision) //monster was hit by a missile
+			end if (collision[0]) //monster was hit by a missile
 				monsterIsHit <= 1'b1;
-//		if ((collision && HitEdgeCode [2] == 1 )) begin  // hit top border of brick  
-//			if (Yspeed < 0) // while moving up
-//				Yspeed <= -Yspeed ; 
-//			
-//			if ((collision && HitEdgeCode [0] == 1 )) begin // || (collision && HitEdgeCode [1] == 1 ))   hit bottom border of brick  
-//				if (Yspeed > 0 )//  while moving down
-//					Yspeed <= -Yspeed ; 
-//			end
-//	    end
+		if ((collision[1] && HitEdgeCode [2] == 1 )) begin  // monster hit border  
+			if (Yspeed < 0) // while moving up
+				Yspeed <= -Yspeed ; 
+			
+			if ((collision[1] && HitEdgeCode [0] == 1 )) begin // || (collision && HitEdgeCode [1] == 1 ))   
+				if (Yspeed > 0 )//  while moving down
+					Yspeed <= -Yspeed ; 
+			end
+	    end
+	
+		if (collision[1] && HitEdgeCode [3] == 1) begin  //monster got to the boarder
+			if (Xspeed < 0 ) // while moving left
+				Xspeed <= -Xspeed ; // positive move right 
 		
-//		if (collision[1] && HitEdgeCode [3] == 1) begin  //monster got to the boarder
-//			if (Xspeed < 0 ) // while moving left
-//				Xspeed <= -Xspeed ; // positive move right 
-//		
-//			if (collision[1] && HitEdgeCode [1] == 1 ) begin   
-//				if (Xspeed > 0 ) //  while moving right
-//					Xspeed <= -Xspeed  ;  // negative move left    
-//			end
-//		end
+			if (collision[1] && HitEdgeCode [1] == 1 ) begin   
+				if (Xspeed > 0 ) //  while moving right
+					Xspeed <= -Xspeed  ;  // negative move left    
+			end
+		end
 
             // Change the location according to the speed
             if (startOfFrame == 1'b1) begin

@@ -57,7 +57,7 @@ module  VGA_Controller
      // 28 bits VGA OUTPUT [CLOCK,      BLANK                           , SYNC ,    VS   , HS
     assign  oVGA        =   {{~clk},{~((H_Cont<H_BLANK)||(V_Cont<V_BLANK))},{1'b1},{oVGA_VS},{oVGA_HS},
     //                          8 bits Blue color     ,  8 bits Green color         ,    8 bits Red color
-                          {RGBIn[7:5], {5{RGBIn[5]}}},{RGBIn[4:2], {5{RGBIn[2]}}}, {RGBIn[1:0], {6{RGBIn[0]}}}};
+                          {RGBIn[1:0], {6{RGBIn[0]}}},{RGBIn[4:2], {5{RGBIn[2]}}},{RGBIn[7:5], {5{RGBIn[5]}}}};
 
     assign  pixelX  =   PIXEL_WIDTH'((H_Cont>=H_BLANK)  ?   H_Cont-H_BLANK  :   11'h0)  ;
     assign  pixelY  =   PIXEL_WIDTH'((V_Cont>=V_BLANK)  ?   V_Cont-V_BLANK  :   11'h0)  ;

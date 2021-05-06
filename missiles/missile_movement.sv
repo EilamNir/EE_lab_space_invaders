@@ -5,7 +5,7 @@ module  missile_movement
     input logic resetN,
     input logic startOfFrame,  // short pulse every start of frame 30Hz
     input logic shotKeyIsPress,
-	input logic collision,
+	input logic [3:0] collision,
 	input logic [3:0] HitEdgeCode,
 	
     input logic [PIXEL_WIDTH - 1:0] spaceShip_X,
@@ -40,7 +40,7 @@ module  missile_movement
 			if (shotKeyIsPress == 1'b1) begin
                 shot_fired <= 1'b1;
             end
-			if (collision == 1'b1) begin
+			if (collision[0] == 1'b1) begin
 				topLeftX_FixedPoint <= 0;
 				topLeftY_FixedPoint <= 0;
 				shot_fired <= 1'b0;

@@ -6,7 +6,7 @@ module missiles(
     input logic make,
     input logic brake,
     input logic startOfFrame,
-	input logic collision,
+	input logic [3:0] collision,
     input logic [10:0] pixelX,
     input logic [10:0] pixelY,
     input logic [10:0] spaceShip_X,

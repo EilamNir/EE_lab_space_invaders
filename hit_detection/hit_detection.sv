@@ -5,15 +5,15 @@ module hit_detection(
     input logic	startOfFrame,  // short pulse every start of frame 30Hz 
     input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
 	
-    output logic collision,
+    output logic [3:0] collision,
     output logic [3:0] HitPulse 
 	);
 
-    parameter unsigned NUMBER_OF_OBJECTS = 3;
+    parameter unsigned NUMBER_OF_OBJECTS = 5;
 
-    assign collision = draw_requests[2] && draw_requests[1]; //monster and missile
-//	assign collision[1] = draw_requests[2] && draw_requests[3]; // monster and boundry
-//	assign collision[2] = draw_requests[0] && draw_requests[4]; // player and boundry
+    assign collision[0] = draw_requests[2] && draw_requests[1]; //monster and missile
+	assign collision[1] = draw_requests[2] && draw_requests[3]; // monster and boundry
+	assign collision[2] = draw_requests[0] && draw_requests[4]; // player and boundry
 
 	
 	logic flag ; // a semaphore to set the output only once per frame / regardless of the number of collisions 
@@ -31,7 +31,7 @@ module hit_detection(
 			if(startOfFrame) 
 				flag <= 1'b0 ; // reset for next time  
 				for (int i = 0 ; i < NUMBER_OF_OBJECTS-1 ; i++) 
-					if (collision && (flag == 1'b0)) begin 
+					if (collision[i] && (flag == 1'b0)) begin 
 						flag <= 1'b1; // to enter only once 
 						HitPulse[i] <= 1'b1 ; 
 					end

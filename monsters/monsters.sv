@@ -3,7 +3,7 @@ module monsters(
     input logic clk,
     input logic resetN,
     input logic startOfFrame,
-	input logic collision,
+	input logic [3:0] collision,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
 

@@ -36,15 +36,15 @@ module space_invaders_TOP
 	logic monsterDR;
 	
 	logic [1:0] boardersDrawReq;
-    logic [0:2] draw_requests;
-    assign draw_requests = {playerDR, missleDR, monsterDR};
+    logic [0:4] draw_requests;
+    assign draw_requests = {playerDR, missleDR, monsterDR, boardersDrawReq[0], boardersDrawReq[1]};
 
     logic [KEYCODE_WIDTH - 1:0] keyCode;
     logic make;
     logic brake;
 
     logic [3:0] HitPulse;
-    logic collision;
+    logic [3:0] collision;
 
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),

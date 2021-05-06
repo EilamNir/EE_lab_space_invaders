@@ -10,7 +10,7 @@ module video_unit
     output logic startOfFrame,
     output logic [VGA_WIDTH - 1:0] oVGA
 );
-    parameter unsigned NUMBER_OF_OBJECTS = 3;
+    parameter unsigned NUMBER_OF_OBJECTS = 5;
     parameter unsigned RGB_WIDTH = 8;
     parameter unsigned PIXEL_WIDTH = 11;
     parameter unsigned VGA_WIDTH = 29;
