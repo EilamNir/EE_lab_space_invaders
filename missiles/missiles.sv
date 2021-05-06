@@ -2,8 +2,9 @@
 module missiles(
     input logic clk,
     input logic resetN,
-    input logic PS2_CLK,
-    input logic PS2_DAT,
+    input logic [KEYCODE_WIDTH - 1:0] keyCode,
+    input logic make,
+    input logic brake,
     input logic startOfFrame,
     input logic [10:0] pixelX,
     input logic [10:0] pixelY,
@@ -14,9 +15,8 @@ module missiles(
     output logic [7:0] missleRGB
 );
 
-    logic [8:0] keyCode;
-    logic make;
-    logic brake;
+    parameter STR_SHOT_KEY = 9'h070; // digit 0
+    parameter unsigned KEYCODE_WIDTH = 9;
 
     logic [10:0] offsetX;
     logic [10:0] offsetY;
@@ -25,18 +25,7 @@ module missiles(
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
 
-    parameter STR_SHOT_KEY = 9'h070; // digit 0
     logic strShotKeyIsPress;
-
-    keyboard_interface kbd_inst(
-        .clk(clk),
-        .resetN(resetN),
-        .PS2_CLK(PS2_CLK),
-        .PS2_DAT(PS2_DAT),
-        .keyCode(keyCode),
-        .make(make),
-        .brake(brake)
-        );
 
     keyToggle_decoder #(.KEY_VALUE(STR_SHOT_KEY)) control_strShot_inst (
         .clk(clk),

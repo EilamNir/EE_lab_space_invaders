@@ -2,8 +2,9 @@
 module  player (
     input logic clk,
     input logic resetN,
-    input logic PS2_CLK,
-    input logic PS2_DAT,
+    input logic [KEYCODE_WIDTH - 1:0] keyCode,
+    input logic make,
+    input logic brake,
     input logic startOfFrame,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
@@ -17,26 +18,13 @@ module  player (
     parameter DOWN  = 9'h073; // digit 5
     parameter RIGHT = 9'h074; // digit 6
     parameter LEFT  = 9'h06B; // digit 4
+    parameter unsigned KEYCODE_WIDTH = 9;
 
     logic [10:0] offsetX;
     logic [10:0] offsetY;
     logic squareDR;
     logic [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
-
-    logic [8:0] keyCode;
-    logic make;
-    logic brake;
-
-    keyboard_interface kbd_inst(
-        .clk(clk),
-        .resetN(resetN),
-        .PS2_CLK(PS2_CLK),
-        .PS2_DAT(PS2_DAT),
-        .keyCode(keyCode),
-        .make(make),
-        .brake(brake)
-        );
 
     logic upIsPress;
     keyToggle_decoder #(.KEY_VALUE(UP)) control_up_inst (
@@ -57,6 +45,7 @@ module  player (
         .brakee(brake),
         .keyIsPressed(downIsPress)
         );
+
     logic RightIsPress;
     keyToggle_decoder #(.KEY_VALUE(RIGHT)) control_right_inst (
         .clk(clk),
@@ -88,8 +77,6 @@ module  player (
         .topLeftX(topLeftX),
         .topLeftY(topLeftY)
         );
-
-
 
     square_object #(.OBJECT_WIDTH_X(32), .OBJECT_HEIGHT_Y(32)) square_object_inst(
         .clk(clk),

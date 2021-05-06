@@ -15,6 +15,7 @@ module space_invaders_TOP
     parameter unsigned HEX_WIDTH = 7;
     parameter unsigned RGB_WIDTH = 8;
     parameter unsigned PIXEL_WIDTH = 11;
+    parameter unsigned KEYCODE_WIDTH = 9;
 
     logic clk;
     logic startOfFrame;
@@ -25,45 +26,64 @@ module space_invaders_TOP
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
 
+    logic [RGB_WIDTH - 1:0] missleRGB;
+    logic [RGB_WIDTH - 1:0] playerRGB;
+    logic [0:1] [RGB_WIDTH - 1:0] obj_RGB;
+    assign obj_RGB = {playerRGB, missleRGB};
+    logic missleDR;
+    logic playerDR;
+    logic [0:1] draw_requests;
+    assign draw_requests = {playerDR, missleDR};
+
+    logic [KEYCODE_WIDTH - 1:0] keyCode;
+    logic make;
+    logic brake;
+
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),
         .rst(~resetN),
         .outclk_0(clk));
 
-    logic playerDR;
-    logic [7:0] playerRGB;
+    keyboard_interface kbd_inst(
+        .clk(clk),
+        .resetN(resetN),
+        .PS2_CLK(PS2_CLK),
+        .PS2_DAT(PS2_DAT),
+        .keyCode(keyCode),
+        .make(make),
+        .brake(brake)
+        );
 
     player player_inst (
-    .clk            (clk),
-    .resetN         (resetN),
-    .PS2_CLK        (PS2_CLK),
-    .PS2_DAT        (PS2_DAT),
-    .startOfFrame   (startOfFrame),
-    .pixelX         (pixelX),
-    .pixelY         (pixelY),
-    .topLeftX       (topLeftX),
-    .topLeftY       (topLeftY),
-    .playerDR       (playerDR),
-    .playerRGB      (playerRGB));
-
-    logic missleDR;
-    logic [7:0] missleRGB;
+        .clk            (clk),
+        .resetN         (resetN),
+        .keyCode        (keyCode),
+        .make           (make),
+        .brake           (brake),
+        .startOfFrame   (startOfFrame),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+        .topLeftX       (topLeftX),
+        .topLeftY       (topLeftY),
+        .playerDR       (playerDR),
+        .playerRGB      (playerRGB));
 
     monsters monsters_inst ();
     hit_detection hit_detection_inst ();
 
     missiles missiles_inst (
-        .clk(clk),
-        .resetN(resetN),
-        .PS2_CLK(PS2_CLK),
-        .PS2_DAT(PS2_DAT),
-        .startOfFrame(startOfFrame),
-        .pixelX(pixelX),
-        .pixelY(pixelY),
-        .spaceShip_X(topLeftX),
-        .spaceShip_Y(topLeftY),
-        .missleDR(missleDR),
-        .missleRGB(missleRGB));
+        .clk            (clk),
+        .resetN         (resetN),
+        .keyCode        (keyCode),
+        .make           (make),
+        .brake           (brake),
+        .startOfFrame   (startOfFrame),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+        .spaceShip_X    (topLeftX),
+        .spaceShip_Y    (topLeftY),
+        .missleDR       (missleDR),
+        .missleRGB      (missleRGB));
 
     obstacles obstacles_inst ();
 
@@ -74,23 +94,16 @@ module space_invaders_TOP
         .pixelY         (pixelY),
         .background_RGB (background_RGB));
 
-
-    logic [0:1] [7:0] obj_RGB;
-    assign obj_RGB = {playerRGB, missleRGB};
-    logic [0:1] draw_requests;
-    assign draw_requests = {playerDR, missleDR};
-
-
     video_unit video_unit_inst (
-    .clk            (clk),
-    .resetN         (resetN),
-    .draw_requests  (draw_requests),
-    .obj_RGB        (obj_RGB),
-    .background_RGB (background_RGB),
-    .pixelX         (pixelX),
-    .pixelY         (pixelY),
-    .startOfFrame   (startOfFrame),
-    .oVGA           (OVGA));
+        .clk            (clk),
+        .resetN         (resetN),
+        .draw_requests  (draw_requests),
+        .obj_RGB        (obj_RGB),
+        .background_RGB (background_RGB),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+        .startOfFrame   (startOfFrame),
+        .oVGA           (OVGA));
 
     sound_unit sound_unit_inst (
         .AUD_ADCDAT(AUD_ADCDAT),
