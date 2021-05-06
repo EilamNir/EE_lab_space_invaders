@@ -8,7 +8,7 @@ module  player_move (
     input logic move_right,
     input logic move_up,
     input logic move_down,
-	input logic [3:0] collision,
+	input logic [3:0] HitPulse,
 	input logic [3:0] HitEdgeCode,
 	
     output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
@@ -68,22 +68,22 @@ module  player_move (
                 topLeftY_FixedPoint  <= topLeftY_FixedPoint + Yspeed;
             end
 			
-//-------------collisions---------------///
-		if ((collision[2] && HitEdgeCode[2] == 1 )) begin  // player hit the border
+//-------------HitPulses---------------///
+		if ((HitPulse[2] && HitEdgeCode[2] == 1 )) begin  // player hit the border
 			if (Yspeed < 0) // while moving up
 				Yspeed <= 0; 
 			end
-			if ((collision[2] && HitEdgeCode [0] == 1 )) begin // || (collision && HitEdgeCode [1] == 1 ))  
+			if ((HitPulse[2] && HitEdgeCode [0] == 1 )) begin // || (HitPulse && HitEdgeCode [1] == 1 ))  
 				if (Yspeed > 0 )//  while moving down
 					Yspeed <= 0 ; 
 			end
 	    
 		
-		if (collision[2] && HitEdgeCode [3] == 1) begin  //monster got to the border
+		if (HitPulse[2] && HitEdgeCode [3] == 1) begin  //monster got to the border
 			if (Xspeed < 0 ) // while moving left
 				Xspeed <= 0 ; // positive move right 
 			end
-			if (collision[2] && HitEdgeCode [1] == 1 ) begin   
+			if (HitPulse[2] && HitEdgeCode [1] == 1 ) begin   
 				if (Xspeed > 0 ) //  while moving right
 					Xspeed <= 0  ;  // negative move left    
 			end

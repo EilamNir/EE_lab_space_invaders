@@ -11,9 +11,10 @@ module hit_detection(
 
     parameter unsigned NUMBER_OF_OBJECTS = 5;
 
-    assign collision[0] = draw_requests[2] && draw_requests[1]; //monster and missile
-	assign collision[1] = draw_requests[2] && draw_requests[3]; // monster and boundry
-	assign collision[2] = draw_requests[0] && draw_requests[4]; // player and boundry
+    assign collision[0] = draw_requests[2] && draw_requests[1]; // monster1 and missile
+	assign collision[1] = draw_requests[3] && draw_requests[1]; // monster2 and missile
+	assign collision[2] = draw_requests[2] && draw_requests[4]; // monster1 and boundry
+	assign collision[3] = draw_requests[0] && draw_requests[5]; // player and boundry
 
 	
 	logic flag ; // a semaphore to set the output only once per frame / regardless of the number of collisions 
@@ -22,19 +23,19 @@ module hit_detection(
 	begin
 		if(!resetN)		begin 
 			flag <= 1'b0;
-			for (int i = 0 ; i < NUMBER_OF_OBJECTS-1 ; i++) 
-				HitPulse[i] <= 1'b0; 
+			HitPulse <= 4'b0; 
 		end 
 		else begin 
-			for (int i = 0 ; i < NUMBER_OF_OBJECTS-1 ; i++) 
-				HitPulse[i] <= 1'b0; 
+			for (int j = 0 ; j < NUMBER_OF_OBJECTS-2 ; j++) 
+				HitPulse[j] <= 1'b0; 
 			if(startOfFrame) 
-				flag <= 1'b0 ; // reset for next time  
-				for (int i = 0 ; i < NUMBER_OF_OBJECTS-1 ; i++) 
-					if (collision[i] && (flag == 1'b0)) begin 
+				for (int k = 0 ; k < NUMBER_OF_OBJECTS-2 ; k++) 
+					if (collision[k] && (flag == 1'b0)) begin 
 						flag <= 1'b1; // to enter only once 
-						HitPulse[i] <= 1'b1 ; 
+						HitPulse[k] <= 1'b1 ; 
 					end
+				flag <= 1'b0 ; // reset for next time  
+
 		end					
 	end
 endmodule

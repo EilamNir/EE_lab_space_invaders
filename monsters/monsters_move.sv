@@ -47,23 +47,23 @@ module  monsters_move (
 			end else begin
 				Xspeed  <= 0;
 				Yspeed  <= 0;
-			end if (collision[0]) //monster was hit by a missile
+			end if (collision[0] | collision[1]) //monster was hit by a missile
 				monsterIsHit <= 1'b1;
-		if ((collision[1] && HitEdgeCode [2] == 1 )) begin  // monster hit border  
+		if ((collision[2] && HitEdgeCode [2] == 1 )) begin  // monster hit border  
 			if (Yspeed < 0) // while moving up
 				Yspeed <= -Yspeed ; 
 			
-			if ((collision[1] && HitEdgeCode [0] == 1 )) begin // || (collision && HitEdgeCode [1] == 1 ))   
+			if ((collision[2] && HitEdgeCode [0] == 1 )) begin // || (collision && HitEdgeCode [1] == 1 ))   
 				if (Yspeed > 0 )//  while moving down
 					Yspeed <= -Yspeed ; 
 			end
 	    end
 	
-		if (collision[1] && HitEdgeCode [3] == 1) begin  //monster got to the boarder
+		if (collision[2] && HitEdgeCode [3] == 1) begin  //monster got to the boarder
 			if (Xspeed < 0 ) // while moving left
 				Xspeed <= -Xspeed ; // positive move right 
 		
-			if (collision[1] && HitEdgeCode [1] == 1 ) begin   
+			if (collision[2] && HitEdgeCode [1] == 1 ) begin   
 				if (Xspeed > 0 ) //  while moving right
 					Xspeed <= -Xspeed  ;  // negative move left    
 			end
