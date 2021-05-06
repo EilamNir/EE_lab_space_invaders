@@ -17,11 +17,11 @@ module missiles(
 
     parameter STR_SHOT_KEY = 9'h070; // digit 0
     parameter unsigned KEYCODE_WIDTH = 9;
+    parameter unsigned RGB_WIDTH = 8;
+    parameter [RGB_WIDTH - 1:0] MISSILE_COLOR = 8'h1F;
 
     logic [10:0] offsetX;
     logic [10:0] offsetY;
-    logic squareDR;
-    logic [7:0] squareRGB;
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
 
@@ -48,7 +48,7 @@ module missiles(
         .topLeftY(topLeftY)
         );
 
-    square_object #(.OBJECT_WIDTH_X(64), .OBJECT_HEIGHT_Y(64)) square_object_inst(
+    square_object #(.OBJECT_WIDTH_X(2), .OBJECT_HEIGHT_Y(5), .OBJECT_COLOR(MISSILE_COLOR)) square_object_inst(
         .clk(clk),
         .resetN(resetN),
         .pixelX(pixelX),
@@ -57,18 +57,8 @@ module missiles(
         .topLeftY(topLeftY),
         .offsetX(offsetX),
         .offsetY(offsetY),
-        .drawingRequest(squareDR),
-        .RGBout(squareRGB)
-        );
-
-    missileBitMap missileBitMap_inst(
-        .clk(clk),
-        .resetN(resetN),
-        .offsetX(offsetX),
-        .offsetY(offsetY),
-        .InsideRectangle(squareDR),
         .drawingRequest(missleDR),
         .RGBout(missleRGB)
-    );
+        );
 
 endmodule
