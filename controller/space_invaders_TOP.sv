@@ -75,7 +75,7 @@ module space_invaders_TOP
         .playerDR       (playerDR),
         .playerRGB      (playerRGB));
 
-    monsters monsters_inst (
+    monsters #(.INITIAL_Y(100))  monsters_inst (
 	    .clk            (clk),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
@@ -100,7 +100,7 @@ module space_invaders_TOP
         .make           (make),
         .brake          (brake),
         .startOfFrame   (startOfFrame),
-		.collision      (collision),
+		.collision      (HitPulse[0]),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .spaceShip_X    (topLeftX),

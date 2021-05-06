@@ -18,7 +18,7 @@ module  missile_movement
     parameter int Y_SPEED = -256;
     parameter unsigned PIXEL_WIDTH = 11;
 	
-	const int X_OFFSET = 16;
+	parameter signed [PIXEL_WIDTH - 1:0] X_OFFSET = 16;
 
     const int   FIXED_POINT_MULTIPLIER  =   64;
     // FIXED_POINT_MULTIPLIER is used to enable working with integers in high resolution so that
