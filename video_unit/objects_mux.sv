@@ -10,7 +10,7 @@ module  objects_mux (
     // Note: This parameter is used in a for loop, that is unrolled at compilation.
     // If this parameter ever gets too large, it may take a lot space, and we might
     // want to move to some other way to check for the first object to draw.
-    parameter unsigned NUMBER_OF_OBJECTS = 2;
+    parameter unsigned NUMBER_OF_OBJECTS = 3;
     parameter unsigned RGB_WIDTH = 8;
 
     int first_draw_request_index;

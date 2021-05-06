@@ -43,6 +43,8 @@ module  missile_movement
 			if (collision == 1'b1) begin
 				topLeftX_FixedPoint <= 0;
 				topLeftY_FixedPoint <= 0;
+				X_SPEED <= 0;
+				Y_SPEED <= 0;
 				shot_fired <= 1'b0;
 			end
             if (startOfFrame == 1'b1 ) begin

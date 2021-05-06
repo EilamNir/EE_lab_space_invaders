@@ -1,30 +1,23 @@
 
-module  player_move (
+module  monsters_move (
 
     input logic clk,
     input logic resetN,
     input logic startOfFrame,  // short pulse every start of frame 30Hz
-    input logic move_left,
-    input logic move_right,
-    input logic move_up,
-    input logic move_down,
-	input logic collision,
-	input logic [3:0] HitEdgeCode,
-	
+	input logic collision,  //collision if smiley hits an object
+
     output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
     output logic signed [PIXEL_WIDTH - 1:0] topLeftY  // can be negative , if the object is partliy outside
 
 );
+	parameter int INITIAL_X = 280;
+	parameter int INITIAL_Y = 185;
 
-    parameter int INITIAL_X = 300;
-    parameter int INITIAL_Y = 400;
-	parameter int MIN_HEIGHT= 280;
-	parameter int MAX_HEIGHT= 450;
     // TODO: Decide on a speed. If we use a multiplication of 64, the speed will be a multiplication
     // of a full pixel, so if we decide to change the speed to such a multiplication, we should also
     // change this module to not use enhanced precision and just work with pixels directly.
-    parameter int X_SPEED = 128;
-    parameter int Y_SPEED = 128;
+    parameter int X_SPEED = 64;
+    parameter int Y_SPEED = 0;
     parameter unsigned PIXEL_WIDTH = 11;
 
     const int   FIXED_POINT_MULTIPLIER  =   64;
@@ -46,50 +39,31 @@ module  player_move (
 
         end else begin
 
-            // Control the speed in the Y direction
-            if ((move_up ^ move_down) == 1'b0)
-                Yspeed <= 0;
-            else if (move_down)
-                Yspeed <= Y_SPEED;
-            else
-                Yspeed <= -Y_SPEED;
-
-            // Control the speed in the X direction
-            if ((move_left ^ move_right) == 1'b0)
-                Xspeed <= 0;
-            else if (move_right)
-                Xspeed <= X_SPEED;
-            else
-                Xspeed <= -X_SPEED;
+		if ((collision && HitEdgeCode [2] == 1 )) begin  // hit top border of brick  
+			if (Yspeed < 0) // while moving up
+				Yspeed <= -Yspeed ; 
+			
+			if ((collision && HitEdgeCode [0] == 1 )) begin // || (collision && HitEdgeCode [1] == 1 ))   hit bottom border of brick  
+				if (Yspeed > 0 )//  while moving down
+					Yspeed <= -Yspeed ; 
+			end
+	    end
+		
+		if (collision && HitEdgeCode [3] == 1) begin  
+			if (Xspeed < 0 ) // while moving left
+				Xspeed <= -Xspeed ; // positive move right 
+		
+			if (collision && HitEdgeCode [1] == 1 ) begin  // hit right border of brick  
+				if (Xspeed > 0 ) //  while moving right
+					Xspeed <= -Xspeed  ;  // negative move left    
+			end
+		end
 
             // Change the location according to the speed
             if (startOfFrame == 1'b1) begin
                 topLeftX_FixedPoint  <= topLeftX_FixedPoint + Xspeed;
                 topLeftY_FixedPoint  <= topLeftY_FixedPoint + Yspeed;
             end
-			
-//-------------collisions---------------///
-//		if ((collision[2] && HitEdgeCode[2] == 1 )) begin  // hit top border of brick  
-//			if (Yspeed < 0) // while moving up
-//				Yspeed <= 0; 
-//			
-//			if ((collision[2] && HitEdgeCode [0] == 1 )) begin // || (collision && HitEdgeCode [1] == 1 ))   hit bottom border of brick  
-//				if (Yspeed > 0 )//  while moving down
-//					Yspeed <= 0 ; 
-//			end
-//	    end
-//		
-//		if (collision[2] && HitEdgeCode [3] == 1) begin  //monster got to the boarder
-//			if (Xspeed < 0 ) // while moving left
-//				Xspeed <= 0 ; // positive move right 
-//		
-//			if (collision[2] && HitEdgeCode [1] == 1 ) begin   
-//				if (Xspeed > 0 ) //  while moving right
-//					Xspeed <= 0  ;  // negative move left    
-//			end
-//		end
-		
-		
         end
     end
 
@@ -99,3 +73,6 @@ module  player_move (
 
 
 endmodule
+
+
+

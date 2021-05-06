@@ -8,6 +8,7 @@ module  player (
     input logic startOfFrame,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
+	input logic collision,
 
     output logic signed [10:0] topLeftX,
     output logic signed [10:0] topLeftY,
@@ -74,6 +75,8 @@ module  player (
         .move_right(RightIsPress),
         .move_up(upIsPress),
         .move_down(downIsPress),
+		.collision(collision),
+		.HitEdgeCode(HitEdgeCode),
         .topLeftX(topLeftX),
         .topLeftY(topLeftY)
         );
