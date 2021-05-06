@@ -45,7 +45,7 @@ module space_invaders_TOP
         .outclk_0(clk));
 
     keyboard_interface kbd_inst(
-        .clk(clk),
+        .clk(CLOCK_50),
         .resetN(resetN),
         .PS2_CLK(PS2_CLK),
         .PS2_DAT(PS2_DAT),
@@ -55,7 +55,7 @@ module space_invaders_TOP
         );
 
     player player_inst (
-        .clk            (clk),
+        .clk            (CLOCK_50),
         .resetN         (resetN),
         .keyCode        (keyCode),
         .make           (make),
@@ -72,7 +72,7 @@ module space_invaders_TOP
     hit_detection hit_detection_inst ();
 
     missiles missiles_inst (
-        .clk            (clk),
+        .clk            (CLOCK_50),
         .resetN         (resetN),
         .keyCode        (keyCode),
         .make           (make),
@@ -88,7 +88,7 @@ module space_invaders_TOP
     obstacles obstacles_inst ();
 
     background background_inst (
-        .clk            (clk),
+        .clk            (CLOCK_50),
         .resetN         (resetN),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
