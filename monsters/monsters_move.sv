@@ -29,8 +29,8 @@ module  monsters_move (
 
     int Xspeed, topLeftX_FixedPoint; // local parameters
     int Yspeed, topLeftY_FixedPoint;
-
-
+	logic flag;
+	
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
@@ -39,40 +39,43 @@ module  monsters_move (
             topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
 			monsterIsHit <= 0;
+			flag <= 1'b0;
 
         end else begin
-			if(~monsterIsHit) begin
+			if(monsterIsHit ~& flag) begin
 				Xspeed  <= X_SPEED;
 				Yspeed  <= Y_SPEED;
-			end else begin
+			end else if(monsterIsHit) begin
 				Xspeed  <= 0;
 				Yspeed  <= 0;
-			end if (collision[0] | collision[1]) //monster was hit by a missile
+			else begin
+				Xspeed  <= -Xspeed;
+				Yspeed  <= -Yspeed;
+			end if (collision[0]) //monster was hit by a missile
 				monsterIsHit <= 1'b1;
-		if ((collision[2] && HitEdgeCode [2] == 1 )) begin  // monster hit border  
-			if (Yspeed < 0) // while moving up
-				Yspeed <= -Yspeed ; 
-			
-			if ((collision[2] && HitEdgeCode [0] == 1 )) begin // || (collision && HitEdgeCode [1] == 1 ))   
-				if (Yspeed > 0 )//  while moving down
-					Yspeed <= -Yspeed ; 
-			end
-	    end
-	
-		if (collision[2] && HitEdgeCode [3] == 1) begin  //monster got to the boarder
-			if (Xspeed < 0 ) // while moving left
-				Xspeed <= -Xspeed ; // positive move right 
-		
-			if (collision[2] && HitEdgeCode [1] == 1 ) begin   
-				if (Xspeed > 0 ) //  while moving right
-					Xspeed <= -Xspeed  ;  // negative move left    
-			end
+			if (collision[1] && flag == 0) begin
+				flag <= 1'b1;
+				if(HitEdgeCode [2] == 1) begin  // monster hit border  
+					if (Yspeed > 0) // while moving up
+						Yspeed <= -Yspeed;
+				end if (HitEdgeCode [0] == 1) begin // || (collision && HitEdgeCode [1] == 1 ))   
+					if (Yspeed > 0 )//  while moving down
+						Yspeed <= -Yspeed ; 
+				end	if (HitEdgeCode [3] == 1) begin  //monster got to the boarder
+					if (Xspeed > 0 ) // while moving left
+						Xspeed <= -Xspeed ; // positive move right 
+				end if (HitEdgeCode [1] == 1) begin   
+					if (Xspeed < 0 ) //  while moving right
+						Xspeed <= -Xspeed  ;  // negative move left    
+				end
 		end
 
             // Change the location according to the speed
             if (startOfFrame == 1'b1) begin
+			
                 topLeftX_FixedPoint  <= topLeftX_FixedPoint + Xspeed;
                 topLeftY_FixedPoint  <= topLeftY_FixedPoint + Yspeed;
+				flag <= 1'b0;
             end
         end
     end

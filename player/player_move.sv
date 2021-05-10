@@ -34,7 +34,7 @@ module  player_move (
 
     int Xspeed, topLeftX_FixedPoint; // local parameters
     int Yspeed, topLeftY_FixedPoint;
-	logic [1:0] border_flags;
+	logic [3:0] border_flags;
 
     always_ff@(posedge clk or negedge resetN)
     begin
@@ -43,57 +43,55 @@ module  player_move (
             Yspeed  <= 0;
             topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-
+			border_flags <= 4'b0;
         end else begin
-			if(startOfFrame) border_flags <= 2'b11;
             // Control the speed in the Y direction
             if ((move_up ^ move_down) == 1'b0)
-                Yspeed <= 0;
-            else if (move_down)
+				Yspeed <= 0;		
+			else if (move_down && border_flags[1] == 0)
                 Yspeed <= Y_SPEED;
-            else
+            else if(border_flags[0] == 0)
                 Yspeed <= -Y_SPEED;
-
+			else Yspeed <= 0;
             // Control the speed in the X direction
             if ((move_left ^ move_right) == 1'b0)
-                Xspeed <= 0;
-            else if (move_right)
+				 Xspeed <= 0;
+			else if (move_right && border_flags[3] == 0)
                 Xspeed <= X_SPEED;
-            else
+            else if (border_flags[2] == 0)
                 Xspeed <= -X_SPEED;
+			else Xspeed <= 0;
 
-            // Change the location according to the speed
-            if (startOfFrame == 1'b1 && border_flags[0] && border_flags[1]) begin
-                topLeftX_FixedPoint  <= topLeftX_FixedPoint + Xspeed;
-                topLeftY_FixedPoint  <= topLeftY_FixedPoint + Yspeed;
-            end
-			
+			// Change the location according to the speed
+			if (startOfFrame == 1'b1) begin
+				topLeftX_FixedPoint  <= topLeftX_FixedPoint + Xspeed;
+				topLeftY_FixedPoint  <= topLeftY_FixedPoint + Yspeed;
+				border_flags <= 4'b0;
+			end
 //-------------collisions---------------///
-		if(collision[3]) begin
-			if (HitEdgeCode[2] == 1) begin  // player hit the border
-				if (Yspeed < 0) // while moving up
-					border_flags[0] <= 1'b0;
-					Yspeed <= 0;
-			end
-			if (HitEdgeCode[0] == 1) begin // player hit the border 
-				if (Yspeed > 0 )   //  while moving down
-					border_flags[0] <= 1'b0 ; 
-			end
-			if (HitEdgeCode[3] == 1) begin  //player hit the border
-				if (Xspeed < 0 ) // while moving left
-					border_flags[1] <= 1'b0 ; // positive move right 
-					Xspeed <= 0;
-			end
-			if (HitEdgeCode[1] == 1) begin   
-				if (Xspeed > 0 ) //  while moving right
-					border_flags[1] <= 1'b0  ;  // negative move left
-					Xspeed <= 0;					
+			if(collision[3]) begin
+				if ((HitEdgeCode[2] == 1) && (border_flags[0] == 0)) begin  // player hit the border
+					if (Yspeed < 0) // while moving up
+						border_flags[0] <= 1'b1;
+						Yspeed <= 0;
+				end
+				if ((HitEdgeCode[0] == 1) && (border_flags[1] == 0)) begin // player hit the border 
+					if (Yspeed > 0 )   //  while moving down
+						border_flags[1] <= 1'b1 ; 
+				end
+				if ((HitEdgeCode[3] == 1) && (border_flags[2] == 0)) begin  //player hit the border
+					if (Xspeed < 0 ) // while moving left
+						border_flags[2] <= 1'b1 ; // positive move right 
+						Xspeed <= 0;
+				end
+				if ((HitEdgeCode[1] == 1) && (border_flags[3] == 0)) begin   
+					if (Xspeed > 0 ) //  while moving right
+						border_flags[3] <= 1'b1  ;  // negative move left
+						Xspeed <= 0;					
+				end
 			end
 		end
-		
-        end
-    end
-
+	end
     //get a better (64 times) resolution using integer
     assign  topLeftX = PIXEL_WIDTH'(topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER);
     assign  topLeftY = PIXEL_WIDTH'(topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER);

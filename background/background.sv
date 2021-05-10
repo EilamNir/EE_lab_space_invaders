@@ -15,7 +15,7 @@ module background
     input logic [PIXEL_WIDTH - 1:0] pixelX,
     input logic [PIXEL_WIDTH - 1:0] pixelY,
     output logic [RGB_WIDTH - 1:0] background_RGB,
-	output logic [1:0] bordersDR
+	output logic [0:1] bordersDR
 );
 
     parameter unsigned RGB_WIDTH = 8;
@@ -45,12 +45,12 @@ module background
 				(pixelY == (yFrameSize - statistics_zone_offset))||
 				(pixelY == (upperBorder))) begin
                 background_RGB <= MOVEMENT_ZONE_END_COLOR;
-				bordersDR <= 2'b1;
+				bordersDR[0] <= 1'b1;
             end
             // Check if we need to print the player zone end
             if (pixelY == player_zone_y ) begin
 			    background_RGB <= STATISTICS_ZONE_COLOR;
-				bordersDR <= 2'b10;
+				bordersDR[1] <= 1'b1;
             end
         end
     end

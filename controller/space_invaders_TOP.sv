@@ -29,17 +29,19 @@ module space_invaders_TOP
     logic [RGB_WIDTH - 1:0] playerRGB;
     logic [RGB_WIDTH - 1:0] missleRGB;
 	logic [RGB_WIDTH - 1:0] monsterRGB;
-	logic [RGB_WIDTH - 1:0] monsterRGB2;
-    logic [0:3] [RGB_WIDTH - 1:0] obj_RGB;
-    assign obj_RGB = {playerRGB, missleRGB, monsterRGB, monsterRGB2};
+    logic [0:2] [RGB_WIDTH - 1:0] obj_RGB;
+    assign obj_RGB = {playerRGB, missleRGB, monsterRGB};
     logic missleDR;
     logic playerDR;
 	logic monsterDR;
 		
 	logic [0:1] bordersDR;
-    logic [0:4] draw_requests;
-    assign draw_requests = {playerDR, missleDR, monsterDR, bordersDR[0], bordersDR[1]};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
-
+	assign bordersDR = {bordersDR[0], bordersDR[1]};
+    logic [0:2] draw_requests;
+    assign draw_requests = {playerDR, missleDR, monsterDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
+	logic [0:4] hit_request;
+	assign hit_request = {draw_requests, bordersDR};
+	
     logic [KEYCODE_WIDTH - 1:0] keyCode;
     logic make;
     logic brake;
@@ -92,7 +94,7 @@ module space_invaders_TOP
 	    .clk            (clk),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
-        .draw_requests  (draw_requests),
+        .hit_request    (hit_request),
 		.collision      (collision),
 		.HitPulse 		(HitPulse));
 
@@ -124,7 +126,7 @@ module space_invaders_TOP
     video_unit #(.NUMBER_OF_OBJECTS(5)) video_unit_inst (
         .clk            (clk),
         .resetN         (resetN),
-        .draw_requests  (draw_requests[0:3]),
+        .draw_requests  (draw_requests),
         .obj_RGB        (obj_RGB),
         .background_RGB (background_RGB),
         .pixelX         (pixelX),
