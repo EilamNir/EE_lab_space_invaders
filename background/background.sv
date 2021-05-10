@@ -43,15 +43,14 @@ module background
             if ((pixelX == movement_zone_offset) ||
 				(pixelX == (xFrameSize - movement_zone_offset)) || 
 				(pixelY == (yFrameSize - statistics_zone_offset))||
-				(pixelY == (upperBorder)) ||
-				(pixelY == player_zone_y) ) begin
+				(pixelY == (upperBorder))) begin
                 background_RGB <= MOVEMENT_ZONE_END_COLOR;
-				bordersDR[0] <= 2'b10;
+				bordersDR <= 2'b1;
             end
             // Check if we need to print the player zone end
-            if (pixelY == player_zone_y) begin
+            if (pixelY == player_zone_y ) begin
 			    background_RGB <= STATISTICS_ZONE_COLOR;
-				bordersDR[1] <= 2'b1;
+				bordersDR <= 2'b10;
             end
         end
     end

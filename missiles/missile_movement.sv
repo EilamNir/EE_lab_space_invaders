@@ -56,7 +56,7 @@ module  missile_movement
                 // Reset the shot fired for the next frame
                 hit_cieling <= 1'b1;
 				shot_fired <= 1'b0;
-                if (shot_fired == 1'b1 && hit_cieling == 1'b0) begin
+                if (shot_fired == 1'b1 && hit_cieling == 1'b1) begin
                     // If a shot was fired, move the missile duo to the player location
                     topLeftX_FixedPoint <= spaceShip_X * FIXED_POINT_MULTIPLIER;
                     topLeftY_FixedPoint <= spaceShip_Y * FIXED_POINT_MULTIPLIER;
