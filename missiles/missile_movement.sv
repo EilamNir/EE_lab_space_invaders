@@ -25,6 +25,7 @@ module  missile_movement
     // we do all calculations with topLeftX_FixedPoint to get a resolution of 1/64 pixel in calcuatuions,
     // we devide at the end by FIXED_POINT_MULTIPLIER which must be 2^n, to return to the initial proportions
 
+	logic hit_cieling;
     logic shot_fired;
     int topLeftX_FixedPoint;
     int topLeftY_FixedPoint;
@@ -35,6 +36,7 @@ module  missile_movement
             topLeftX_FixedPoint <= 0;
             topLeftY_FixedPoint <= 0;
             shot_fired <= 1'b0;
+			hit_cieling <= 1'b0;
         end else begin
             // If a shot is fired, raise a flag for the next frame
 			if (shotKeyIsPress == 1'b1) begin
@@ -45,11 +47,17 @@ module  missile_movement
 				topLeftY_FixedPoint <= 0;
 				shot_fired <= 1'b0;
 			end
+			if (collision[2] == 1'b1) begin
+				topLeftX_FixedPoint <= 0;
+				topLeftY_FixedPoint <= 0;
+				hit_cieling <= 1'b1;
+			end
             if (startOfFrame == 1'b1 ) begin
                 // Reset the shot fired for the next frame
-                shot_fired <= 1'b0;
-                if (shot_fired == 1'b1) begin
-                    // If a shot was fired, move the missile to the player location
+                hit_cieling <= 1'b1;
+				shot_fired <= 1'b0;
+                if (shot_fired == 1'b1 && hit_cieling == 1'b0) begin
+                    // If a shot was fired, move the missile duo to the player location
                     topLeftX_FixedPoint <= spaceShip_X * FIXED_POINT_MULTIPLIER;
                     topLeftY_FixedPoint <= spaceShip_Y * FIXED_POINT_MULTIPLIER;
                 end else begin

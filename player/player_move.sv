@@ -8,7 +8,7 @@ module  player_move (
     input logic move_right,
     input logic move_up,
     input logic move_down,
-	input logic [3:0] HitPulse,
+	input logic [3:0] collision,
 	input logic [3:0] HitEdgeCode,
 	
     output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
@@ -34,7 +34,7 @@ module  player_move (
 
     int Xspeed, topLeftX_FixedPoint; // local parameters
     int Yspeed, topLeftY_FixedPoint;
-
+	logic [1:0] border_flags;
 
     always_ff@(posedge clk or negedge resetN)
     begin
@@ -45,7 +45,7 @@ module  player_move (
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
 
         end else begin
-
+			if(startOfFrame) border_flags <= 2'b11;
             // Control the speed in the Y direction
             if ((move_up ^ move_down) == 1'b0)
                 Yspeed <= 0;
@@ -63,30 +63,33 @@ module  player_move (
                 Xspeed <= -X_SPEED;
 
             // Change the location according to the speed
-            if (startOfFrame == 1'b1) begin
+            if (startOfFrame == 1'b1 && border_flags[0] && border_flags[1]) begin
                 topLeftX_FixedPoint  <= topLeftX_FixedPoint + Xspeed;
                 topLeftY_FixedPoint  <= topLeftY_FixedPoint + Yspeed;
             end
 			
-//-------------HitPulses---------------///
-		if ((HitPulse[2] && HitEdgeCode[2] == 1 )) begin  // player hit the border
-			if (Yspeed < 0) // while moving up
-				Yspeed <= 0; 
+//-------------collisions---------------///
+		if(collision[3]) begin
+			if (HitEdgeCode[2] == 1) begin  // player hit the border
+				if (Yspeed < 0) // while moving up
+					border_flags[0] <= 1'b0;
+					Yspeed <= 0;
 			end
-			if ((HitPulse[2] && HitEdgeCode [0] == 1 )) begin // || (HitPulse && HitEdgeCode [1] == 1 ))  
-				if (Yspeed > 0 )//  while moving down
-					Yspeed <= 0 ; 
+			if (HitEdgeCode[0] == 1) begin // player hit the border 
+				if (Yspeed > 0 )   //  while moving down
+					border_flags[0] <= 1'b0 ; 
 			end
-	    
-		
-		if (HitPulse[2] && HitEdgeCode [3] == 1) begin  //monster got to the border
-			if (Xspeed < 0 ) // while moving left
-				Xspeed <= 0 ; // positive move right 
+			if (HitEdgeCode[3] == 1) begin  //player hit the border
+				if (Xspeed < 0 ) // while moving left
+					border_flags[1] <= 1'b0 ; // positive move right 
+					Xspeed <= 0;
 			end
-			if (HitPulse[2] && HitEdgeCode [1] == 1 ) begin   
+			if (HitEdgeCode[1] == 1) begin   
 				if (Xspeed > 0 ) //  while moving right
-					Xspeed <= 0  ;  // negative move left    
+					border_flags[1] <= 1'b0  ;  // negative move left
+					Xspeed <= 0;					
 			end
+		end
 		
         end
     end

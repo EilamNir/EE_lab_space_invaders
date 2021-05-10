@@ -35,11 +35,10 @@ module space_invaders_TOP
     logic missleDR;
     logic playerDR;
 	logic monsterDR;
-	logic monsterDR2;
 		
 	logic [0:1] bordersDR;
-    logic [0:5] draw_requests;
-    assign draw_requests = {playerDR, missleDR, monsterDR, monsterDR2, bordersDR[0], bordersDR[1]};
+    logic [0:4] draw_requests;
+    assign draw_requests = {playerDR, missleDR, monsterDR, bordersDR[0], bordersDR[1]};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
 
     logic [KEYCODE_WIDTH - 1:0] keyCode;
     logic make;
@@ -72,34 +71,24 @@ module space_invaders_TOP
         .startOfFrame   (startOfFrame),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
-		.HitPulse       (HitPulse),
+		.collision      (collision),
         .topLeftX       (topLeftX),
         .topLeftY       (topLeftY),
         .playerDR       (playerDR),
         .playerRGB      (playerRGB));
 
-    monsters #(.INITIAL_X(150)) monsters_inst (
+    monsters monsters_inst (
 	    .clk            (clk),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
-		.collision       (collision),
+		.collision      (collision),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .monsterDR      (monsterDR),
         .monsterRGB     (monsterRGB));
 		
-	monsters #(.INITIAL_X(200)) monsters_inst2 (
-	    .clk            (clk),
-        .resetN         (resetN),
-        .startOfFrame   (startOfFrame),
-		.collision       (collision),
-        .pixelX         (pixelX),
-        .pixelY         (pixelY),
-        .monsterDR      (monsterDR2),
-        .monsterRGB     (monsterRGB2));
 		
-		
-    hit_detection #(.NUMBER_OF_OBJECTS(6)) hit_detection_inst (
+    hit_detection #(.NUMBER_OF_OBJECTS(5)) hit_detection_inst (
 	    .clk            (clk),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
@@ -114,7 +103,7 @@ module space_invaders_TOP
         .make           (make),
         .brake          (brake),
         .startOfFrame   (startOfFrame),
-		.collision       (collision),
+		.collision      (collision),
 		.pixelX         (pixelX),
         .pixelY         (pixelY),
         .spaceShip_X    (topLeftX),
@@ -129,10 +118,10 @@ module space_invaders_TOP
         .resetN         (resetN),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
-		.bordersDR(bordersDR),
+		.bordersDR		(bordersDR),
         .background_RGB (background_RGB));
 
-    video_unit #(.NUMBER_OF_OBJECTS(6)) video_unit_inst (
+    video_unit #(.NUMBER_OF_OBJECTS(5)) video_unit_inst (
         .clk            (clk),
         .resetN         (resetN),
         .draw_requests  (draw_requests[0:3]),
