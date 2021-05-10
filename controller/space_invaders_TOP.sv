@@ -35,7 +35,6 @@ module space_invaders_TOP
     logic playerDR;
     logic monsterDR;
 
-    logic [1:0] boardersDrawReq;
     logic [0:2] draw_requests;
     assign draw_requests = {playerDR, missleDR, monsterDR};
 
@@ -113,7 +112,6 @@ module space_invaders_TOP
     background background_inst (
         .clk            (clk),
         .resetN         (resetN),
-        .boardersDrawReq(boardersDrawReq),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .background_RGB (background_RGB));

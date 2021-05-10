@@ -40,6 +40,18 @@ module missiles(
     logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftY;
     logic [SHOT_AMOUNT-1:0] draw_requests;
     logic [SHOT_AMOUNT-1:0] missile_active;
+    logic [SHOT_AMOUNT-1:0] key_presses;
+
+    // Only send the key press to the first available shot
+    always_comb begin
+        key_presses = SHOT_AMOUNT'('b0);
+        for (int j = 0; j < SHOT_AMOUNT; j++) begin
+            if (missile_active[j] == 1'b0) begin
+                key_presses[j] = strShotKeyIsPress;
+                break;
+            end
+        end
+    end
 
     genvar i;
     generate
@@ -49,7 +61,7 @@ module missiles(
                 .clk(clk),
                 .resetN(resetN),
                 .startOfFrame(startOfFrame),
-                .shotKeyIsPress(strShotKeyIsPress),
+                .shotKeyIsPress(key_presses[i]),
                 .collision(collision & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
                 .spaceShip_X(spaceShip_X),
                 .spaceShip_Y(spaceShip_Y),

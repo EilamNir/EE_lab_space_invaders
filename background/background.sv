@@ -14,8 +14,7 @@ module background
     input logic resetN,
     input logic [PIXEL_WIDTH - 1:0] pixelX,
     input logic [PIXEL_WIDTH - 1:0] pixelY,
-    output logic [RGB_WIDTH - 1:0] background_RGB,
-	output logic [1:0] boardersDrawReq
+    output logic [RGB_WIDTH - 1:0] background_RGB
 );
 
     parameter unsigned RGB_WIDTH = 8;

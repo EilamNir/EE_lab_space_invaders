@@ -6,7 +6,7 @@ module hit_detection(
     input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
 	
     output logic collision,
-    output logic [3:0] HitPulse 
+    output logic [1:0] HitPulse
 	);
 
     parameter unsigned NUMBER_OF_OBJECTS = 3;
