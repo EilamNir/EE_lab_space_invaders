@@ -25,17 +25,17 @@ module space_invaders_TOP
 
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
-	 
+
     logic [RGB_WIDTH - 1:0] playerRGB;
     logic [RGB_WIDTH - 1:0] missleRGB;
-	logic [RGB_WIDTH - 1:0] monsterRGB;
+    logic [RGB_WIDTH - 1:0] monsterRGB;
     logic [0:2] [RGB_WIDTH - 1:0] obj_RGB;
     assign obj_RGB = {playerRGB, missleRGB, monsterRGB};
     logic missleDR;
     logic playerDR;
-	logic monsterDR;
-	
-	logic [1:0] boardersDrawReq;
+    logic monsterDR;
+
+    logic [1:0] boardersDrawReq;
     logic [0:2] draw_requests;
     assign draw_requests = {playerDR, missleDR, monsterDR};
 
@@ -75,23 +75,23 @@ module space_invaders_TOP
         .playerDR       (playerDR),
         .playerRGB      (playerRGB));
 
-    monsters #(.INITIAL_Y(100))  monsters_inst (
-	    .clk            (clk),
+    monsters monsters_inst (
+        .clk            (clk),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
-		.collision      (collision),
+        .collision      (collision),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .monsterDR      (monsterDR),
         .monsterRGB     (monsterRGB));
-		
+
     hit_detection hit_detection_inst (
-	    .clk            (clk),
+        .clk            (clk),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
         .draw_requests  (draw_requests),
-		.collision      (collision),
-		.HitPulse 		(HitPulse));
+        .collision      (collision),
+        .HitPulse       (HitPulse));
 
     missiles missiles_inst (
         .clk            (clk),
@@ -100,7 +100,7 @@ module space_invaders_TOP
         .make           (make),
         .brake          (brake),
         .startOfFrame   (startOfFrame),
-		.collision      (HitPulse[0]),
+        .collision      (HitPulse[0]),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .spaceShip_X    (topLeftX),
@@ -113,7 +113,7 @@ module space_invaders_TOP
     background background_inst (
         .clk            (clk),
         .resetN         (resetN),
-		.boardersDrawReq(boardersDrawReq),
+        .boardersDrawReq(boardersDrawReq),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .background_RGB (background_RGB));

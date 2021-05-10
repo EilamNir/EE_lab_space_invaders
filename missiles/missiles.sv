@@ -39,6 +39,7 @@ module missiles(
     logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftX;
     logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftY;
     logic [SHOT_AMOUNT-1:0] draw_requests;
+    logic [SHOT_AMOUNT-1:0] missile_active;
 
     genvar i;
     generate
@@ -53,7 +54,8 @@ module missiles(
                 .spaceShip_X(spaceShip_X),
                 .spaceShip_Y(spaceShip_Y),
                 .topLeftX(topLeftX[i]),
-                .topLeftY(topLeftY[i])
+                .topLeftY(topLeftY[i]),
+                .missile_active(missile_active[i])
                 );
 
             square_object #(.OBJECT_WIDTH_X(2), .OBJECT_HEIGHT_Y(5)) square_object_isnt (
@@ -70,6 +72,6 @@ module missiles(
 
     // Only draw the pixel if there is at least one missile that wants to be drawn
     assign missleRGB = MISSILE_COLOR;
-    assign missleDR = |draw_requests;
+    assign missleDR = |(draw_requests & missile_active);
 
 endmodule
