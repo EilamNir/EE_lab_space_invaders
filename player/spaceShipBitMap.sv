@@ -63,8 +63,8 @@ logic[0:31][0:31][7:0] object_colors = {
  logic [0:3] [0:3] [3:0] hit_colors =
 		   {16'hC446,
 			16'h8C62,
-			16'h8932,
-			16'h9113};
+			16'h8132,
+			16'h1113};
  // pipeline (ff) to get the pixel color from the array 	
 //////////--------------------------------------------------------------------------------------------------------------=
 always_ff@(posedge clk or negedge resetN)
