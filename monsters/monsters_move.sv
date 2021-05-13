@@ -4,16 +4,16 @@ module  monsters_move (
     input logic clk,
     input logic resetN,
     input logic startOfFrame,  // short pulse every start of frame 30Hz
-	input logic collision,
-	input logic [3:0] HitEdgeCode,
+    input logic [3:0] collision,
+    input logic [3:0] HitEdgeCode,
 
-	output logic monsterIsHit,
+    output logic monsterIsHit,
     output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
     output logic signed [PIXEL_WIDTH - 1:0] topLeftY  // can be negative , if the object is partliy outside
 
 );
-	parameter int INITIAL_X = 300;
-	parameter int INITIAL_Y = 200;
+    parameter int INITIAL_X = 300;
+    parameter int INITIAL_Y = 200;
 
     // TODO: Decide on a speed. If we use a multiplication of 64, the speed will be a multiplication
     // of a full pixel, so if we decide to change the speed to such a multiplication, we should also
@@ -30,44 +30,34 @@ module  monsters_move (
     int Xspeed, topLeftX_FixedPoint; // local parameters
     int Yspeed, topLeftY_FixedPoint;
 
-
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
-            Xspeed  <= 0;
-            Yspeed  <= 0;
+            Xspeed  <= X_SPEED;
+            Yspeed  <= Y_SPEED;
             topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-			monsterIsHit <= 0;
-
+            monsterIsHit <= 0;
         end else begin
-			if(~monsterIsHit) begin
-				Xspeed  <= X_SPEED;
-				Yspeed  <= Y_SPEED;
-			end else begin
-				Xspeed  <= 0;
-				Yspeed  <= 0;
-			end if (collision) //monster was hit by a missile
-				monsterIsHit <= 1'b1;
-//		if ((collision && HitEdgeCode [2] == 1 )) begin  // hit top border of brick  
-//			if (Yspeed < 0) // while moving up
-//				Yspeed <= -Yspeed ; 
-//			
-//			if ((collision && HitEdgeCode [0] == 1 )) begin // || (collision && HitEdgeCode [1] == 1 ))   hit bottom border of brick  
-//				if (Yspeed > 0 )//  while moving down
-//					Yspeed <= -Yspeed ; 
-//			end
-//	    end
-		
-//		if (collision[1] && HitEdgeCode [3] == 1) begin  //monster got to the boarder
-//			if (Xspeed < 0 ) // while moving left
-//				Xspeed <= -Xspeed ; // positive move right 
-//		
-//			if (collision[1] && HitEdgeCode [1] == 1 ) begin   
-//				if (Xspeed > 0 ) //  while moving right
-//					Xspeed <= -Xspeed  ;  // negative move left    
-//			end
-//		end
+
+            if(monsterIsHit || collision[0]) begin
+                // If the monster was hit by a missile, stop it
+                monsterIsHit <= 1'b1;
+                Xspeed  <= 0;
+                Yspeed  <= 0;
+            end
+
+            // Check border collisions
+            if (collision[1]) begin
+                if (((HitEdgeCode [2] == 1) && (Yspeed < 0)) || // monster hit ceiling while moving up
+                    ((HitEdgeCode [0] == 1) && (Yspeed > 0))) begin // monster hit ground while moving down
+                    Yspeed <= -Yspeed;
+                end
+                if (((HitEdgeCode [3] == 1) && (Xspeed < 0 )) || //monster got to the left border while moving left
+                    ((HitEdgeCode [1] == 1) && (Xspeed > 0))) begin //monster got to the right border while moving right
+                    Xspeed <= -Xspeed;
+                end
+            end
 
             // Change the location according to the speed
             if (startOfFrame == 1'b1) begin

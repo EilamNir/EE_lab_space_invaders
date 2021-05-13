@@ -104,8 +104,8 @@ logic[0:31][0:31][7:0] monster_colors = {
 			16'h8C62,    
 			16'h8932, 
 			16'h9113}; 
- // pipeline (ff) to get the pixel color from the array 	 
-//////////--------------------------------------------------------------------------------------------------------------= 
+ // pipeline (ff) to get the pixel color from the array 
+ //////////--------------------------------------------------------------------------------------------------------------= 
 always_ff@(posedge clk or negedge resetN) 
 begin 
 	if(!resetN) begin 

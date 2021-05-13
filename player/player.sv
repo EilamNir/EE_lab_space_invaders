@@ -8,7 +8,7 @@ module  player (
     input logic startOfFrame,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
-	input logic collision,
+	input logic [3:0] collision,
 
     output logic signed [10:0] topLeftX,
     output logic signed [10:0] topLeftY,

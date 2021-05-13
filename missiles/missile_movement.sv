@@ -19,7 +19,8 @@ module  missile_movement
     parameter int Y_SPEED = -256;
     parameter unsigned PIXEL_WIDTH = 11;
 
-    parameter signed [PIXEL_WIDTH - 1:0] X_OFFSET = 16;
+    parameter logic signed [PIXEL_WIDTH - 1:0] X_OFFSET = 15;
+    parameter logic signed [PIXEL_WIDTH - 1:0] Y_OFFSET = 0;
 
     const int   FIXED_POINT_MULTIPLIER  =   64;
     // FIXED_POINT_MULTIPLIER is used to enable working with integers in high resolution so that
@@ -42,19 +43,21 @@ module  missile_movement
             if (shotKeyIsPress == 1'b1) begin
                 shot_fired <= 1'b1;
             end
-            if (collision == 1'b1) begin
+
+            if (collision) begin
                 topLeftX_FixedPoint <= 0;
                 topLeftY_FixedPoint <= 0;
                 // Remove the missile from the screen
                 missile_active <= 1'b0;
             end
+
             if (startOfFrame == 1'b1 ) begin
                 // Reset the shot fired for the next frame
                 shot_fired <= 1'b0;
                 if (shot_fired == 1'b1) begin
                     // If a shot was fired, move the missile to the player location
-                    topLeftX_FixedPoint <= spaceShip_X * FIXED_POINT_MULTIPLIER;
-                    topLeftY_FixedPoint <= spaceShip_Y * FIXED_POINT_MULTIPLIER;
+                    topLeftX_FixedPoint <= (spaceShip_X + X_OFFSET) * FIXED_POINT_MULTIPLIER;
+                    topLeftY_FixedPoint <= (spaceShip_Y + Y_OFFSET) * FIXED_POINT_MULTIPLIER;
                     // Add the missile to the screen
                     missile_active <= 1'b1;
                 end else if (missile_active == 1'b1) begin
@@ -66,7 +69,7 @@ module  missile_movement
         end
     end
     //get a better (64 times) resolution using integer
-    assign  topLeftX = PIXEL_WIDTH'(topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER) + X_OFFSET;
+    assign  topLeftX = PIXEL_WIDTH'(topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER);
     assign  topLeftY = PIXEL_WIDTH'(topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER);
 
 

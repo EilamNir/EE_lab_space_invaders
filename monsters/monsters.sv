@@ -3,7 +3,7 @@ module monsters(
     input logic clk,
     input logic resetN,
     input logic startOfFrame,
-	input logic collision,
+	input logic [3:0] collision,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
 
@@ -12,7 +12,10 @@ module monsters(
 );
 
     parameter unsigned KEYCODE_WIDTH = 9;
-
+	parameter int INITIAL_X = 300;
+	parameter int INITIAL_Y = 200;
+	parameter int X_SPEED = 8;
+	
     logic [10:0] offsetX;
     logic [10:0] offsetY;
     logic squareDR;
@@ -22,7 +25,7 @@ module monsters(
     logic signed [10:0] topLeftY;
 	logic monsterIsHit;
 	
-    monsters_move monsters_move_inst(
+    monsters_move #(.X_SPEED(X_SPEED),.INITIAL_X(INITIAL_X)) monsters_move_inst(
         .clk(clk),
         .resetN(resetN),
 		.collision(collision),

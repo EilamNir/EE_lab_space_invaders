@@ -14,7 +14,8 @@ module background
     input logic resetN,
     input logic [PIXEL_WIDTH - 1:0] pixelX,
     input logic [PIXEL_WIDTH - 1:0] pixelY,
-    output logic [RGB_WIDTH - 1:0] background_RGB
+    output logic [RGB_WIDTH - 1:0] background_RGB,
+	output logic [0:1] bordersDR
 );
 
     parameter unsigned RGB_WIDTH = 8;
@@ -28,6 +29,7 @@ module background
     const int yFrameSize = 479;
     const int movement_zone_offset = 20;
     const int statistics_zone_offset = 20;
+	const int upperBorder = 20;
     const int player_zone_y = 310;
 
     always_ff@(posedge clk or negedge resetN) begin
@@ -36,20 +38,19 @@ module background
         end else begin
             // Default to printing the background color
             background_RGB <= BACKGROUND_COLOR;
-
+			bordersDR <= 2'b0;
             // Check if we need to print the movement zone end
-            if ((pixelX == movement_zone_offset) || (pixelX == (xFrameSize - movement_zone_offset))) begin
+            if ((pixelX == movement_zone_offset) ||
+				(pixelX == (xFrameSize - movement_zone_offset)) || 
+				(pixelY == (yFrameSize - statistics_zone_offset))||
+				(pixelY == (upperBorder))) begin
                 background_RGB <= MOVEMENT_ZONE_END_COLOR;
+				bordersDR[0] <= 1'b1;
             end
-
             // Check if we need to print the player zone end
-            if (pixelY == player_zone_y) begin
-                background_RGB <= PLAYER_ZONE_END_COLOR;
-            end
-
-            // Check if we need to print the statistics zone end
-            if (pixelY == (yFrameSize - statistics_zone_offset)) begin
-                background_RGB <= STATISTICS_ZONE_COLOR;
+            if (pixelY == player_zone_y ) begin
+			    background_RGB <= STATISTICS_ZONE_COLOR;
+				bordersDR[1] <= 1'b1;
             end
         end
     end

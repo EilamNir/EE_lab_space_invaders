@@ -34,16 +34,20 @@ module space_invaders_TOP
     logic missleDR;
     logic playerDR;
     logic monsterDR;
-
+        
+    logic [0:1] bordersDR;
+    assign bordersDR = {bordersDR[0], bordersDR[1]};
     logic [0:2] draw_requests;
-    assign draw_requests = {playerDR, missleDR, monsterDR};
-
+    assign draw_requests = {playerDR, missleDR, monsterDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
+    logic [0:4] hit_request;
+    assign hit_request = {draw_requests, bordersDR};
+    
     logic [KEYCODE_WIDTH - 1:0] keyCode;
     logic make;
     logic brake;
 
     logic [3:0] HitPulse;
-    logic collision;
+    logic [3:0] collision;
 
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),
@@ -69,6 +73,7 @@ module space_invaders_TOP
         .startOfFrame   (startOfFrame),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
+        .collision      (collision),
         .topLeftX       (topLeftX),
         .topLeftY       (topLeftY),
         .playerDR       (playerDR),
@@ -83,12 +88,13 @@ module space_invaders_TOP
         .pixelY         (pixelY),
         .monsterDR      (monsterDR),
         .monsterRGB     (monsterRGB));
-
-    hit_detection hit_detection_inst (
+        
+        
+    hit_detection #(.NUMBER_OF_OBJECTS(5)) hit_detection_inst (
         .clk            (clk),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
-        .draw_requests  (draw_requests),
+        .hit_request    (hit_request),
         .collision      (collision),
         .HitPulse       (HitPulse));
 
@@ -99,7 +105,7 @@ module space_invaders_TOP
         .make           (make),
         .brake          (brake),
         .startOfFrame   (startOfFrame),
-        .collision      (HitPulse[0]),
+        .collision      (collision),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .spaceShip_X    (topLeftX),
@@ -114,9 +120,10 @@ module space_invaders_TOP
         .resetN         (resetN),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
+        .bordersDR      (bordersDR),
         .background_RGB (background_RGB));
 
-    video_unit video_unit_inst (
+    video_unit #(.NUMBER_OF_OBJECTS(5)) video_unit_inst (
         .clk            (clk),
         .resetN         (resetN),
         .draw_requests  (draw_requests),

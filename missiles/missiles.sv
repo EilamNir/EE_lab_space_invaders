@@ -6,7 +6,7 @@ module missiles(
     input logic make,
     input logic brake,
     input logic startOfFrame,
-    input logic collision,
+	input logic [3:0] collision,
     input logic [10:0] pixelX,
     input logic [10:0] pixelY,
     input logic [10:0] spaceShip_X,
@@ -56,13 +56,12 @@ module missiles(
     genvar i;
     generate
         for (i = 0; i < SHOT_AMOUNT; i++) begin : generate_missiles
-            // TODO: Change these parameters, these are only here as a test that multiple missiles can have different parameters
-            missile_movement #(.X_OFFSET(16 + (i * 4)), .X_SPEED(i * 4), .Y_SPEED(-256 + (i * 16))) missile_movement_inst (
+            missile_movement missile_movement_inst (
                 .clk(clk),
                 .resetN(resetN),
                 .startOfFrame(startOfFrame),
                 .shotKeyIsPress(key_presses[i]),
-                .collision(collision & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
+                .collision((collision[0] | collision[2]) & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
                 .spaceShip_X(spaceShip_X),
                 .spaceShip_Y(spaceShip_Y),
                 .topLeftX(topLeftX[i]),
