@@ -25,19 +25,29 @@ module space_invaders_TOP
 
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
-
-    logic [RGB_WIDTH - 1:0] missleRGB;
+	 
     logic [RGB_WIDTH - 1:0] playerRGB;
-    logic [0:1] [RGB_WIDTH - 1:0] obj_RGB;
-    assign obj_RGB = {playerRGB, missleRGB};
+    logic [RGB_WIDTH - 1:0] missleRGB;
+	logic [RGB_WIDTH - 1:0] monsterRGB;
+    logic [0:2] [RGB_WIDTH - 1:0] obj_RGB;
+    assign obj_RGB = {playerRGB, missleRGB, monsterRGB};
     logic missleDR;
     logic playerDR;
-    logic [0:1] draw_requests;
-    assign draw_requests = {playerDR, missleDR};
-
+	logic monsterDR;
+		
+	logic [0:1] bordersDR;
+	assign bordersDR = {bordersDR[0], bordersDR[1]};
+    logic [0:2] draw_requests;
+    assign draw_requests = {playerDR, missleDR, monsterDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
+	logic [0:4] hit_request;
+	assign hit_request = {draw_requests, bordersDR};
+	
     logic [KEYCODE_WIDTH - 1:0] keyCode;
     logic make;
     logic brake;
+
+    logic [3:0] HitPulse;
+    logic [3:0] collision;
 
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),
@@ -59,26 +69,44 @@ module space_invaders_TOP
         .resetN         (resetN),
         .keyCode        (keyCode),
         .make           (make),
-        .brake           (brake),
+        .brake          (brake),
         .startOfFrame   (startOfFrame),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
+		.collision      (collision),
         .topLeftX       (topLeftX),
         .topLeftY       (topLeftY),
         .playerDR       (playerDR),
         .playerRGB      (playerRGB));
 
-    monsters monsters_inst ();
-    hit_detection hit_detection_inst ();
+    monsters monsters_inst (
+	    .clk            (clk),
+        .resetN         (resetN),
+        .startOfFrame   (startOfFrame),
+		.collision      (collision),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+        .monsterDR      (monsterDR),
+        .monsterRGB     (monsterRGB));
+		
+		
+    hit_detection #(.NUMBER_OF_OBJECTS(5)) hit_detection_inst (
+	    .clk            (clk),
+        .resetN         (resetN),
+        .startOfFrame   (startOfFrame),
+        .hit_request    (hit_request),
+		.collision      (collision),
+		.HitPulse 		(HitPulse));
 
     missiles missiles_inst (
         .clk            (clk),
         .resetN         (resetN),
         .keyCode        (keyCode),
         .make           (make),
-        .brake           (brake),
+        .brake          (brake),
         .startOfFrame   (startOfFrame),
-        .pixelX         (pixelX),
+		.collision      (collision),
+		.pixelX         (pixelX),
         .pixelY         (pixelY),
         .spaceShip_X    (topLeftX),
         .spaceShip_Y    (topLeftY),
@@ -92,9 +120,10 @@ module space_invaders_TOP
         .resetN         (resetN),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
+		.bordersDR		(bordersDR),
         .background_RGB (background_RGB));
 
-    video_unit video_unit_inst (
+    video_unit #(.NUMBER_OF_OBJECTS(5)) video_unit_inst (
         .clk            (clk),
         .resetN         (resetN),
         .draw_requests  (draw_requests),
