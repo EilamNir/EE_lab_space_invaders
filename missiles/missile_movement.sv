@@ -12,8 +12,9 @@ module  missile_movement
     input logic [PIXEL_WIDTH - 1:0] spaceShip_Y,
 
     output logic signed [PIXEL_WIDTH - 1:0]  topLeftX, // output the top left corner
-    output logic signed [PIXEL_WIDTH - 1:0]  topLeftY,  // can be negative , if the object is partliy outside
-    output logic missile_active
+    output logic signed [PIXEL_WIDTH - 1:0]  topLeftY,  // can be negative , if the object is partly outside
+    output logic missile_active,
+    output logic activation_pulse
 );
     parameter int X_SPEED = 0;
     parameter int Y_SPEED = -256;
@@ -24,12 +25,13 @@ module  missile_movement
 
     const int   FIXED_POINT_MULTIPLIER  =   64;
     // FIXED_POINT_MULTIPLIER is used to enable working with integers in high resolution so that
-    // we do all calculations with topLeftX_FixedPoint to get a resolution of 1/64 pixel in calcuatuions,
-    // we devide at the end by FIXED_POINT_MULTIPLIER which must be 2^n, to return to the initial proportions
+    // we do all calculations with topLeftX_FixedPoint to get a resolution of 1/64 pixel in calculations,
+    // we divide at the end by FIXED_POINT_MULTIPLIER which must be 2^n, to return to the initial proportions
 
     logic shot_fired;
     int topLeftX_FixedPoint;
     int topLeftY_FixedPoint;
+    logic previous_missile_active;
 
     always_ff@(posedge clk or negedge resetN)
     begin
@@ -38,7 +40,11 @@ module  missile_movement
             topLeftY_FixedPoint <= 0;
             shot_fired <= 1'b0;
             missile_active <= 1'b0;
+            previous_missile_active <= 0;
         end else begin
+            // Save the last state of the missile_active for activation_pulse
+            previous_missile_active <= missile_active;
+
             // If a shot is fired, raise a flag for the next frame
             if (shotKeyIsPress == 1'b1) begin
                 shot_fired <= 1'b1;
@@ -72,5 +78,7 @@ module  missile_movement
     assign  topLeftX = PIXEL_WIDTH'(topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER);
     assign  topLeftY = PIXEL_WIDTH'(topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER);
 
+    // Send a short pulse when activating the missile
+    assign activation_pulse = (!previous_missile_active) & missile_active;
 
 endmodule
