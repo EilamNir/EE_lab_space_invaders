@@ -16,7 +16,7 @@ module missiles(
     output logic [7:0] missleRGB
 );
 
-    parameter STR_SHOT_KEY = 9'h070; // digit 0
+    parameter STR_SHOT_KEY = 9'h15A; // enter key
     parameter unsigned KEYCODE_WIDTH = 9;
     parameter unsigned RGB_WIDTH = 8;
     parameter [RGB_WIDTH - 1:0] MISSILE_COLOR = 8'h1F;

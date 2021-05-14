@@ -15,10 +15,10 @@ module  player (
     output logic playerDR,
     output logic [7:0] playerRGB
 );
-    parameter UP    = 9'h075; // digit 8
-    parameter DOWN  = 9'h073; // digit 5
-    parameter RIGHT = 9'h074; // digit 6
-    parameter LEFT  = 9'h06B; // digit 4
+    parameter UP    = 9'h06C; // digit 7
+    parameter DOWN  = 9'h075; // digit 8
+    parameter RIGHT = 9'h14A; // key '/'
+    parameter LEFT  = 9'h073; // digit 5
     parameter unsigned KEYCODE_WIDTH = 9;
 
     logic [10:0] offsetX;
