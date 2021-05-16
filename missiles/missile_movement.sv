@@ -13,8 +13,7 @@ module  missile_movement
 
     output logic signed [PIXEL_WIDTH - 1:0]  topLeftX, // output the top left corner
     output logic signed [PIXEL_WIDTH - 1:0]  topLeftY,  // can be negative , if the object is partly outside
-    output logic missile_active,
-    output logic activation_pulse
+    output logic missile_active
 );
     parameter int X_SPEED = 0;
     parameter int Y_SPEED = -256;
@@ -42,8 +41,6 @@ module  missile_movement
             missile_active <= 1'b0;
             previous_missile_active <= 0;
         end else begin
-            // Save the last state of the missile_active for activation_pulse
-            previous_missile_active <= missile_active;
 
             if (collision) begin
                 topLeftX_FixedPoint <= 0;
@@ -82,6 +79,5 @@ module  missile_movement
     assign  topLeftY = PIXEL_WIDTH'(topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER);
 
     // Send a short pulse when activating the missile
-    assign activation_pulse = (!previous_missile_active) & missile_active;
 
 endmodule
