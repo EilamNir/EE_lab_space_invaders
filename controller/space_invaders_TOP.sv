@@ -23,22 +23,20 @@ module space_invaders_TOP
     logic [PIXEL_WIDTH - 1:0] pixelY;
     logic [RGB_WIDTH - 1:0] background_RGB;
 
-    logic signed [10:0] topLeftX;
-    logic signed [10:0] topLeftY;
 
     logic [RGB_WIDTH - 1:0] playerRGB;
-    logic [RGB_WIDTH - 1:0] missleRGB;
+    logic [RGB_WIDTH - 1:0] player_missleRGB;
     logic [RGB_WIDTH - 1:0] monsterRGB;
     logic [0:2] [RGB_WIDTH - 1:0] obj_RGB;
-    assign obj_RGB = {playerRGB, missleRGB, monsterRGB};
-    logic missleDR;
+    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB};
+    logic player_missleDR;
     logic playerDR;
     logic monsterDR;
         
     logic [0:1] bordersDR;
     assign bordersDR = {bordersDR[0], bordersDR[1]};
     logic [0:2] draw_requests;
-    assign draw_requests = {playerDR, missleDR, monsterDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
+    assign draw_requests = {playerDR, player_missleDR, monsterDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
     logic [0:4] hit_request;
     assign hit_request = {draw_requests, bordersDR};
     
@@ -74,10 +72,10 @@ module space_invaders_TOP
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .collision      (collision),
-        .topLeftX       (topLeftX),
-        .topLeftY       (topLeftY),
         .playerDR       (playerDR),
-        .playerRGB      (playerRGB));
+        .playerRGB      (playerRGB),
+        .missleDR       (player_missleDR),
+        .missleRGB      (player_missleRGB));
 
     monsters monsters_inst (
         .clk            (clk),
@@ -97,21 +95,6 @@ module space_invaders_TOP
         .hit_request    (hit_request),
         .collision      (collision),
         .HitPulse       (HitPulse));
-
-    missiles missiles_inst (
-        .clk            (clk),
-        .resetN         (resetN),
-        .keyCode        (keyCode),
-        .make           (make),
-        .brake          (brake),
-        .startOfFrame   (startOfFrame),
-        .collision      (collision),
-        .pixelX         (pixelX),
-        .pixelY         (pixelY),
-        .spaceShip_X    (topLeftX),
-        .spaceShip_Y    (topLeftY),
-        .missleDR       (missleDR),
-        .missleRGB      (missleRGB));
 
     obstacles obstacles_inst ();
 

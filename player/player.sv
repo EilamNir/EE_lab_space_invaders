@@ -10,10 +10,11 @@ module  player (
     input logic [10:0]pixelY,
 	input logic [3:0] collision,
 
-    output logic signed [10:0] topLeftX,
-    output logic signed [10:0] topLeftY,
     output logic playerDR,
-    output logic [7:0] playerRGB
+    output logic [7:0] playerRGB,
+
+    output logic missleDR,
+    output logic [7:0] missleRGB
 );
     parameter UP    = 9'h075; // digit 8
     parameter DOWN  = 9'h073; // digit 5
@@ -21,6 +22,8 @@ module  player (
     parameter LEFT  = 9'h06B; // digit 4
     parameter unsigned KEYCODE_WIDTH = 9;
 
+    logic signed [10:0] topLeftX;
+    logic signed [10:0] topLeftY;
     logic [10:0] offsetX;
     logic [10:0] offsetY;
     logic squareDR;
@@ -104,7 +107,24 @@ module  player (
         .drawingRequest(playerDR),
         .RGBout(playerRGB),
         .HitEdgeCode(HitEdgeCode)
-    );
+        );
+
+
+    missiles missiles_inst (
+        .clk            (clk),
+        .resetN         (resetN),
+        .keyCode        (keyCode),
+        .make           (make),
+        .brake          (brake),
+        .startOfFrame   (startOfFrame),
+        .collision      (collision),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+        .spaceShip_X    (topLeftX),
+        .spaceShip_Y    (topLeftY),
+        .missleDR       (missleDR),
+        .missleRGB      (missleRGB)
+        );
 
 
 
