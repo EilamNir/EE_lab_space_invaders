@@ -4,7 +4,7 @@ module missiles(
     input logic resetN,
     input logic shooting_pusle,
     input logic startOfFrame,
-	input logic [3:0] collision,
+	input logic collision,
     input logic [10:0] pixelX,
     input logic [10:0] pixelY,
     input logic [10:0] spaceShip_X,
@@ -17,6 +17,13 @@ module missiles(
     parameter unsigned RGB_WIDTH = 8;
     parameter [RGB_WIDTH - 1:0] MISSILE_COLOR = 8'h1F;
     parameter unsigned SHOT_AMOUNT = 7;
+    parameter unsigned PIXEL_WIDTH = 11;
+
+    parameter int X_SPEED = 0;
+    parameter int Y_SPEED = -256;
+    parameter logic signed [PIXEL_WIDTH - 1:0] X_OFFSET = 15;
+    parameter logic signed [PIXEL_WIDTH - 1:0] Y_OFFSET = 0;
+
 
     logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftX;
     logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftY;
@@ -39,17 +46,17 @@ module missiles(
     genvar i;
     generate
         for (i = 0; i < SHOT_AMOUNT; i++) begin : generate_missiles
-            missile_movement missile_movement_inst (
+            missile_movement #(.X_SPEED(X_SPEED), .Y_SPEED(Y_SPEED), .X_OFFSET(X_OFFSET), .Y_OFFSET(Y_OFFSET)) missile_movement_inst (
                 .clk(clk),
                 .resetN(resetN),
                 .startOfFrame(startOfFrame),
                 .shooting_pulse(fire_commands[i]),
-                .collision((collision[0] | collision[2]) & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
+                .collision(collision & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
                 .spaceShip_X(spaceShip_X),
                 .spaceShip_Y(spaceShip_Y),
                 .topLeftX(topLeftX[i]),
                 .topLeftY(topLeftY[i]),
-                .missile_active(missile_active[i]),
+                .missile_active(missile_active[i])
                 );
 
             square_object #(.OBJECT_WIDTH_X(2), .OBJECT_HEIGHT_Y(5)) square_object_isnt (

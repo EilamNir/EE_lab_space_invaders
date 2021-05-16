@@ -17,6 +17,9 @@ module space_invaders_TOP
     parameter unsigned PIXEL_WIDTH = 11;
     parameter unsigned KEYCODE_WIDTH = 9;
 
+    parameter unsigned HIT_DETECTION_NUMBER_OF_OBJECTS = 6;
+    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 4;
+
     logic clk;
     logic startOfFrame;
     logic [PIXEL_WIDTH - 1:0] pixelX;
@@ -26,26 +29,28 @@ module space_invaders_TOP
 
     logic [RGB_WIDTH - 1:0] playerRGB;
     logic [RGB_WIDTH - 1:0] player_missleRGB;
+    logic [RGB_WIDTH - 1:0] monster_missleRGB;
     logic [RGB_WIDTH - 1:0] monsterRGB;
-    logic [0:2] [RGB_WIDTH - 1:0] obj_RGB;
-    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB};
+    logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB;
+    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB};
     logic player_missleDR;
+    logic monster_missleDR;
     logic playerDR;
     logic monsterDR;
         
     logic [0:1] bordersDR;
     assign bordersDR = {bordersDR[0], bordersDR[1]};
-    logic [0:2] draw_requests;
-    assign draw_requests = {playerDR, player_missleDR, monsterDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
-    logic [0:4] hit_request;
+    logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
+    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
+    logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
     assign hit_request = {draw_requests, bordersDR};
     
     logic [KEYCODE_WIDTH - 1:0] keyCode;
     logic make;
     logic brake;
 
-    logic [3:0] HitPulse;
-    logic [3:0] collision;
+    logic [4:0] HitPulse;
+    logic [4:0] collision;
 
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),
@@ -85,10 +90,12 @@ module space_invaders_TOP
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .monsterDR      (monsterDR),
-        .monsterRGB     (monsterRGB));
+        .monsterRGB     (monsterRGB),
+        .missleDR       (monster_missleDR),
+        .missleRGB      (monster_missleRGB));
         
         
-    hit_detection #(.NUMBER_OF_OBJECTS(5)) hit_detection_inst (
+    hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (
         .clk            (clk),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
@@ -106,7 +113,7 @@ module space_invaders_TOP
         .bordersDR      (bordersDR),
         .background_RGB (background_RGB));
 
-    video_unit #(.NUMBER_OF_OBJECTS(5)) video_unit_inst (
+    video_unit #(.NUMBER_OF_OBJECTS(VIDEO_UNIT_NUMBER_OF_OBJECTS)) video_unit_inst (
         .clk            (clk),
         .resetN         (resetN),
         .draw_requests  (draw_requests),

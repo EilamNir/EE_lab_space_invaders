@@ -3,12 +3,15 @@ module monsters(
     input logic clk,
     input logic resetN,
     input logic startOfFrame,
-	input logic [3:0] collision,
+	input logic [4:0] collision,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
 
     output logic monsterDR,
-    output logic [7:0] monsterRGB
+    output logic [7:0] monsterRGB,
+
+    output logic missleDR,
+    output logic [7:0] missleRGB
 );
 
     parameter unsigned KEYCODE_WIDTH = 9;
@@ -24,6 +27,7 @@ module monsters(
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
 	logic monsterIsHit;
+    logic shooting_pusle;
 	
     monsters_move #(.X_SPEED(X_SPEED),.INITIAL_X(INITIAL_X)) monsters_move_inst(
         .clk(clk),
@@ -61,6 +65,28 @@ module monsters(
         .RGBout(monsterRGB),
         .HitEdgeCode(HitEdgeCode)
     );
+
+    shooting_cooldown #(.SHOOTING_COOLDOWN(30)) shooting_cooldown_inst(
+        .clk           (clk),
+        .resetN        (resetN),
+        .startOfFrame  (startOfFrame),
+        .fire_command  (1'b1),
+        .shooting_pusle(shooting_pusle)
+        );
+
+    missiles #(.SHOT_AMOUNT(5), .X_SPEED(0), .Y_SPEED(128), .X_OFFSET(15), .Y_OFFSET(32), .MISSILE_COLOR(8'hD0)) missiles_inst (
+        .clk            (clk),
+        .resetN         (resetN),
+        .shooting_pusle (shooting_pusle),
+        .startOfFrame   (startOfFrame),
+        .collision      ((collision[4] | collision[2])),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+        .spaceShip_X    (topLeftX),
+        .spaceShip_Y    (topLeftY),
+        .missleDR       (missleDR),
+        .missleRGB      (missleRGB)
+        );
 
 
 

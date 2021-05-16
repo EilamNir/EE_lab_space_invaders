@@ -8,7 +8,7 @@ module  player (
     input logic startOfFrame,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
-    input logic [3:0] collision,
+    input logic [4:0] collision,
 
     output logic playerDR,
     output logic [7:0] playerRGB,
@@ -136,7 +136,7 @@ module  player (
         .resetN         (resetN),
         .shooting_pusle (shooting_pusle),
         .startOfFrame   (startOfFrame),
-        .collision      (collision),
+        .collision      ((collision[0] | collision[2])),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .spaceShip_X    (topLeftX),

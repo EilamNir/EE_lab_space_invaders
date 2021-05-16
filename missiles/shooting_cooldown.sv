@@ -7,7 +7,7 @@ module shooting_cooldown(
 
     output logic shooting_pusle
 );
-    parameter unsigned SHOOTING_COOLDOWN_WIDTH = 4;
+    parameter unsigned SHOOTING_COOLDOWN_WIDTH = 6;
     parameter logic [SHOOTING_COOLDOWN_WIDTH - 1:0] SHOOTING_COOLDOWN = 15;
 
     logic [SHOOTING_COOLDOWN_WIDTH - 1:0] count_down;

@@ -30,7 +30,6 @@ module  missile_movement
     logic shot_fired;
     int topLeftX_FixedPoint;
     int topLeftY_FixedPoint;
-    logic previous_missile_active;
 
     always_ff@(posedge clk or negedge resetN)
     begin
@@ -39,7 +38,6 @@ module  missile_movement
             topLeftY_FixedPoint <= 0;
             shot_fired <= 1'b0;
             missile_active <= 1'b0;
-            previous_missile_active <= 0;
         end else begin
 
             if (collision) begin
