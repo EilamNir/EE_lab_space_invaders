@@ -70,7 +70,7 @@ module monsters(
         .clk           (clk),
         .resetN        (resetN),
         .startOfFrame  (startOfFrame),
-        .fire_command  (1'b1),
+        .fire_command  (~monsterIsHit),
         .shooting_pusle(shooting_pusle)
         );
 
