@@ -2,9 +2,7 @@
 module missiles(
     input logic clk,
     input logic resetN,
-    input logic [KEYCODE_WIDTH - 1:0] keyCode,
-    input logic make,
-    input logic brake,
+    input logic shooting_pusle,
     input logic startOfFrame,
 	input logic [3:0] collision,
     input logic [10:0] pixelX,
@@ -16,8 +14,6 @@ module missiles(
     output logic [7:0] missleRGB
 );
 
-    parameter STR_SHOT_KEY = 9'h070; // digit 0
-    parameter unsigned KEYCODE_WIDTH = 9;
     parameter unsigned RGB_WIDTH = 8;
     parameter [RGB_WIDTH - 1:0] MISSILE_COLOR = 8'h1F;
     parameter unsigned SHOT_AMOUNT = 7;
@@ -28,17 +24,6 @@ module missiles(
 
     logic [10:0] offsetX;
     logic [10:0] offsetY;
-
-    logic shotKeyIsPressed;
-
-    keyToggle_decoder #(.KEY_VALUE(STR_SHOT_KEY)) control_strShot_inst (
-        .clk(clk),
-        .resetN(resetN),
-        .keyCode(keyCode),
-        .make(make),
-        .brakee(brake),
-        .keyIsPressed(shotKeyIsPressed)
-        );
 
     logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftX;
     logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftY;
@@ -51,9 +36,9 @@ module missiles(
     always_comb begin
         key_presses = SHOT_AMOUNT'('b0);
         for (int j = 0; j < SHOT_AMOUNT; j++) begin
-            if ((missile_active[j] == 1'b0) && // Only send the key press to the first available shot
-                (shooting_cooldown == 0) && (activation_pulse == 0)) begin // Only send the key press if the cooldown is not active
-                key_presses[j] = shotKeyIsPressed;
+            // Only send the key press to the first available shot
+            if (missile_active[j] == 1'b0) begin
+                key_presses[j] = shooting_pusle;
                 break;
             end
         end
@@ -66,7 +51,7 @@ module missiles(
                 .clk(clk),
                 .resetN(resetN),
                 .startOfFrame(startOfFrame),
-                .shotKeyIsPress(key_presses[i]),
+                .shooting_pulse(key_presses[i]),
                 .collision((collision[0] | collision[2]) & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
                 .spaceShip_X(spaceShip_X),
                 .spaceShip_Y(spaceShip_Y),

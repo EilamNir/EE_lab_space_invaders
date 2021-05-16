@@ -8,7 +8,7 @@ module  player (
     input logic startOfFrame,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
-	input logic [3:0] collision,
+    input logic [3:0] collision,
 
     output logic playerDR,
     output logic [7:0] playerRGB,
@@ -20,6 +20,8 @@ module  player (
     parameter DOWN  = 9'h073; // digit 5
     parameter RIGHT = 9'h074; // digit 6
     parameter LEFT  = 9'h06B; // digit 4
+    parameter STR_SHOT_KEY = 9'h070; // digit 0
+
     parameter unsigned KEYCODE_WIDTH = 9;
 
     logic signed [10:0] topLeftX;
@@ -29,6 +31,7 @@ module  player (
     logic squareDR;
     logic [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
+    logic shooting_pusle;
 
     logic upIsPress;
     keyToggle_decoder #(.KEY_VALUE(UP)) control_up_inst (
@@ -70,6 +73,17 @@ module  player (
         .keyIsPressed(LeftIsPress)
         );
 
+    logic shotKeyIsPressed;
+
+    keyToggle_decoder #(.KEY_VALUE(STR_SHOT_KEY)) control_strShot_inst (
+        .clk(clk),
+        .resetN(resetN),
+        .keyCode(keyCode),
+        .make(make),
+        .brakee(brake),
+        .keyIsPressed(shotKeyIsPressed)
+        );
+
     player_move player_move_inst(
         .clk(clk),
         .resetN(resetN),
@@ -78,8 +92,8 @@ module  player (
         .move_right(RightIsPress),
         .move_up(upIsPress),
         .move_down(downIsPress),
-		.collision(collision),
-		.HitEdgeCode(HitEdgeCode),
+        .collision(collision),
+        .HitEdgeCode(HitEdgeCode),
         .topLeftX(topLeftX),
         .topLeftY(topLeftY)
         );
@@ -109,13 +123,18 @@ module  player (
         .HitEdgeCode(HitEdgeCode)
         );
 
+    shooting_cooldown shooting_cooldown_inst(
+        .clk           (clk),
+        .resetN        (resetN),
+        .startOfFrame  (startOfFrame),
+        .fire_command  (shotKeyIsPressed),
+        .shooting_pusle(shooting_pusle)
+        );
 
     missiles missiles_inst (
         .clk            (clk),
         .resetN         (resetN),
-        .keyCode        (keyCode),
-        .make           (make),
-        .brake          (brake),
+        .shooting_pusle (shooting_pusle),
         .startOfFrame   (startOfFrame),
         .collision      (collision),
         .pixelX         (pixelX),

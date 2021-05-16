@@ -4,7 +4,7 @@ module  missile_movement
     input logic clk,
     input logic resetN,
     input logic startOfFrame,  // short pulse every start of frame 30Hz
-    input logic shotKeyIsPress,
+    input logic shooting_pulse,
     input logic collision,
     input logic [3:0] HitEdgeCode,
 
@@ -45,11 +45,6 @@ module  missile_movement
             // Save the last state of the missile_active for activation_pulse
             previous_missile_active <= missile_active;
 
-            // If a shot is fired, raise a flag for the next frame
-            if (shotKeyIsPress == 1'b1) begin
-                shot_fired <= 1'b1;
-            end
-
             if (collision) begin
                 topLeftX_FixedPoint <= 0;
                 topLeftY_FixedPoint <= 0;
@@ -71,6 +66,14 @@ module  missile_movement
                     topLeftX_FixedPoint  <= topLeftX_FixedPoint + X_SPEED;
                     topLeftY_FixedPoint  <= topLeftY_FixedPoint + Y_SPEED;
                 end
+            end
+
+            // If a shot is fired, raise a flag for the next frame
+            // Note: It might be possible that the shooting_pulse is active at the startOfFrame pulse,
+            // so we must keep this after the if of startOfFrame, so if both of them are sent at the same time,
+            // the shot_fired will still be set for the next frame.
+            if (shooting_pulse == 1'b1) begin
+                shot_fired <= 1'b1;
             end
         end
     end
