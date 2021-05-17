@@ -19,7 +19,7 @@ module monsters(
 	parameter int INITIAL_Y = 200;
 	parameter int X_SPEED = 8;
     parameter int Y_SPEED = -2;
-    parameter unsigned MONSTER_AMOUNT = 20;
+    parameter unsigned MONSTER_AMOUNT = 2;
 
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetX;
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetY;
