@@ -8,24 +8,29 @@ module  player (
     input logic startOfFrame,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
-	input logic [3:0] collision,
+    input logic [4:0] collision,
 
-    output logic signed [10:0] topLeftX,
-    output logic signed [10:0] topLeftY,
     output logic playerDR,
-    output logic [7:0] playerRGB
+    output logic [7:0] playerRGB,
+
+    output logic missleDR,
+    output logic [7:0] missleRGB
 );
     parameter UP    = 9'h06C; // digit 7
     parameter DOWN  = 9'h075; // digit 8
     parameter RIGHT = 9'h14A; // key '/'
     parameter LEFT  = 9'h073; // digit 5
+    parameter STR_SHOT_KEY = 9'h15A; // enter key
     parameter unsigned KEYCODE_WIDTH = 9;
 
+    logic signed [10:0] topLeftX;
+    logic signed [10:0] topLeftY;
     logic [10:0] offsetX;
     logic [10:0] offsetY;
     logic squareDR;
     logic [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
+    logic shooting_pusle;
 
     logic upIsPress;
     keyToggle_decoder #(.KEY_VALUE(UP)) control_up_inst (
@@ -67,6 +72,17 @@ module  player (
         .keyIsPressed(LeftIsPress)
         );
 
+    logic shotKeyIsPressed;
+
+    keyToggle_decoder #(.KEY_VALUE(STR_SHOT_KEY)) control_strShot_inst (
+        .clk(clk),
+        .resetN(resetN),
+        .keyCode(keyCode),
+        .make(make),
+        .brakee(brake),
+        .keyIsPressed(shotKeyIsPressed)
+        );
+
     player_move player_move_inst(
         .clk(clk),
         .resetN(resetN),
@@ -75,8 +91,8 @@ module  player (
         .move_right(RightIsPress),
         .move_up(upIsPress),
         .move_down(downIsPress),
-		.collision(collision),
-		.HitEdgeCode(HitEdgeCode),
+        .collision(collision),
+        .HitEdgeCode(HitEdgeCode),
         .topLeftX(topLeftX),
         .topLeftY(topLeftY)
         );
@@ -104,7 +120,29 @@ module  player (
         .drawingRequest(playerDR),
         .RGBout(playerRGB),
         .HitEdgeCode(HitEdgeCode)
-    );
+        );
+
+    shooting_cooldown shooting_cooldown_inst(
+        .clk           (clk),
+        .resetN        (resetN),
+        .startOfFrame  (startOfFrame),
+        .fire_command  (shotKeyIsPressed),
+        .shooting_pusle(shooting_pusle)
+        );
+
+    missiles missiles_inst (
+        .clk            (clk),
+        .resetN         (resetN),
+        .shooting_pusle (shooting_pusle),
+        .startOfFrame   (startOfFrame),
+        .collision      ((collision[0] | collision[2])),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+        .spaceShip_X    (topLeftX),
+        .spaceShip_Y    (topLeftY),
+        .missleDR       (missleDR),
+        .missleRGB      (missleRGB)
+        );
 
 
 
