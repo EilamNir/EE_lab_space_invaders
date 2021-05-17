@@ -4,7 +4,8 @@ module  monsters_move (
     input logic clk,
     input logic resetN,
     input logic startOfFrame,  // short pulse every start of frame 30Hz
-    input logic [3:0] collision,
+    input logic missile_collision,
+    input logic border_collision,
     input logic [3:0] HitEdgeCode,
 
     output logic monsterIsHit,
@@ -40,7 +41,7 @@ module  monsters_move (
             monsterIsHit <= 0;
         end else begin
 
-            if(monsterIsHit || collision[0]) begin
+            if(monsterIsHit || missile_collision) begin
                 // If the monster was hit by a missile, stop it
                 monsterIsHit <= 1'b1;
                 Xspeed  <= 0;
@@ -48,7 +49,7 @@ module  monsters_move (
             end
 
             // Check border collisions
-            if (collision[1]) begin
+            if (border_collision) begin
                 if (((HitEdgeCode [2] == 1) && (Yspeed < 0)) || // monster hit ceiling while moving up
                     ((HitEdgeCode [0] == 1) && (Yspeed > 0))) begin // monster hit ground while moving down
                     Yspeed <= -Yspeed;

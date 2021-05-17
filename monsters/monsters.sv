@@ -18,76 +18,111 @@ module monsters(
 	parameter int INITIAL_X = 300;
 	parameter int INITIAL_Y = 200;
 	parameter int X_SPEED = 8;
-	
-    logic [10:0] offsetX;
-    logic [10:0] offsetY;
-    logic squareDR;
-    logic [7:0] squareRGB;
+    parameter int Y_SPEED = -2;
+    parameter unsigned MONSTER_AMOUNT = 20;
+
+    logic [MONSTER_AMOUNT - 1:0] [10:0] offsetX;
+    logic [MONSTER_AMOUNT - 1:0] [10:0] offsetY;
+    logic [MONSTER_AMOUNT - 1:0] squareDR;
+    logic [MONSTER_AMOUNT - 1:0] [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
-    logic signed [10:0] topLeftX;
-    logic signed [10:0] topLeftY;
-	logic monsterIsHit;
-    logic shooting_pusle;
-	
-    monsters_move #(.X_SPEED(X_SPEED),.INITIAL_X(INITIAL_X)) monsters_move_inst(
-        .clk(clk),
-        .resetN(resetN),
-		.collision(collision),
-        .startOfFrame(startOfFrame),
-		.HitEdgeCode(HitEdgeCode),
-		.monsterIsHit(monsterIsHit),
-        .topLeftX(topLeftX),
-        .topLeftY(topLeftY)
-        );
+    logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
+    logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
+    logic [MONSTER_AMOUNT - 1:0] monsterIsHit;
+    logic [MONSTER_AMOUNT - 1:0] shooting_pusle;
 
-    square_object #(.OBJECT_WIDTH_X(32), .OBJECT_HEIGHT_Y(32)) square_object_inst(
-        .clk(clk),
-        .resetN(resetN),
-        .pixelX(pixelX),
-        .pixelY(pixelY),
-        .topLeftX(topLeftX),
-        .topLeftY(topLeftY),
-        .offsetX(offsetX),
-        .offsetY(offsetY),
-        .drawingRequest(squareDR),
-        .RGBout(squareRGB)
-        );
+    logic [MONSTER_AMOUNT-1:0] missiles_draw_requests;
 
+    genvar i;
+    generate
+        for (i = 0; i < MONSTER_AMOUNT; i++) begin : generate_monsters
+            monsters_move #(.X_SPEED(X_SPEED + (i * 4)), .Y_SPEED(Y_SPEED + (i * 4)), .INITIAL_X(INITIAL_X + (i * 8)), .INITIAL_Y(INITIAL_Y)) monsters_move_inst(
+                .clk(clk),
+                .resetN(resetN),
+                .missile_collision(collision[0] & squareDR[i]),
+                .border_collision(collision[1] & squareDR[i]),
+                .startOfFrame(startOfFrame),
+                .HitEdgeCode(HitEdgeCode),
+                .monsterIsHit(monsterIsHit[i]),
+                .topLeftX(topLeftX[i]),
+                .topLeftY(topLeftY[i])
+                );
+
+            square_object #(.OBJECT_WIDTH_X(32), .OBJECT_HEIGHT_Y(32)) square_object_inst(
+                .clk(clk),
+                .resetN(resetN),
+                .pixelX(pixelX),
+                .pixelY(pixelY),
+                .topLeftX(topLeftX[i]),
+                .topLeftY(topLeftY[i]),
+                .offsetX(offsetX[i]),
+                .offsetY(offsetY[i]),
+                .drawingRequest(squareDR[i]),
+                .RGBout(squareRGB[i])
+                );
+
+            shooting_cooldown #(.SHOOTING_COOLDOWN(90)) shooting_cooldown_inst(
+                .clk           (clk),
+                .resetN        (resetN),
+                .startOfFrame  (startOfFrame),
+                .fire_command  (~(monsterIsHit[i])),
+                .shooting_pusle(shooting_pusle[i])
+                );
+
+            missiles #(.SHOT_AMOUNT(4), .X_SPEED(0), .Y_SPEED(128), .X_OFFSET(15), .Y_OFFSET(28), .MISSILE_COLOR(8'hD0)) missiles_inst (
+                .clk            (clk),
+                .resetN         (resetN),
+                .shooting_pusle (shooting_pusle[i]),
+                .startOfFrame   (startOfFrame),
+                .collision      ((collision[4] | collision[2])),
+                .pixelX         (pixelX),
+                .pixelY         (pixelY),
+                .spaceShip_X    (topLeftX[i]),
+                .spaceShip_Y    (topLeftY[i]),
+                .missleDR       (missiles_draw_requests[i])
+                );
+                end
+    endgenerate
+
+    // Decide on which square object to pass into the bitmap
+    logic chosen_square_DR;
+    logic [10:0] chosen_offsetX;
+    logic [10:0] chosen_offsetY;
+    logic chosen_monster_is_hit;
+    always_comb begin
+        chosen_square_DR = 1'b0;
+        chosen_offsetX = 11'b0;
+        chosen_offsetY = 11'b0;
+        chosen_monster_is_hit = 1'b0;
+        for (int j = 0; j < MONSTER_AMOUNT; j++) begin
+            // Only save the offset of the first square
+            if (squareDR[j] == 1'b1) begin
+                chosen_square_DR = 1'b1;
+                chosen_offsetX = offsetX[j];
+                chosen_offsetY = offsetY[j];
+                chosen_monster_is_hit = monsterIsHit[j];
+                break;
+            end
+        end
+    end
 
     chickenBitMap chickenBitMap_inst(
         .clk(clk),
         .resetN(resetN),
-        .offsetX(offsetX),
-        .offsetY(offsetY),
-        .InsideRectangle(squareDR),
-		.monsterIsHit(monsterIsHit),
+        .offsetX(chosen_offsetX),
+        .offsetY(chosen_offsetY),
+        .InsideRectangle(chosen_square_DR),
+        .monsterIsHit(chosen_monster_is_hit),
         .drawingRequest(monsterDR),
         .RGBout(monsterRGB),
         .HitEdgeCode(HitEdgeCode)
     );
 
-    shooting_cooldown #(.SHOOTING_COOLDOWN(30)) shooting_cooldown_inst(
-        .clk           (clk),
-        .resetN        (resetN),
-        .startOfFrame  (startOfFrame),
-        .fire_command  (~monsterIsHit),
-        .shooting_pusle(shooting_pusle)
-        );
+    // assign monsterDR = (squareDR != 0);
+    // assign monsterRGB = 8'h5b;
+    // assign HitEdgeCode = 4'b0;
 
-    missiles #(.SHOT_AMOUNT(5), .X_SPEED(0), .Y_SPEED(128), .X_OFFSET(15), .Y_OFFSET(32), .MISSILE_COLOR(8'hD0)) missiles_inst (
-        .clk            (clk),
-        .resetN         (resetN),
-        .shooting_pusle (shooting_pusle),
-        .startOfFrame   (startOfFrame),
-        .collision      ((collision[4] | collision[2])),
-        .pixelX         (pixelX),
-        .pixelY         (pixelY),
-        .spaceShip_X    (topLeftX),
-        .spaceShip_Y    (topLeftY),
-        .missleDR       (missleDR),
-        .missleRGB      (missleRGB)
-        );
-
-
+    assign missleRGB = 8'hD0;
+    assign missleDR = (missiles_draw_requests != 0);
 
 endmodule

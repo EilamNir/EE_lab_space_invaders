@@ -13,7 +13,7 @@ module hit_detection(
     parameter unsigned COLLISION_WIDTH = 5;
 
     assign collision[0] = hit_request[2] && hit_request[1]; // monster and player_missile
-	assign collision[1] = hit_request[2] && hit_request[4]; // monster and boundry
+	assign collision[1] = hit_request[2] && (hit_request[4] || hit_request[5]); // monster and boundry
 	assign collision[2] = (hit_request[1] | hit_request[3]) && hit_request[4]; // any missile and boundry
 	assign collision[3] = hit_request[0] && (hit_request[4] || hit_request[5]); // player and boundry
     assign collision[4] = hit_request[0] && hit_request[3]; // player and monster_missile
