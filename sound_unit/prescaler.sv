@@ -11,11 +11,11 @@
 
 module	prescaler	(	
 //		--////////////////////	Clock Input	 	////////////////////	
-					input		logic	clk,
-					input		logic	resetN,
-					input		logic [9:0]	preScaleValue,
-					output	logic	slowEnPulse, 
-					output	logic	slowEnPulse_d // a delayed enalbe to avoid read and write DPRAM at the same time 
+	input		logic	clk,
+	input		logic	resetN,
+	input		logic [9:0]	preScaleValue,
+	output	logic	slowEnPulse, 
+	output	logic	slowEnPulse_d // a delayed enalbe to avoid read and write DPRAM at the same time 
 
 		);
 

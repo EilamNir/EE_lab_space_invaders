@@ -29,7 +29,7 @@ begin
 				if (addr >= count_limit)  // overflow 
 					addr <= 0;
 				else 
-					addr <= addr + 1;
+					addr <= addr + 8'b1;
 			end
 
 end
