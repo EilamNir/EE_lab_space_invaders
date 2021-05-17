@@ -55,6 +55,7 @@ module space_invaders_TOP
 	logic [3:0] sound_requests;
 	assign sound_requests = {collision[0], collision[4]};
 	logic enableSound;
+	assign enableSound = 1'b1;
 	
 	
     clock_divider clock_div_inst (
