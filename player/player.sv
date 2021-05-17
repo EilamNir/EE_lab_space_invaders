@@ -16,12 +16,11 @@ module  player (
     output logic missleDR,
     output logic [7:0] missleRGB
 );
-    parameter UP    = 9'h075; // digit 8
-    parameter DOWN  = 9'h073; // digit 5
-    parameter RIGHT = 9'h074; // digit 6
-    parameter LEFT  = 9'h06B; // digit 4
-    parameter STR_SHOT_KEY = 9'h070; // digit 0
-
+    parameter UP    = 9'h06C; // digit 7
+    parameter DOWN  = 9'h075; // digit 8
+    parameter RIGHT = 9'h14A; // key '/'
+    parameter LEFT  = 9'h073; // digit 5
+    parameter STR_SHOT_KEY = 9'h15A; // enter key
     parameter unsigned KEYCODE_WIDTH = 9;
 
     logic signed [10:0] topLeftX;

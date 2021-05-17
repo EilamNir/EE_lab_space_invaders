@@ -14,6 +14,7 @@ module missiles(
     output logic [7:0] missleRGB
 );
 
+
     parameter unsigned RGB_WIDTH = 8;
     parameter [RGB_WIDTH - 1:0] MISSILE_COLOR = 8'h1F;
     parameter unsigned SHOT_AMOUNT = 7;
