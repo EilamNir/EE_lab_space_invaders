@@ -52,6 +52,11 @@ module space_invaders_TOP
     logic [4:0] HitPulse;
     logic [4:0] collision;
 
+	logic [3:0] sound_requests;
+	assign sound_requests = {collision[0], collision[4]};
+	logic enableSound;
+	
+	
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),
         .rst(~resetN),
@@ -125,6 +130,10 @@ module space_invaders_TOP
         .oVGA           (OVGA));
 
     sound_unit sound_unit_inst (
+		.clk(clk),
+		.resetN(resetN),
+		.enableSound(enableSound),
+		.sound_requests(sound_requests),
         .AUD_ADCDAT(AUD_ADCDAT),
         .AUDOUT(AUDOUT));
 
