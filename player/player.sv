@@ -11,10 +11,11 @@ module  player (
     input logic [4:0] collision,
 
     output logic playerDR,
-    output logic [7:0] playerRGB,
+    output logic [RGB_WIDTH - 1:0] playerRGB,
 
     output logic missleDR,
-    output logic [7:0] missleRGB
+    output logic [RGB_WIDTH - 1:0] missleRGB,
+    output logic player_dead
 );
     parameter UP    = 9'h06C; // digit 7
     parameter DOWN  = 9'h075; // digit 8
@@ -23,14 +24,19 @@ module  player (
     parameter STR_SHOT_KEY = 9'h15A; // enter key
     parameter unsigned KEYCODE_WIDTH = 9;
 
+    parameter unsigned RGB_WIDTH = 8;
+
+
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
     logic [10:0] offsetX;
     logic [10:0] offsetY;
     logic squareDR;
-    logic [7:0] squareRGB;
+    logic [RGB_WIDTH - 1:0] squareRGB;
     logic [3:0] HitEdgeCode;
     logic shooting_pusle;
+    logic [RGB_WIDTH - 1:0] bitmapRGB;
+    logic player_faded;
 
     logic upIsPress;
     keyToggle_decoder #(.KEY_VALUE(UP)) control_up_inst (
@@ -91,7 +97,7 @@ module  player (
         .move_right(RightIsPress),
         .move_up(upIsPress),
         .move_down(downIsPress),
-        .collision(collision),
+        .border_collision(collision[3]),
         .HitEdgeCode(HitEdgeCode),
         .topLeftX(topLeftX),
         .topLeftY(topLeftY)
@@ -118,15 +124,26 @@ module  player (
         .offsetY(offsetY),
         .InsideRectangle(squareDR),
         .drawingRequest(playerDR),
-        .RGBout(playerRGB),
+        .RGBout(bitmapRGB),
         .HitEdgeCode(HitEdgeCode)
         );
+
+    player_lives player_lives_inst(
+        .clk              (clk),
+        .resetN           (resetN),
+        .startOfFrame     (startOfFrame),
+        .missile_collision(collision[4]),
+        .player_faded     (player_faded),
+        .player_dead      (player_dead)
+        );
+
+    assign playerRGB = RGB_WIDTH'((player_faded == 1'b1) ? RGB_WIDTH'('b0) : bitmapRGB) ;
 
     shooting_cooldown shooting_cooldown_inst(
         .clk           (clk),
         .resetN        (resetN),
         .startOfFrame  (startOfFrame),
-        .fire_command  (shotKeyIsPressed),
+        .fire_command  (shotKeyIsPressed & (~player_faded)),
         .shooting_pusle(shooting_pusle)
         );
 
