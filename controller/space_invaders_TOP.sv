@@ -7,7 +7,7 @@ module space_invaders_TOP
     input logic AUD_ADCDAT,
 
     output logic [VGA_WIDTH - 1:0] OVGA,
-    output logic [AUDIO_WIDTH - 1:0] AUDOUT
+    inout [AUDIO_WIDTH - 1:0] AUDOUT
 );
 
     parameter unsigned VGA_WIDTH = 29;
@@ -52,8 +52,8 @@ module space_invaders_TOP
     logic [4:0] HitPulse;
     logic [4:0] collision;
 
-	logic [3:0] sound_requests;
-	assign sound_requests = {collision[0], collision[4]};
+	logic [0:1] sound_requests;
+	assign sound_requests = {collision[0], 1'b1};
 	logic enableSound;
 	assign enableSound = 1'b1;
 	

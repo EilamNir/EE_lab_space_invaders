@@ -9,7 +9,7 @@ module sound_unit
 	input logic clk,
 	input logic resetN,
 	input logic enableSound,
-	input logic [3:0] sound_requests,
+	input logic [0:1] sound_requests,
 	input logic AUD_ADCDAT,
 	
     output logic [7:0] AUDOUT
@@ -23,13 +23,15 @@ module sound_unit
 	logic [15:0] soundData;
 	
 	
-	sound_mux sound_mux_inst (
-		.clk(clk),
-		.resetN(resetN),
-		.sound_requests(sound_requests),
-		.sound_signal(sound_signal)
-	);
-	
+	// sound_mux sound_mux_inst (
+	// 	.clk(clk),
+	// 	.resetN(resetN),
+	// 	.sound_requests(sound_requests),
+	// 	.sound_signal(sound_signal)
+	// );
+
+	assign sound_signal = 4'd7; // TODO: Remove me
+
 	ToneDecoder	tone_dec_inst(
 		.tone(sound_signal),
 		.preScaleValue(preScaleValue)
@@ -47,8 +49,8 @@ module sound_unit
 	addr_counter addr_counter_inst(
         .clk(clk),
         .resetN(resetN),
-        .en(slowEnPulse),
-        .en1(enableSound),
+        .en(1'b1),
+        .en1(slowEnPulse),
 		.addr(freq)    // sin table index will choose the right frequency
 	);		
 	
@@ -70,12 +72,6 @@ module sound_unit
 		.dacdata_right(soundData),
 		.AUD_ADCDAT(AUD_ADCDAT),
 		.MICROPHON_LED(AUDOUT[0]),
-		.dacdata_left(),
-		.dacdata_right(),
-		.adcdata_left_valid(),
-		.adcdata_left(),
-		.adcdata_right_valid(),
-		.adcdata_right(),
 		.AUD_ADCLRCK(AUDOUT[1]),
 		.AUD_BCLK(AUDOUT[2]),
 		.AUD_DACDAT(AUDOUT[3]),

@@ -6,7 +6,7 @@
 module  sound_mux (
     input logic clk,
     input logic resetN,
-    input logic [3:0] sound_requests,
+    input logic [0:1] sound_requests,
     output logic [3:0] sound_signal
 );
 
