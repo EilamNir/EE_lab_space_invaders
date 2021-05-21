@@ -51,6 +51,7 @@ module space_invaders_TOP
 
     logic [4:0] HitPulse;
     logic [4:0] collision;
+    logic all_monsters_dead;
 
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),
@@ -69,7 +70,7 @@ module space_invaders_TOP
 
     player player_inst (
         .clk            (clk),
-        .resetN         (resetN),
+        .resetN         (resetN & (~all_monsters_dead)),
         .keyCode        (keyCode),
         .make           (make),
         .brake          (brake),
@@ -84,7 +85,7 @@ module space_invaders_TOP
 
     monsters monsters_inst (
         .clk            (clk),
-        .resetN         (resetN),
+        .resetN         (resetN & (~all_monsters_dead)),
         .startOfFrame   (startOfFrame),
         .collision      (collision),
         .pixelX         (pixelX),
@@ -92,7 +93,8 @@ module space_invaders_TOP
         .monsterDR      (monsterDR),
         .monsterRGB     (monsterRGB),
         .missleDR       (monster_missleDR),
-        .missleRGB      (monster_missleRGB));
+        .missleRGB      (monster_missleRGB),
+        .all_monsters_dead(all_monsters_dead));
         
         
     hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (

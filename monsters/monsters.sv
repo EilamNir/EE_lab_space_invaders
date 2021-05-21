@@ -11,7 +11,9 @@ module monsters(
     output logic [7:0] monsterRGB,
 
     output logic missleDR,
-    output logic [7:0] missleRGB
+    output logic [7:0] missleRGB,
+
+    output logic all_monsters_dead
 );
 
     parameter unsigned KEYCODE_WIDTH = 9;
@@ -133,5 +135,8 @@ module monsters(
 
     assign missleRGB = 8'hD0;
     assign missleDR = (missiles_draw_requests != 0);
+
+    // Only raise all_monsters_dead if monster_deactivated is all 1s
+    assign all_monsters_dead = &monster_deactivated;
 
 endmodule
