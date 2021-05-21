@@ -20,6 +20,7 @@ module monsters(
 	parameter int X_SPEED = 8;
     parameter int Y_SPEED = -2;
     parameter unsigned MONSTER_AMOUNT = 2;
+    parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 5;
 
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetX;
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetY;
@@ -29,6 +30,7 @@ module monsters(
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
     logic [MONSTER_AMOUNT - 1:0] monsterIsHit;
+    logic [MONSTER_AMOUNT - 1:0] monster_deactivated;
     logic [MONSTER_AMOUNT - 1:0] shooting_pusle;
 
     logic [MONSTER_AMOUNT-1:0] missiles_draw_requests;
@@ -59,6 +61,14 @@ module monsters(
                 .offsetY(offsetY[i]),
                 .drawingRequest(squareDR[i]),
                 .RGBout(squareRGB[i])
+                );
+
+            delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
+                .clk(clk),
+                .resetN(resetN),
+                .startOfFrame(startOfFrame),
+                .input_signal(monsterIsHit[i]),
+                .output_signal(monster_deactivated[i])
                 );
 
             shooting_cooldown #(.SHOOTING_COOLDOWN(90)) shooting_cooldown_inst(
@@ -97,11 +107,14 @@ module monsters(
         for (int j = 0; j < MONSTER_AMOUNT; j++) begin
             // Only save the offset of the first square
             if (squareDR[j] == 1'b1) begin
-                chosen_square_DR = 1'b1;
-                chosen_offsetX = offsetX[j];
-                chosen_offsetY = offsetY[j];
-                chosen_monster_is_hit = monsterIsHit[j];
-                break;
+                // Ignore deactivated monsters
+                if (monster_deactivated[j] == 1'b0) begin
+                    chosen_square_DR = 1'b1;
+                    chosen_offsetX = offsetX[j];
+                    chosen_offsetY = offsetY[j];
+                    chosen_monster_is_hit = monsterIsHit[j];
+                    break;
+                end
             end
         end
     end
@@ -117,10 +130,6 @@ module monsters(
         .RGBout(monsterRGB),
         .HitEdgeCode(HitEdgeCode)
     );
-
-    // assign monsterDR = (squareDR != 0);
-    // assign monsterRGB = 8'h5b;
-    // assign HitEdgeCode = 4'b0;
 
     assign missleRGB = 8'hD0;
     assign missleDR = (missiles_draw_requests != 0);

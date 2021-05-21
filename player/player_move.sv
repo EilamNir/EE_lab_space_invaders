@@ -8,7 +8,7 @@ module  player_move (
     input logic move_right,
     input logic move_up,
     input logic move_down,
-    input logic [3:0] collision,
+    input logic border_collision,
     input logic [3:0] HitEdgeCode,
 
     output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
@@ -65,7 +65,7 @@ module  player_move (
             end
 
             // Remember collisions with the borders
-            if (collision[3]) begin
+            if (border_collision) begin
                 border_collision_flags <= border_collision_flags | HitEdgeCode;
             end
 
