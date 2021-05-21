@@ -6,6 +6,7 @@ module player_lives(
     input logic missile_collision,
 
     output logic player_faded,
+    output logic player_damaged,
     output logic player_dead
 );
     parameter unsigned LIVES_AMOUNT_WIDTH = 3;
@@ -21,12 +22,14 @@ module player_lives(
         if(!resetN) begin
             current_lives <= LIVES_AMOUNT;
             player_faded <= 1'b0;
+            player_damaged <= 1'b0;
             player_dead <= 1'b0;
             damaged_timeout <= 0;
         end else begin
             // Reset the player damaged flag when the timeout is over
             if (damaged_timeout == 0) begin
                 player_faded <= 1'b0;
+                player_damaged <= 1'b0;
             end else if (startOfFrame) begin
                 // Reduce the damaged timeout by one every frame
                 damaged_timeout <= PLAYER_DAMAGED_FRAME_AMOUNT_WIDTH'(damaged_timeout - 1);
@@ -42,9 +45,11 @@ module player_lives(
                 player_dead <= 1'b1;
                 // Dead player is always faded
                 player_faded <= 1'b1;
+                player_damaged <= 1'b1;
             end else if (missile_collision && (damaged_timeout == 0)) begin // Check if the player hit a missile while not damaged
                 // Mark the player as damaged
                 player_faded <= 1'b1;
+                player_damaged <= 1'b1;
                 // Start the damaged timeout
                 damaged_timeout <= PLAYER_DAMAGED_FRAME_AMOUNT;
                 // Remove one life from the player
