@@ -2,6 +2,7 @@
 module player_lives(
     input logic clk,
     input logic resetN,
+	input logic enable,
     input logic startOfFrame,
     input logic missile_collision,
 
@@ -23,7 +24,7 @@ module player_lives(
             player_faded <= 1'b0;
             player_dead <= 1'b0;
             damaged_timeout <= 0;
-        end else begin
+        end else if(enable) begin
             // Reset the player damaged flag when the timeout is over
             if (damaged_timeout == 0) begin
                 player_faded <= 1'b0;

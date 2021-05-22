@@ -2,6 +2,7 @@
 module missiles(
     input logic clk,
     input logic resetN,
+	input logic enable,
     input logic shooting_pusle,
     input logic startOfFrame,
 	input logic collision,
@@ -48,26 +49,28 @@ module missiles(
     generate
         for (i = 0; i < SHOT_AMOUNT; i++) begin : generate_missiles
             missile_movement #(.X_SPEED(X_SPEED), .Y_SPEED(Y_SPEED), .X_OFFSET(X_OFFSET), .Y_OFFSET(Y_OFFSET)) missile_movement_inst (
-                .clk(clk),
-                .resetN(resetN),
-                .startOfFrame(startOfFrame),
-                .shooting_pulse(fire_commands[i]),
-                .collision(collision & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
-                .spaceShip_X(spaceShip_X),
-                .spaceShip_Y(spaceShip_Y),
-                .topLeftX(topLeftX[i]),
-                .topLeftY(topLeftY[i]),
-                .missile_active(missile_active[i])
+                .clk			(clk),
+                .resetN			(resetN),
+				.enable			(enable),
+                .startOfFrame	(startOfFrame),
+                .shooting_pulse	(fire_commands[i]),
+                .collision		(collision & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
+                .spaceShip_X	(spaceShip_X),
+                .spaceShip_Y	(spaceShip_Y),
+                .topLeftX		(topLeftX[i]),
+                .topLeftY		(topLeftY[i]),
+                .missile_active	(missile_active[i])
                 );
 
             square_object #(.OBJECT_WIDTH_X(2), .OBJECT_HEIGHT_Y(5)) square_object_isnt (
-                .clk(clk),
-                .resetN(resetN),
-                .pixelX(pixelX),
-                .pixelY(pixelY),
-                .topLeftX(topLeftX[i]),
-                .topLeftY(topLeftY[i]),
-                .drawingRequest(draw_requests[i])
+                .clk			(clk),
+                .resetN			(resetN),
+				.enable			(enable),
+                .pixelX			(pixelX),
+                .pixelY			(pixelY),
+                .topLeftX		(topLeftX[i]),
+                .topLeftY		(topLeftY[i]),
+                .drawingRequest	(draw_requests[i])
                 );
         end
     endgenerate

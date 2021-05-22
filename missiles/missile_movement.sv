@@ -3,6 +3,7 @@ module  missile_movement
 (
     input logic clk,
     input logic resetN,
+	input logic enable,
     input logic startOfFrame,  // short pulse every start of frame 30Hz
     input logic shooting_pulse,
     input logic collision,
@@ -38,16 +39,21 @@ module  missile_movement
             topLeftY_FixedPoint <= 0;
             shot_fired <= 1'b0;
             missile_active <= 1'b0;
-        end else begin
-
-            if (collision) begin
+        end else if(enable) begin
+			if(!enable) begin
+				topLeftX_FixedPoint <= 0;
+				topLeftY_FixedPoint <= 0;
+				shot_fired <= 1'b0;
+				missile_active <= 1'b0;
+			end
+            else if (collision) begin
                 topLeftX_FixedPoint <= 0;
                 topLeftY_FixedPoint <= 0;
                 // Remove the missile from the screen
                 missile_active <= 1'b0;
             end
 
-            if (startOfFrame == 1'b1 ) begin
+            else if (startOfFrame == 1'b1 ) begin
                 // Reset the shot fired for the next frame
                 shot_fired <= 1'b0;
                 if (shot_fired == 1'b1) begin
@@ -67,7 +73,7 @@ module  missile_movement
             // Note: It might be possible that the shooting_pulse is active at the startOfFrame pulse,
             // so we must keep this after the if of startOfFrame, so if both of them are sent at the same time,
             // the shot_fired will still be set for the next frame.
-            if (shooting_pulse == 1'b1) begin
+            else if (shooting_pulse == 1'b1) begin
                 shot_fired <= 1'b1;
             end
         end

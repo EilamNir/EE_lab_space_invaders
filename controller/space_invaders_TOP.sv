@@ -102,7 +102,7 @@ module space_invaders_TOP
 		.enable_player	(enable_player),
 		.enable_monst   (enable_monst),
 		.enable_boss	(enable_boss),
-		.enable_astero   (enable_astero),
+		.enable_astero  (enable_astero),
 		.resetN_player	(resetN_player),
 		.resetN_monst	(resetN_monst),
 		.stage_num		(stage_num));
@@ -110,6 +110,7 @@ module space_invaders_TOP
     player player_inst (
         .clk            (clk),
         .resetN         (resetN & resetN_player),
+		.enable			(enable_player),
         .keyCode        (keyCode),
         .make           (make),
         .brake          (brake),
@@ -117,20 +118,22 @@ module space_invaders_TOP
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .collision      (collision),
-        .playerDR       (playerDR & enable_player),
+        .playerDR       (playerDR),
         .playerRGB      (playerRGB),
+		.player_died	(player_died),
         .missleDR       (player_missleDR),
         .missleRGB      (player_missleRGB));
 
     monsters monsters_inst (
         .clk            (clk),
         .resetN         (resetN & resetN_monst),
+		.enable			(enable_monst),
         .startOfFrame   (startOfFrame),
         .collision      (collision),
 		//.stage_num    (stage_num),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
-        .monsterDR      (monsterDR & enable_monst),
+        .monsterDR      (monsterDR),
         .monsterRGB     (monsterRGB),
         .missleDR       (monster_missleDR),
         .missleRGB      (monster_missleRGB)

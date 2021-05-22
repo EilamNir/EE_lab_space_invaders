@@ -8,6 +8,7 @@
 module	square_object	(	
     input logic clk,
     input logic resetN,
+	input logic enable,
     input logic signed	[10:0] pixelX,// current VGA pixel
     input logic signed	[10:0] pixelY,
     input logic signed	[10:0] topLeftX, //position on the screen
@@ -43,8 +44,8 @@ module	square_object	(
 		if(!resetN) begin
 			RGBout			<=	8'b0;
 			drawingRequest	<=	1'b0;
-		end
-		else begin
+		end	else if(enable) begin
+		
 			// DEFUALT outputs
 				RGBout <= TRANSPARENT_ENCODING ; // so it will not be displayed
 				drawingRequest <= 1'b0 ;// transparent color

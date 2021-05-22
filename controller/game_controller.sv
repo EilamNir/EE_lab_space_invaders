@@ -8,11 +8,11 @@ module game_controller
 (
     input logic clk,
     input logic resetN,
-	input logic start_game,  //SW on the FPGA
+	input logic start_game,  //SW1 on the FPGA
 	input logic win_stage,   //monsters / boss / astro modules will sent this
 	input logic player_died, //player module will sent this
 	input logic skip_stage,  //command on the FPGA
-	input logic pause, 		 //SW on the FPGA
+	input logic pause, 		 //SW2 on the FPGA
 	
     output logic game_won,
     output logic game_over,
@@ -41,8 +41,9 @@ always_ff@(posedge clk or negedge resetN)
 always_comb
 	begin
         next_st = pres_st;
-        enable_player= 1'b0;
-		pause_enable_monst = 1'b0;
+        enable_player= 1'b1;
+		//		pause_enable_monst = 1'b1;
+		enable_monst = 1'b1;
         game_won 	 = 1'b0;
         game_over    = 1'b0;
 	    resetN_player= 1'b1;
@@ -50,23 +51,29 @@ always_comb
 		
 		case (pres_st)
 			RESET: begin
-				if(start_game) next_st = RUN;  //next state 
+				if(start_game) next_st = RUN;  //next state
+				else if(!start_game) next_st = RESET;
 				resetN_player = 1'b0;
-				resetN_monst = 1'b0;
+				resetN_monst  = 1'b0;
+				enable_player = 1'b0;
+				enable_monst  = 1'b0;
+				//pause_enable_monst = 1'b0;
 			end // reset_game
 			
 			RUN: begin 
+				if(!start_game)			next_st = RESET;
 				if(pause) 				next_st = PAUSE;
 				else if(player_died)   	next_st = GAME_OVER; 
 				else if(win_stage)    	next_st = STAGE_WON;
-				enable_player = 1'b1;
-				pause_enable_monst = 1'b0;
 			end // run game
 				
 			PAUSE: begin
+				if(!start_game)			next_st = RESET;
+				enable_monst  = 1'b0;
+				//pause_enable_monst = 1'b0;
 				enable_player = 1'b0;
-				pause_enable_monst = 1'b1;
-				if(!pause)    next_st = RUN;  
+				if(!pause)    	next_st = RUN;	
+				else if (pause) 			next_st = PAUSE;
 			end // pause
 			
 			STAGE_WON: begin
@@ -75,11 +82,11 @@ always_comb
 			end // STAGE_WON
 			
 			GAME_OVER: begin
-				if(!resetN) next_st = RESET; 
+				if(!resetN & !start_game) next_st = RESET; 
 				if(win_stage) game_won = 1'b1;
 				else game_over = 1'b1;
 				enable_player = 1'b0;
-				pause_enable_monst = 1'b1;
+				//pause_enable_monst = 1'b0;
 			end // GAME_OVER
     	
     	endcase
@@ -98,5 +105,5 @@ always_comb
 		.stage_num(stage_num)
 	);
 
-	assign enable_monst = pause_enable_monst & run_enable_monst;
+	//assign enable_monst = pause_enable_monst & run_enable_monst;
 endmodule

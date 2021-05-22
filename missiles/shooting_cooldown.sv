@@ -2,6 +2,7 @@
 module shooting_cooldown(
     input logic clk,
     input logic resetN,
+	input logic enable,
     input logic startOfFrame,
     input logic fire_command,
 
@@ -17,8 +18,9 @@ module shooting_cooldown(
         if(!resetN) begin
             count_down <= SHOOTING_COOLDOWN_WIDTH'('b0);
             shooting_pusle <= 1'b0;
-        end else begin
-            // Default to not shooting
+        end else if(enable) begin
+			
+			// Default to not shooting
             shooting_pusle <= 1'b0;
 
             // Check if we are ready to shoot
