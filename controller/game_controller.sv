@@ -77,8 +77,10 @@ always_comb
 			end // pause
 			
 			STAGE_WON: begin
-				next_st = RUN;
+				if(stage_num == 3'b100) next_st = GAME_OVER;
+				else next_st = RUN;
 				resetN_monst = 1'b0;
+				
 			end // STAGE_WON
 			
 			GAME_OVER: begin

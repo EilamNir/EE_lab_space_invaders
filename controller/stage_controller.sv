@@ -63,7 +63,10 @@ always_comb
 			STAGE4: begin
 				stage_num = STAGE4;			
 				enable_boss = 1'b1;				
-				if(win_stage || skip_stage)	next_gameStage = INIT;
+				if(win_stage || skip_stage) begin
+					next_gameStage = INIT;
+					game_won = 1'b1;
+				end
 			end
 		endcase
 	end 
