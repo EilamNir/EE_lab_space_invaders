@@ -2,12 +2,15 @@ module space_invaders_TOP
 (
     input logic CLOCK_50,
     input logic resetN,
+	input logic start_game,
+	input logic cheat,
+	input logic pause,
     input logic PS2_CLK,
     input logic PS2_DAT,
     input logic AUD_ADCDAT,
 
     output logic [VGA_WIDTH - 1:0] OVGA,
-    output logic [AUDIO_WIDTH - 1:0] AUDOUT
+    inout logic [AUDIO_WIDTH - 1:0] AUDOUT
 );
 
     parameter unsigned VGA_WIDTH = 29;
@@ -50,7 +53,7 @@ module space_invaders_TOP
     logic brake;
 
     logic [4:0] HitPulse;
-    logic [4:0] collision;
+    logic [6:0] collision;
 
 	logic [3:0] sound_requests;
 	assign sound_requests = {collision[0], collision[4]};
@@ -73,9 +76,40 @@ module space_invaders_TOP
         .brake(brake)
         );
 
-    player player_inst (
+	logic player_died;
+	logic win_stage;
+	logic enable_player;
+	logic enable_monst;
+	logic enable_boss;
+	logic enable_astero;
+	logic game_won;
+	logic game_over;
+	logic resetN_player;
+	logic resetN_monst;
+	logic [2:0] stage_num;
+
+
+    game_controller controller_inst(
         .clk            (clk),
         .resetN         (resetN),
+		.start_game		(start_game),
+		.win_stage		(win_stage), 
+		.player_died	(player_died), 
+		.skip_stage		(cheat), 
+		.pause			(pause), 
+		.game_won		(game_won),
+		.game_over		(game_over),
+		.enable_player	(enable_player),
+		.enable_monst   (enable_monst),
+		.enable_boss	(enable_boss),
+		.enable_astero   (enable_astero),
+		.resetN_player	(resetN_player),
+		.resetN_monst	(resetN_monst),
+		.stage_num		(stage_num));
+
+    player player_inst (
+        .clk            (clk),
+        .resetN         (resetN & resetN_player),
         .keyCode        (keyCode),
         .make           (make),
         .brake          (brake),
@@ -83,22 +117,25 @@ module space_invaders_TOP
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .collision      (collision),
-        .playerDR       (playerDR),
+        .playerDR       (playerDR & enable_player),
         .playerRGB      (playerRGB),
         .missleDR       (player_missleDR),
         .missleRGB      (player_missleRGB));
 
     monsters monsters_inst (
         .clk            (clk),
-        .resetN         (resetN),
+        .resetN         (resetN & resetN_monst),
         .startOfFrame   (startOfFrame),
         .collision      (collision),
+		//.stage_num    (stage_num),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
-        .monsterDR      (monsterDR),
+        .monsterDR      (monsterDR & enable_monst),
         .monsterRGB     (monsterRGB),
         .missleDR       (monster_missleDR),
-        .missleRGB      (monster_missleRGB));
+        .missleRGB      (monster_missleRGB)
+		//.win_stage    (win_stage)
+		);
         
         
     hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (
@@ -108,12 +145,12 @@ module space_invaders_TOP
         .hit_request    (hit_request),
         .collision      (collision),
         .HitPulse       (HitPulse));
-
-    obstacles obstacles_inst ();
-
+		
     background background_inst (
         .clk            (clk),
         .resetN         (resetN),
+		//.game_over	(game_over),
+		//.game_won		(game_won),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .bordersDR      (bordersDR),

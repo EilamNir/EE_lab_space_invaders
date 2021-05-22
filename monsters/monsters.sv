@@ -3,7 +3,7 @@ module monsters(
     input logic clk,
     input logic resetN,
     input logic startOfFrame,
-	input logic [4:0] collision,
+	input logic [6:0] collision,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
 
@@ -15,11 +15,11 @@ module monsters(
 );
 
     parameter unsigned KEYCODE_WIDTH = 9;
-	parameter int INITIAL_X = 300;
+	parameter int INITIAL_X = 50;
 	parameter int INITIAL_Y = 200;
 	parameter int X_SPEED = 8;
     parameter int Y_SPEED = -2;
-    parameter unsigned MONSTER_AMOUNT = 2;
+    parameter unsigned MONSTER_AMOUNT = 20;
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 5;
 
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetX;

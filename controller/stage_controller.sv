@@ -1,68 +1,71 @@
-//-- this module control each stage:
-//-- 4 stages:
-//-- 1) 
-//-- Gil Kapel, may 18th, 2021
+//-- this module control the high level game:
+//-- initialize, run the game, pause and winning or losing
+//-- also control the different stages
+//-- written by Nir Eilam and Gil Kapel, may 18th, 2021
 
 
 module stage_controller
 (
     input logic clk,
     input logic resetN,
-	input logic [2:0] stage_num,
+	input logic start_game,  //SW on the FPGA
+	input logic win_stage,   //monsters / boss / astro modules will sent this
+	input logic skip_stage,  //command on the FPGA
 	
-    output logic ,
-	output logic
+    output logic game_won,
+    output logic game_over,
+    output logic enable_monst,
+	output logic enable_boss,
+    output logic enable_astero,
+	output logic [2:0] stage_num 
 );
-	parameter stage1 2'b00;
-	parameter stage2 2'b01;
-	parameter stage3 2'b10;
-	parameter stage4 2'b11;
-always_comb
+
+	enum  logic [2:0] {INIT, STAGE1, STAGE2, STAGE3, STAGE4}  next_gameStage, pres_gameStage; //Game stages manager
+
+always_ff@(posedge clk or negedge resetN)	
 	begin
-		next_st = pres_st;	
-        enable_player = 1'b0;
-        enable_monsters = 1'b0;
-        game_won = 1'b0;
-        game_over = 1'b0;
-	    resetN_player = 1'b1;
-	    resetN_monsters = 1'b1;
-		
-		case (stage_num)
-			RESET: begin
-				if(start_game) next_st = RUN;  //next state 
-				resetN_player = 1'b0;
-				resetN_monsters = 1'b0;
-			end // reset_game
-			
-			RUN: begin
-				enable_player = 1'b1;
-				enable_monsters = 1'b1;
-				if(pause) 	next_st = PAUSE;
-				else if(player_destroyed)   next_st = GAME_OVER; 
-				else if(win_stage)    		next_st = STAGE_WON;
-			end // run game
-				
-			PAUSE: begin
-				enable_player = 1'b0;
-				enable_monsters = 1'b0;
-				if(!pause)    next_st = RUN;  
-			end // pause
-			
-			STAGE_WON: begin
-				if(last_stage) next_st = GAME_OVER;   
-				else begin
-					next_st = RUN;
-					resetN_monsters = 1'b0;
-				end
-			end // STAGE_WON
-			
-			GAME_OVER: begin
-				if(!resetN) next_st = RESET;  
-				enable_player = 1'b0;
-				enable_monsters = 1'b0;
-			end // GAME_OVER
-    	
-    	endcase
+        if(!resetN) begin 
+			pres_gameStage <= INIT;
+		end else begin 
+			pres_gameStage <= next_gameStage;
+		end
 	end
 	
+always_comb
+	begin
+        next_gameStage = pres_gameStage;
+        enable_monst = 1'b0;
+        enable_boss  = 1'b0;
+        enable_astero = 1'b0;
+        game_won 	 = 1'b0;
+        game_over    = 1'b0;
+		
+		case (pres_gameStage)
+			INIT: begin
+				stage_num = INIT;
+				if(start_game) next_gameStage = STAGE1;
+			end
+			STAGE1: begin
+				stage_num = STAGE1;
+				if(win_stage || skip_stage) next_gameStage = STAGE2;
+				enable_monst = 1'b1;
+			end
+			STAGE2: begin
+				stage_num = STAGE2;
+				if(win_stage || skip_stage) next_gameStage = STAGE3;
+				enable_monst = 1'b1;
+			end
+			STAGE3: begin
+				stage_num = STAGE3;
+				if(win_stage || skip_stage) next_gameStage = STAGE4;
+				enable_astero = 1'b1;
+			end
+			STAGE4: begin
+				stage_num = STAGE4;			
+				enable_boss = 1'b1;				
+				if(win_stage || skip_stage)	next_gameStage = INIT;
+			end
+		endcase
+	end 
+				
 endmodule

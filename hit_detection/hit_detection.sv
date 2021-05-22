@@ -10,13 +10,15 @@ module hit_detection(
 	);
 
     parameter unsigned NUMBER_OF_OBJECTS = 5;
-    parameter unsigned COLLISION_WIDTH = 5;
+    parameter unsigned COLLISION_WIDTH = 7;
 
     assign collision[0] = hit_request[2] && hit_request[1]; // monster and player_missile
 	assign collision[1] = hit_request[2] && (hit_request[4] || hit_request[5]); // monster and boundry
 	assign collision[2] = (hit_request[1] | hit_request[3]) && hit_request[4]; // any missile and boundry
 	assign collision[3] = hit_request[0] && (hit_request[4] || hit_request[5]); // player and boundry
     assign collision[4] = hit_request[0] && hit_request[3]; // player and monster_missile
+	assign collision[5] = hit_request[2] && hit_request[4]; // asteroid and all around boundry
+	assign collision[6] = hit_request[0] && hit_request[2]; // player and monster/asteroid
 
 
 	logic [COLLISION_WIDTH - 1:0] flags ; // a semaphore to set the output only once per frame / regardless of the number of collisions 

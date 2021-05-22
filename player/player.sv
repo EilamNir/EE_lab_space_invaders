@@ -8,7 +8,7 @@ module  player (
     input logic startOfFrame,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
-    input logic [4:0] collision,
+    input logic [6:0] collision,
 
     output logic playerDR,
     output logic [RGB_WIDTH - 1:0] playerRGB,
@@ -132,7 +132,7 @@ module  player (
         .clk              (clk),
         .resetN           (resetN),
         .startOfFrame     (startOfFrame),
-        .missile_collision(collision[4]),
+        .missile_collision(collision[4] || collision[6]),
         .player_faded     (player_faded),
         .player_dead      (player_dead)
         );
