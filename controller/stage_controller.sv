@@ -13,7 +13,6 @@ module stage_controller
 	input logic skip_stage,  //command on the FPGA
 	
     output logic game_won,
-    output logic game_over,
     output logic enable_monst,
 	output logic enable_boss,
     output logic enable_astero,
@@ -38,7 +37,6 @@ always_comb
         enable_boss  = 1'b0;
         enable_astero = 1'b0;
         game_won 	 = 1'b0;
-        game_over    = 1'b0;
 		
 		case (pres_gameStage)
 			INIT: begin
@@ -64,7 +62,6 @@ always_comb
 				stage_num = STAGE4;			
 				enable_boss = 1'b1;				
 				if(win_stage || skip_stage) begin
-					next_gameStage = INIT;
 					game_won = 1'b1;
 				end
 			end

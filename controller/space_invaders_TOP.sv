@@ -3,7 +3,7 @@ module space_invaders_TOP
     input logic CLOCK_50,
     input logic resetN,
 	input logic start_game,
-	input logic cheat,
+	input logic cheatN,
 	input logic pause,
     input logic PS2_CLK,
     input logic PS2_DAT,
@@ -76,7 +76,7 @@ module space_invaders_TOP
         .brake(brake)
         );
 
-	logic player_died;
+	logic player_dead;
 	logic win_stage;
 	logic enable_player;
 	logic enable_monst;
@@ -94,8 +94,8 @@ module space_invaders_TOP
         .resetN         (resetN),
 		.start_game		(start_game),
 		.win_stage		(win_stage), 
-		.player_died	(player_died), 
-		.skip_stage		(cheat), 
+		.player_dead	(player_dead), 
+		.skip_stage		(~cheatN), 
 		.pause			(pause), 
 		.game_won		(game_won),
 		.game_over		(game_over),
@@ -120,7 +120,7 @@ module space_invaders_TOP
         .collision      (collision),
         .playerDR       (playerDR),
         .playerRGB      (playerRGB),
-		.player_died	(player_died),
+		.player_dead	(player_dead),
         .missleDR       (player_missleDR),
         .missleRGB      (player_missleRGB));
 

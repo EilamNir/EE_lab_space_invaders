@@ -3,7 +3,6 @@ module  monsters_move (
 
     input logic clk,
     input logic resetN,
-    input logic enable,
     input logic startOfFrame,  // short pulse every start of frame 30Hz
     input logic missile_collision,
     input logic border_collision,
@@ -40,7 +39,7 @@ module  monsters_move (
             topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
             monsterIsHit <= 0;
-        end else if(enable) begin
+        end else begin
 
             if(monsterIsHit || missile_collision) begin
                 // If the monster was hit by a missile, stop it

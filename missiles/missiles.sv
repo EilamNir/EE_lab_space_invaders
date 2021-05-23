@@ -2,7 +2,6 @@
 module missiles(
     input logic clk,
     input logic resetN,
-	input logic enable,
     input logic shooting_pusle,
     input logic startOfFrame,
 	input logic collision,
@@ -51,7 +50,6 @@ module missiles(
             missile_movement #(.X_SPEED(X_SPEED), .Y_SPEED(Y_SPEED), .X_OFFSET(X_OFFSET), .Y_OFFSET(Y_OFFSET)) missile_movement_inst (
                 .clk			(clk),
                 .resetN			(resetN),
-				.enable			(enable),
                 .startOfFrame	(startOfFrame),
                 .shooting_pulse	(fire_commands[i]),
                 .collision		(collision & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
@@ -65,7 +63,6 @@ module missiles(
             square_object #(.OBJECT_WIDTH_X(2), .OBJECT_HEIGHT_Y(5)) square_object_isnt (
                 .clk			(clk),
                 .resetN			(resetN),
-				.enable			(enable),
                 .pixelX			(pixelX),
                 .pixelY			(pixelY),
                 .topLeftX		(topLeftX[i]),

@@ -808,8 +808,8 @@ agreement for further details.
 	(port
 		(pt 0 96)
 		(input)
-		(text "player_died" (rect 0 0 56 12)(font "Arial" ))
-		(text "player_died" (rect 21 91 77 103)(font "Arial" ))
+		(text "player_dead" (rect 0 0 56 12)(font "Arial" ))
+		(text "player_dead" (rect 21 91 77 103)(font "Arial" ))
 		(line (pt 0 96)(pt 16 96))
 	)
 	(port

@@ -93,8 +93,7 @@ module  player (
     player_move player_move_inst(
         .clk(clk),
         .resetN(resetN),
-		.enable(enable),
-        .startOfFrame(startOfFrame),
+        .startOfFrame(startOfFrame & (enable)),
         .move_left(LeftIsPress),
         .move_right(RightIsPress),
         .move_up(upIsPress),
@@ -108,7 +107,6 @@ module  player (
     square_object #(.OBJECT_WIDTH_X(32), .OBJECT_HEIGHT_Y(32)) square_object_inst(
         .clk			(clk),
         .resetN			(resetN),
-		.enable		    (enable),
         .pixelX			(pixelX),
         .pixelY			(pixelY),
         .topLeftX		(topLeftX),
@@ -134,8 +132,7 @@ module  player (
     player_lives player_lives_inst(
         .clk              (clk),
         .resetN           (resetN),
-		.enable			  (enable),
-        .startOfFrame     (startOfFrame),
+        .startOfFrame     (startOfFrame & (enable)),
         .missile_collision(collision[4] || collision[6]),
         .player_faded     (player_faded),
         .player_dead      (player_dead)
@@ -146,8 +143,7 @@ module  player (
     shooting_cooldown shooting_cooldown_inst(
         .clk           (clk),
         .resetN        (resetN),
-		.enable		   (enable),
-        .startOfFrame  (startOfFrame),
+        .startOfFrame  (startOfFrame & (enable)),
         .fire_command  (shotKeyIsPressed & (~player_faded)),
         .shooting_pusle(shooting_pusle)
         );
@@ -155,9 +151,8 @@ module  player (
     missiles missiles_inst (
         .clk            (clk),
         .resetN         (resetN),
-		.enable 		(enable),
         .shooting_pusle (shooting_pusle),
-        .startOfFrame   (startOfFrame),
+        .startOfFrame   (startOfFrame & (enable)),
         .collision      ((collision[0] | collision[2])),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
