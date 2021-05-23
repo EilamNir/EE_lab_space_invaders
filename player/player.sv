@@ -2,13 +2,14 @@
 module  player (
     input logic clk,
     input logic resetN,
+	input logic enable,
     input logic [KEYCODE_WIDTH - 1:0] keyCode,
     input logic make,
     input logic brake,
     input logic startOfFrame,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
-    input logic [4:0] collision,
+    input logic [6:0] collision,
 
     output logic playerDR,
     output logic [RGB_WIDTH - 1:0] playerRGB,
@@ -93,7 +94,7 @@ module  player (
     player_move player_move_inst(
         .clk(clk),
         .resetN(resetN),
-        .startOfFrame(startOfFrame),
+        .startOfFrame(startOfFrame & (enable)),
         .move_left(LeftIsPress),
         .move_right(RightIsPress),
         .move_up(upIsPress),
@@ -105,35 +106,35 @@ module  player (
         );
 
     square_object #(.OBJECT_WIDTH_X(32), .OBJECT_HEIGHT_Y(32)) square_object_inst(
-        .clk(clk),
-        .resetN(resetN),
-        .pixelX(pixelX),
-        .pixelY(pixelY),
-        .topLeftX(topLeftX),
-        .topLeftY(topLeftY),
-        .offsetX(offsetX),
-        .offsetY(offsetY),
-        .drawingRequest(squareDR),
-        .RGBout(squareRGB)
+        .clk			(clk),
+        .resetN			(resetN),
+        .pixelX			(pixelX),
+        .pixelY			(pixelY),
+        .topLeftX		(topLeftX),
+        .topLeftY		(topLeftY),
+        .offsetX		(offsetX),
+        .offsetY		(offsetY),
+        .drawingRequest	(squareDR),
+        .RGBout			(squareRGB)
         );
 
 
     spaceShipBitMap spaceShipBitMap_inst(
-        .clk(clk),
-        .resetN(resetN),
-        .offsetX(offsetX),
-        .offsetY(offsetY),
+        .clk			(clk),
+        .resetN			(resetN),
+        .offsetX		(offsetX),
+        .offsetY		(offsetY),
         .InsideRectangle(squareDR),
-        .drawingRequest(playerDR),
-        .RGBout(bitmapRGB),
-        .HitEdgeCode(HitEdgeCode)
+        .drawingRequest	(playerDR),
+        .RGBout			(bitmapRGB),
+        .HitEdgeCode	(HitEdgeCode)
         );
 
     player_lives player_lives_inst(
         .clk              (clk),
         .resetN           (resetN),
-        .startOfFrame     (startOfFrame),
-        .missile_collision(collision[4]),
+        .startOfFrame     (startOfFrame & (enable)),
+        .missile_collision(collision[4] || collision[6]),
         .player_faded     (player_faded),
         .player_damaged   (player_damaged),
         .player_dead      (player_dead)
@@ -144,7 +145,7 @@ module  player (
     shooting_cooldown shooting_cooldown_inst(
         .clk           (clk),
         .resetN        (resetN),
-        .startOfFrame  (startOfFrame),
+        .startOfFrame  (startOfFrame & (enable)),
         .fire_command  (shotKeyIsPressed & (~player_damaged)),
         .shooting_pusle(shooting_pusle)
         );
@@ -153,7 +154,7 @@ module  player (
         .clk            (clk),
         .resetN         (resetN),
         .shooting_pusle (shooting_pusle),
-        .startOfFrame   (startOfFrame),
+        .startOfFrame   (startOfFrame & (enable)),
         .collision      ((collision[0] | collision[2])),
         .pixelX         (pixelX),
         .pixelY         (pixelY),

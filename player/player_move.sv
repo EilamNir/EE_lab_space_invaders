@@ -44,8 +44,7 @@ module  player_move (
             topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
             border_collision_flags <= 4'b0;
-        end else begin
-
+        end else begin			
             // Control the speed in the Y direction
             if (move_down && (!move_up) && (!border_collision_flags[0])) begin
                 Yspeed <= Y_SPEED;

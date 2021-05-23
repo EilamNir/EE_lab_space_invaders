@@ -12,7 +12,7 @@ module	sintable	 #(
 //		--////////////////////	Clock Input	 	////////////////////	
 					input		logic	clk,
 					input		logic	resetN,
-					input		logic [COUNT_SIZE-1:0]	ADDR,
+					input		logic [COUNT_SIZE-1:0]	addr,
 					output	logic [15:0]	Q // table function output 
 			);
 
@@ -292,7 +292,7 @@ begin
 	if(!resetN)
 			tmp8bit	<= 8'h00;
 	else 
-		tmp8bit	<= sin_table[ADDR]; //  get sine (or other function) value from the table   
+		tmp8bit	<= sin_table[addr]; //  get sine (or other function) value from the table   
 
 end
 

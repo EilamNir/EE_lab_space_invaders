@@ -18,7 +18,8 @@ module shooting_cooldown(
             count_down <= SHOOTING_COOLDOWN_WIDTH'('b0);
             shooting_pusle <= 1'b0;
         end else begin
-            // Default to not shooting
+			
+			// Default to not shooting
             shooting_pusle <= 1'b0;
 
             // Check if we are ready to shoot

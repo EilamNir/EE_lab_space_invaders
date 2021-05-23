@@ -2,8 +2,9 @@
 module monsters(
     input logic clk,
     input logic resetN,
+    input logic enable,
     input logic startOfFrame,
-	input logic [4:0] collision,
+	input logic [6:0] collision,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
 
@@ -21,7 +22,7 @@ module monsters(
 	parameter int INITIAL_Y = 50;
 	parameter int X_SPEED = -24;
     parameter int Y_SPEED = -15;
-    parameter unsigned MONSTER_AMOUNT = 16;
+    parameter unsigned MONSTER_AMOUNT = 2;
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
     parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
 
@@ -46,7 +47,7 @@ module monsters(
                 .resetN(resetN),
                 .missile_collision(collision[0] & squareDR[i]),
                 .border_collision(collision[1] & squareDR[i]),
-                .startOfFrame(startOfFrame),
+                .startOfFrame(startOfFrame & (enable)),
                 .HitEdgeCode(HitEdgeCode),
                 .monsterIsHit(monsterIsHit[i]),
                 .topLeftX(topLeftX[i]),
@@ -69,7 +70,7 @@ module monsters(
             delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
                 .clk(clk),
                 .resetN(resetN),
-                .startOfFrame(startOfFrame),
+                .startOfFrame(startOfFrame & (enable)),
                 .input_signal(monsterIsHit[i]),
                 .output_signal(monster_deactivated[i])
                 );
@@ -77,7 +78,7 @@ module monsters(
             shooting_cooldown #(.SHOOTING_COOLDOWN(60 + ((i>>2) * 2) + i)) shooting_cooldown_inst(
                 .clk           (clk),
                 .resetN        (resetN),
-                .startOfFrame  (startOfFrame),
+                .startOfFrame  (startOfFrame & (enable)),
                 .fire_command  (~(monsterIsHit[i])),
                 .shooting_pusle(shooting_pusle[i])
                 );
@@ -86,7 +87,7 @@ module monsters(
                 .clk            (clk),
                 .resetN         (resetN),
                 .shooting_pusle (shooting_pusle[i]),
-                .startOfFrame   (startOfFrame),
+                .startOfFrame   (startOfFrame & (enable)),
                 .collision      ((collision[4] | collision[2])),
                 .pixelX         (pixelX),
                 .pixelY         (pixelY),

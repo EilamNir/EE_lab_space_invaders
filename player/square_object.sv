@@ -43,8 +43,8 @@ module	square_object	(
 		if(!resetN) begin
 			RGBout			<=	8'b0;
 			drawingRequest	<=	1'b0;
-		end
-		else begin
+		end	else begin
+		
 			// DEFUALT outputs
 				RGBout <= TRANSPARENT_ENCODING ; // so it will not be displayed
 				drawingRequest <= 1'b0 ;// transparent color
