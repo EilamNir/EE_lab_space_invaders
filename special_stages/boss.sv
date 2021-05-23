@@ -2,13 +2,14 @@
 module boss(
     input logic clk,
     input logic resetN,
+    input logic enable,
     input logic startOfFrame,
-	input logic [4:0] collision,
+	input logic [6:0] collision,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
 
     output logic BossDR,
-    output logic [7:0] BosRGB,
+    output logic [7:0] BossRGB,
 
     output logic missleDR,
     output logic [7:0] missleRGB
@@ -37,7 +38,7 @@ module boss(
          .resetN(resetN),
          .missile_collision(collision[0] & squareDR),
          .border_collision(collision[1] & squareDR),
-         .startOfFrame(startOfFrame),
+         .startOfFrame(startOfFrame & (enable)),
          .HitEdgeCode(HitEdgeCode),
          .BossIsHit(BossIsHit),
          .topLeftX(topLeftX),
@@ -60,7 +61,7 @@ module boss(
     delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
         .clk(clk),
         .resetN(resetN),
-        .startOfFrame(startOfFrame),
+        .startOfFrame(startOfFrame & (enable)),
         .input_signal(BossIsHit),
         .output_signal(Boss_deactivated)
         );
@@ -68,7 +69,7 @@ module boss(
     shooting_cooldown #(.SHOOTING_COOLDOWN(90)) shooting_cooldown_inst(
         .clk           (clk),
         .resetN        (resetN),
-        .startOfFrame  (startOfFrame),
+        .startOfFrame  (startOfFrame & (enable)),
         .fire_command  (~(BossIsHit)),
         .shooting_pusle(shooting_pusle)
         );
@@ -77,7 +78,7 @@ module boss(
         .clk            (clk),
         .resetN         (resetN),
         .shooting_pusle (shooting_pusle),
-        .startOfFrame   (startOfFrame),
+        .startOfFrame   (startOfFrame & (enable)),
         .collision      ((collision[4] | collision[2])),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
@@ -85,16 +86,16 @@ module boss(
         .spaceShip_Y    (topLeftY),
         .missleDR       (missiles_draw_requests)
         );
-
+    
+		
     ChickenautBitMap ChickenautBitMap_inst(
         .clk(clk),
         .resetN(resetN),
         .offsetX(offsetX),
         .offsetY(offsetY),
-        .InsideRectangle(square_DR),
-        .BossIsHit(BossIsHit),
+        .InsideRectangle(squareDR),
         .drawingRequest(BossDR),
-        .RGBout(BosRGB),
+        .RGBout(BossRGB),
         .HitEdgeCode(HitEdgeCode)
     );
 

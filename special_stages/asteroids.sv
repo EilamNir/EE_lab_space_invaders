@@ -2,8 +2,9 @@
 module asteroids(
     input logic clk,
     input logic resetN,
+    input logic enable,
     input logic startOfFrame,
-	input logic [4:0] collision,
+	input logic [6:0] collision,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
 
@@ -14,9 +15,10 @@ module asteroids(
     parameter unsigned KEYCODE_WIDTH = 9;
 	parameter int INITIAL_X = 50;
 	parameter int INITIAL_Y = 20;
-	parameter int X_SPEED = 0;
-    parameter int Y_SPEED = 20;
+	parameter int X_SPEED = 10;
+    parameter int Y_SPEED = 30;
     parameter unsigned ASTEROIDS_AMOUNT = 20;
+    parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
 
     logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetX;
     logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetY;
@@ -25,20 +27,20 @@ module asteroids(
     logic [3:0] HitEdgeCode;
     logic signed [ASTEROIDS_AMOUNT - 1:0] [10:0] topLeftX;
     logic signed [ASTEROIDS_AMOUNT - 1:0] [10:0] topLeftY;
-    logic [ASTEROIDS_AMOUNT - 1:0] asteroidsIsHit;
+    logic [ASTEROIDS_AMOUNT - 1:0] asteroidIsHit;
     logic [ASTEROIDS_AMOUNT - 1:0] asteroids_deactivated;
 
     genvar i;
     generate
         for (i = 0; i < ASTEROIDS_AMOUNT; i++) begin : generate_asteroids
-            asteroids_move #(.X_SPEED(X_SPEED + (i * 4)), .Y_SPEED(Y_SPEED + (i * 4)), .INITIAL_X(INITIAL_X + (i * 8)), .INITIAL_Y(INITIAL_Y)) asteroids_move_inst(
-                .clk(clk),
+            asteroids_move #(.X_SPEED(X_SPEED + ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + (i * 2)), .INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((2'(i) & 2'b11) * 64))) asteroids_move_inst(
+				.clk(clk),
                 .resetN(resetN),
                 .missile_collision(collision[0] & squareDR[i]),
                 .border_collision(collision[5] & squareDR[i]),
-                .startOfFrame(startOfFrame),
+                .startOfFrame(startOfFrame & (enable)),
                 .HitEdgeCode(HitEdgeCode),
-                .asteroidsIsHit(asteroidsIsHit[i]),
+                .asteroidIsHit(asteroidIsHit[i]),
                 .topLeftX(topLeftX[i]),
                 .topLeftY(topLeftY[i])
                 );
@@ -59,8 +61,8 @@ module asteroids(
             delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
                 .clk(clk),
                 .resetN(resetN),
-                .startOfFrame(startOfFrame),
-                .input_signal(asteroidsIsHit[i]),
+                .startOfFrame(startOfFrame & (enable)),
+                .input_signal(asteroidIsHit[i]),
                 .output_signal(asteroids_deactivated[i])
                 );
 
@@ -85,7 +87,7 @@ module asteroids(
                     chosen_square_DR = 1'b1;
                     chosen_offsetX = offsetX[j];
                     chosen_offsetY = offsetY[j];
-                    chosen_asteroids_is_hit = asteroidsIsHit[j];
+                    chosen_asteroids_is_hit = asteroidIsHit[j];
                     break;
                 end
             end
@@ -97,8 +99,8 @@ module asteroids(
         .resetN(resetN),
         .offsetX(chosen_offsetX),
         .offsetY(chosen_offsetY),
+        .asteroidIsHit(chosen_asteroids_is_hit),
         .InsideRectangle(chosen_square_DR),
-        .asteroidsIsHit(chosen_asteroids_is_hit),
         .drawingRequest(asteroidsDR),
         .RGBout(asteroidsRGB),
         .HitEdgeCode(HitEdgeCode)

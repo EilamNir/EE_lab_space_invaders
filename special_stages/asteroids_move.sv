@@ -8,7 +8,7 @@ module  asteroids_move (
     input logic border_collision,
     input logic [3:0] HitEdgeCode,
 
-    output logic monsterIsHit,
+    output logic asteroidIsHit,
     output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
     output logic signed [PIXEL_WIDTH - 1:0] topLeftY  // can be negative , if the object is partliy outside
 
@@ -38,12 +38,12 @@ module  asteroids_move (
             Yspeed  <= Y_SPEED;
             topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-            monsterIsHit <= 0;
+            asteroidIsHit <= 0;
         end else begin
 
-            if(monsterIsHit || missile_collision) begin
-                // If the monster was hit by a missile, stop it
-                monsterIsHit <= 1'b1;
+            if(asteroidIsHit || missile_collision) begin
+                // If the asteroid was hit by a missile, stop it
+                asteroidIsHit <= 1'b1;
                 Xspeed  <= 0;
                 Yspeed  <= 0;
             end
