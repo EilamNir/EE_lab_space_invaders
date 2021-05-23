@@ -10,7 +10,7 @@ module space_invaders_TOP
     input logic AUD_ADCDAT,
 
     output logic [VGA_WIDTH - 1:0] OVGA,
-    inout logic [AUDIO_WIDTH - 1:0] AUDOUT
+    inout [AUDIO_WIDTH - 1:0] AUDOUT
 );
 
     parameter unsigned VGA_WIDTH = 29;
@@ -40,14 +40,14 @@ module space_invaders_TOP
     logic monster_missleDR;
     logic playerDR;
     logic monsterDR;
-        
+
     logic [0:1] bordersDR;
     assign bordersDR = {bordersDR[0], bordersDR[1]};
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
     assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
     assign hit_request = {draw_requests, bordersDR};
-    
+
     logic [KEYCODE_WIDTH - 1:0] keyCode;
     logic make;
     logic brake;
@@ -55,12 +55,9 @@ module space_invaders_TOP
     logic [4:0] HitPulse;
     logic [6:0] collision;
 
-	logic [3:0] sound_requests;
-	assign sound_requests = {collision[0], collision[4]};
-	logic enableSound;
-	assign enableSound = 1'b1;
-	
-	
+    logic [0:1] sound_requests;
+    assign sound_requests = {collision[0], collision[4]};
+
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),
         .rst(~resetN),
@@ -137,10 +134,9 @@ module space_invaders_TOP
         .monsterRGB     (monsterRGB),
         .missleDR       (monster_missleDR),
         .missleRGB      (monster_missleRGB)
-		//.win_stage    (win_stage)
-		);
-        
-        
+        //.win_stage    (win_stage)
+        );
+
     hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (
         .clk            (clk),
         .resetN         (resetN),
@@ -171,10 +167,10 @@ module space_invaders_TOP
         .oVGA           (OVGA));
 
     sound_unit sound_unit_inst (
-		.clk(clk),
-		.resetN(resetN),
-		.enableSound(enableSound),
-		.sound_requests(sound_requests),
+        .clk(clk),
+        .resetN(resetN),
+        .sound_requests(sound_requests),
+        .startOfFrame(startOfFrame),
         .AUD_ADCDAT(AUD_ADCDAT),
         .AUDOUT(AUDOUT));
 
