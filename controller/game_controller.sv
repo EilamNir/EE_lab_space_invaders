@@ -30,7 +30,10 @@ module game_controller
     logic pause_enable_monst;
     logic skip_stage_pulse;
     logic previous_skip_stage;
+    logic stable_start_game;
+    logic stable_pause;
 
+    // Create a short pulse when the skip_stage starts
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
@@ -42,6 +45,17 @@ module game_controller
 
     assign skip_stage_pulse = skip_stage & (~previous_skip_stage);
 
+    //
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            stable_start_game <= 1'b0;
+            stable_pause <= 1'b0;
+        end else begin
+            stable_start_game <= start_game;
+            stable_pause <= pause;
+        end
+    end
 
 always_ff@(posedge clk or negedge resetN)
     begin
@@ -73,7 +87,7 @@ always_comb
             end // reset_game
 
             RUN: begin
-                if(pause)                               next_st = PAUSE;
+                if(stable_pause)                        next_st = PAUSE;
                 else if(player_dead)                    next_st = GAME_OVER;
                 else if(win_stage || skip_stage_pulse)  next_st = STAGE_WON;
                 if(!start_game)                         next_st = RESET;
@@ -83,7 +97,7 @@ always_comb
                 enable_monst  = 1'b0;
                 enable_player = 1'b0;
                 //pause_enable_monst = 1'b0;
-                if(!pause)          next_st = RUN;
+                if(!stable_pause)          next_st = RUN;
                 if(!start_game)     next_st = RESET;
             end // pause
 
