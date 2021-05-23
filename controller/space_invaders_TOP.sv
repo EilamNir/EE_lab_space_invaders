@@ -9,6 +9,9 @@ module space_invaders_TOP
     input logic PS2_DAT,
     input logic AUD_ADCDAT,
 
+    output logic [6:0] HEX0,
+    output logic [6:0] HEX1,
+    output logic [6:0] HEX2,
     output logic [VGA_WIDTH - 1:0] OVGA,
     inout [AUDIO_WIDTH - 1:0] AUDOUT
 );
@@ -57,6 +60,7 @@ module space_invaders_TOP
     logic [4:0] HitPulse;
     logic [6:0] collision;
 
+    logic monster_died_pulse;
     logic all_monsters_dead;
 
     logic [0:1] sound_requests;
@@ -140,6 +144,7 @@ module space_invaders_TOP
         .monsterRGB     (monsterRGB),
         .missleDR       (monster_missleDR),
         .missleRGB      (monster_missleRGB),
+        .monster_died_pulse(monster_died_pulse),
         .all_monsters_dead(win_stage));
 
     hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (
@@ -178,5 +183,17 @@ module space_invaders_TOP
         .startOfFrame(startOfFrame),
         .AUD_ADCDAT(AUD_ADCDAT),
         .AUDOUT(AUDOUT));
+
+    score score_inst (
+        .clk(clk),
+        .resetN(resetN),
+        .pixelX(pixelX),
+        .pixelY(pixelY),
+        .monster_died_pulse(monster_died_pulse),
+
+        // .scoreDR(scoreDR),
+        // .scoreRGB(scoreRGB),
+        .ss({HEX2, HEX1, HEX0})
+    );
 
 endmodule
