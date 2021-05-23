@@ -16,6 +16,10 @@ module  player (
 
     output logic missleDR,
     output logic [RGB_WIDTH - 1:0] missleRGB,
+
+    output logic livesDR,
+    output logic [RGB_WIDTH - 1:0] livesRGB,
+
     output logic player_dead
 );
     parameter UP    = 9'h06C; // digit 7
@@ -26,6 +30,8 @@ module  player (
     parameter unsigned KEYCODE_WIDTH = 9;
 
     parameter unsigned RGB_WIDTH = 8;
+    parameter unsigned LIVES_AMOUNT_WIDTH = 3;
+    parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 4;
 
 
     logic signed [10:0] topLeftX;
@@ -37,6 +43,7 @@ module  player (
     logic [3:0] HitEdgeCode;
     logic shooting_pusle;
     logic [RGB_WIDTH - 1:0] bitmapRGB;
+    logic [LIVES_AMOUNT_WIDTH - 1:0] remaining_lives;
     logic player_faded;
     logic player_damaged;
 
@@ -135,12 +142,38 @@ module  player (
         .resetN           (resetN),
         .startOfFrame     (startOfFrame & (enable)),
         .missile_collision(collision[4] || collision[6]),
+        .remaining_lives  (remaining_lives),
         .player_faded     (player_faded),
         .player_damaged   (player_damaged),
         .player_dead      (player_dead)
         );
 
     assign playerRGB = RGB_WIDTH'((player_faded == 1'b1) ? RGB_WIDTH'('b0) : bitmapRGB) ;
+
+    logic [LIVES_AMOUNT - 1:0] lives_square_draw_requests;
+    logic [LIVES_AMOUNT - 1:0] lives_draw_requests;
+    logic [LIVES_AMOUNT - 1:0] [10:0] lives_offsetX;
+    logic [LIVES_AMOUNT - 1:0] [10:0] lives_offsetY;
+
+    genvar i;
+    generate
+        for (i = 0; i < LIVES_AMOUNT; i++) begin : generate_lives
+            square_object #(.OBJECT_WIDTH_X(8), .OBJECT_HEIGHT_Y(8)) square_object_lives_inst(
+                .clk            (clk),
+                .resetN         (resetN),
+                .pixelX         (pixelX),
+                .pixelY         (pixelY),
+                .topLeftX       (32 + (i * 16)),
+                .topLeftY       (467),
+                .drawingRequest (lives_square_draw_requests[i])
+                );
+
+            assign lives_draw_requests[i] = lives_square_draw_requests[i] & (i < remaining_lives);
+        end
+    endgenerate
+
+    assign livesDR = (lives_draw_requests != 0);
+    assign livesRGB = 8'b00010000;
 
     shooting_cooldown shooting_cooldown_inst(
         .clk           (clk),
