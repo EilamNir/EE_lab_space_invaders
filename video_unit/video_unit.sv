@@ -8,6 +8,7 @@ module video_unit
     output logic [PIXEL_WIDTH - 1:0] pixelX,
     output logic [PIXEL_WIDTH - 1:0] pixelY,
     output logic startOfFrame,
+    output logic startOfPixel,
     output logic [VGA_WIDTH - 1:0] oVGA
 );
     parameter unsigned NUMBER_OF_OBJECTS = 3;
@@ -15,6 +16,12 @@ module video_unit
     parameter unsigned PIXEL_WIDTH = 11;
     parameter unsigned VGA_WIDTH = 29;
 
+
+    logic clk2;    
+    clock_divider clock_div_inst (
+        .refclk(clk),
+        .rst(~resetN),
+        .outclk_0(clk2));
 
     logic [RGB_WIDTH - 1:0] RGBOut;
 
@@ -33,7 +40,20 @@ module video_unit
         .pixelY      (pixelY),
         .startOfFrame(startOfFrame),
         .oVGA        (oVGA),
-        .clk         (clk),
+        .clk         (clk2),
         .resetN      (resetN));
+
+    logic [PIXEL_WIDTH - 1:0] prev_pixelX;
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            prev_pixelX <= PIXEL_WIDTH'('b0);
+        end
+        else begin
+            prev_pixelX <= pixelX;
+        end
+    end
+
+    assign startOfPixel = (prev_pixelX != pixelX);
 
 endmodule

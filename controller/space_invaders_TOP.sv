@@ -17,8 +17,8 @@ module space_invaders_TOP
     parameter unsigned PIXEL_WIDTH = 11;
     parameter unsigned KEYCODE_WIDTH = 9;
 
-    logic clk;
     logic startOfFrame;
+    logic startOfPixel;
     logic [PIXEL_WIDTH - 1:0] pixelX;
     logic [PIXEL_WIDTH - 1:0] pixelY;
     logic [RGB_WIDTH - 1:0] background_RGB;
@@ -45,13 +45,8 @@ module space_invaders_TOP
     logic [3:0] HitPulse;
     logic collision;
 
-    clock_divider clock_div_inst (
-        .refclk(CLOCK_50),
-        .rst(~resetN),
-        .outclk_0(clk));
-
     keyboard_interface kbd_inst(
-        .clk(clk),
+        .clk(CLOCK_50),
         .resetN(resetN),
         .PS2_CLK(PS2_CLK),
         .PS2_DAT(PS2_DAT),
@@ -61,7 +56,7 @@ module space_invaders_TOP
         );
 
     player player_inst (
-        .clk            (clk),
+        .clk            (CLOCK_50),
         .resetN         (resetN),
         .keyCode        (keyCode),
         .make           (make),
@@ -75,7 +70,7 @@ module space_invaders_TOP
         .playerRGB      (playerRGB));
 
     monsters monsters_inst (
-        .clk            (clk),
+        .clk            (CLOCK_50),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
         .collision      (collision),
@@ -85,7 +80,7 @@ module space_invaders_TOP
         .monsterRGB     (monsterRGB));
 
     hit_detection hit_detection_inst (
-        .clk            (clk),
+        .clk            (CLOCK_50),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
         .draw_requests  (draw_requests),
@@ -93,12 +88,13 @@ module space_invaders_TOP
         .HitPulse       (HitPulse));
 
     missiles missiles_inst (
-        .clk            (clk),
+        .clk            (CLOCK_50),
         .resetN         (resetN),
         .keyCode        (keyCode),
         .make           (make),
         .brake          (brake),
         .startOfFrame   (startOfFrame),
+        .startOfPixel   (startOfPixel),
         .collision      (HitPulse[0]),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
@@ -110,14 +106,14 @@ module space_invaders_TOP
     obstacles obstacles_inst ();
 
     background background_inst (
-        .clk            (clk),
+        .clk            (CLOCK_50),
         .resetN         (resetN),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .background_RGB (background_RGB));
 
     video_unit video_unit_inst (
-        .clk            (clk),
+        .clk            (CLOCK_50),
         .resetN         (resetN),
         .draw_requests  (draw_requests),
         .obj_RGB        (obj_RGB),
@@ -125,6 +121,7 @@ module space_invaders_TOP
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .startOfFrame   (startOfFrame),
+        .startOfPixel   (startOfPixel),
         .oVGA           (OVGA));
 
     sound_unit sound_unit_inst (
