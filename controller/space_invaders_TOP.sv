@@ -66,7 +66,7 @@ module space_invaders_TOP
     logic all_monsters_dead;
 
     logic [0:1] sound_requests;
-    assign sound_requests = {HitPulse[0], HitPulse[4]};
+    assign sound_requests = {collision[0], collision[4]};
 
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),
@@ -85,6 +85,7 @@ module space_invaders_TOP
 
 	logic player_dead;
 	logic win_stage;
+	logic win_astero_stage;
 	logic enable_player;
 	logic enable_monst;
 	logic enable_boss;
@@ -100,7 +101,7 @@ module space_invaders_TOP
         .clk            (clk),
         .resetN         (resetN),
 		.start_game		(start_game),
-		.win_stage		(win_stage), 
+		.win_stage		(win_stage | win_astero_stage), 
 		.player_dead	(player_dead), 
 		.skip_stage		(~cheatN), 
 		.pause			(pause), 
@@ -124,7 +125,7 @@ module space_invaders_TOP
         .startOfFrame   (startOfFrame),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
-        .collision      (HitPulse),
+        .collision      (collision),
         .playerDR       (playerDR),
         .playerRGB      (playerRGB),
 		.player_dead	(player_dead),
@@ -136,7 +137,7 @@ module space_invaders_TOP
         .resetN         (resetN & resetN_monst),
 		.enable			(enable_monst),
         .startOfFrame   (startOfFrame),
-        .collision      (HitPulse),
+        .collision      (collision),
 		//.stage_num    (stage_num),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
@@ -151,17 +152,18 @@ module space_invaders_TOP
         .resetN         (resetN & enable_astero),
 		.enable			(enable_astero),
         .startOfFrame   (startOfFrame),
-        .collision      (HitPulse),
+        .collision      (collision),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
 		.asteroidsDR	(asteroidsDR),
+		.all_asteroids_destroied (win_astero_stage),
 		.asteroidsRGB	(asteroidsRGB));
 	boss boss_inst(	
         .clk            (clk),
         .resetN         (resetN & enable_boss),
 		.enable			(enable_boss),
         .startOfFrame   (startOfFrame),
-        .collision      (HitPulse),
+        .collision      (collision),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
 		.BossDR			(BossDR),

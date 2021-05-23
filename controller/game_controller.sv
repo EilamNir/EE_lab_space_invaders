@@ -28,12 +28,15 @@ module game_controller
     enum  logic [2:0] {RESET, RUN, PAUSE, GAME_OVER, STAGE_WON}  next_st, pres_st; //state machine
     logic run_enable_monst;
     logic pause_enable_monst;
+	logic pause_enable_astero;
+	logic pause_enable_boss;
     logic skip_stage_pulse;
     logic previous_skip_stage;
     logic stable_start_game;
     logic stable_pause;
 	logic run_resetN_monst;
-	logic stage_enable_astero;
+	logic run_enable_astero;
+	logic run_enable_boss;
     // Create a short pulse when the skip_stage starts
     always_ff@(posedge clk or negedge resetN)
     begin
@@ -72,16 +75,19 @@ always_comb
         next_st = pres_st;
         enable_player= 1'b1;
         pause_enable_monst = 1'b1;
+		pause_enable_astero = 1'b1;
+		pause_enable_boss = 1'b1;
         game_over    = 1'b0;
         resetN_player= 1'b1;
         run_resetN_monst = 1'b1;
-
         case (pres_st)
             RESET: begin
                 resetN_player = 1'b0;
                 run_resetN_monst  = 1'b0;
                 enable_player = 1'b0;
                 pause_enable_monst = 1'b0;
+				pause_enable_astero = 1'b0;
+				pause_enable_boss 	= 1'b0;
                 if(stable_start_game) next_st = RUN;  //next state
             end // reset_game
 
@@ -93,15 +99,17 @@ always_comb
             end // run game
 
             PAUSE: begin
-                enable_player = 1'b0;
-                pause_enable_monst = 1'b0;
+                enable_player 		= 1'b0;
+                pause_enable_monst 	= 1'b0;
+				pause_enable_astero = 1'b0;
+				pause_enable_boss 	= 1'b0;
                 if(!stable_pause)          next_st = RUN;
                 if(!stable_start_game)     next_st = RESET;
             end // pause
 
             STAGE_WON: begin
                 run_resetN_monst = 1'b0;
-                if(stage_num == 3'b100) next_st = GAME_OVER;
+                if(stage_num == 3'b101) next_st = GAME_OVER;
                 else next_st = RUN;
 
             end // STAGE_WON
@@ -111,6 +119,8 @@ always_comb
                 enable_player = 1'b0;
                 run_resetN_monst = 1'b0;
                 pause_enable_monst = 1'b0;
+				pause_enable_astero = 1'b0;
+				pause_enable_boss 	= 1'b0;
                 if(!stable_start_game) next_st = RESET;
             end // GAME_OVER
 
@@ -124,13 +134,14 @@ always_comb
         .win_stage(win_stage || skip_stage_pulse),
         .game_won (game_won),
         .enable_monst(run_enable_monst),
-        .enable_boss(enable_boss),
-        .enable_astero(stage_enable_astero),
+        .enable_boss(run_enable_boss),
+        .enable_astero(run_enable_astero),
         .stage_num(stage_num)
     );
 
 	assign enable_monst = pause_enable_monst & run_enable_monst;
 	assign resetN_monst = run_resetN_monst & run_enable_monst;
-	assign enable_astero = !stable_pause & stage_enable_astero;
+	assign enable_astero = pause_enable_astero & run_enable_astero;
+	assign enable_boss = pause_enable_boss & run_enable_boss;
 	
 endmodule

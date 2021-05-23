@@ -9,6 +9,7 @@ module asteroids(
     input logic [10:0]pixelY,
 
     output logic asteroidsDR,
+	output logic all_asteroids_destroied,
     output logic [7:0] asteroidsRGB
 );
 
@@ -16,7 +17,7 @@ module asteroids(
 	parameter int INITIAL_X = 50;
 	parameter int INITIAL_Y = 20;
 	parameter int X_SPEED = 10;
-    parameter int Y_SPEED = 30;
+    parameter int Y_SPEED = 60;
     parameter unsigned ASTEROIDS_AMOUNT = 20;
     parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
 
@@ -33,7 +34,7 @@ module asteroids(
     genvar i;
     generate
         for (i = 0; i < ASTEROIDS_AMOUNT; i++) begin : generate_asteroids
-            asteroids_move #(.X_SPEED(X_SPEED + ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + (i * 2)), .INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((2'(i) & 2'b11) * 64))) asteroids_move_inst(
+            asteroids_move #(.X_SPEED(X_SPEED + ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + ((i>>2) * 8)), .INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((2'(i) & 2'b11) * 64))) asteroids_move_inst(
 				.clk(clk),
                 .resetN(resetN),
                 .missile_collision(collision[0] & squareDR[i]),
@@ -105,6 +106,8 @@ module asteroids(
         .RGBout(asteroidsRGB),
         .HitEdgeCode(HitEdgeCode)
     );
+
+    assign all_asteroids_destroied = &asteroids_deactivated;
 
 
 endmodule

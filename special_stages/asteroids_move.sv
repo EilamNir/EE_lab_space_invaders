@@ -52,11 +52,11 @@ module  asteroids_move (
             if (border_collision) begin
                 if (((HitEdgeCode [2] == 1) && (Yspeed < 0)) || // monster hit ceiling while moving up
                     ((HitEdgeCode [0] == 1) && (Yspeed > 0))) begin // monster hit ground while moving down
-                    Yspeed <= -Yspeed;
+                    topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
                 end
                 if (((HitEdgeCode [3] == 1) && (Xspeed < 0 )) || //monster got to the left border while moving left
                     ((HitEdgeCode [1] == 1) && (Xspeed > 0))) begin //monster got to the right border while moving right
-                    Xspeed <= -Xspeed;
+                    topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
                 end
             end
 
