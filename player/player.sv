@@ -137,7 +137,7 @@ module  player (
         .HitEdgeCode	(HitEdgeCode)
         );
 
-    player_lives player_lives_inst(
+    player_lives #(.LIVES_AMOUNT(LIVES_AMOUNT), .LIVES_AMOUNT_WIDTH(LIVES_AMOUNT_WIDTH)) player_lives_inst(
         .clk              (clk),
         .resetN           (resetN),
         .startOfFrame     (startOfFrame & (enable)),
@@ -165,6 +165,8 @@ module  player (
                 .pixelY         (pixelY),
                 .topLeftX       (32 + (i * 16)),
                 .topLeftY       (467),
+                .offsetX        (lives_offsetX[i]),
+                .offsetY        (lives_offsetY[i]),
                 .drawingRequest (lives_square_draw_requests[i])
                 );
 
@@ -172,8 +174,37 @@ module  player (
         end
     endgenerate
 
-    assign livesDR = (lives_draw_requests != 0);
-    assign livesRGB = 8'b00010000;
+    // Decide on which square object to pass into the bitmap
+    logic chosen_lives_square_DR;
+    logic [10:0] chosen_lives_offsetX;
+    logic [10:0] chosen_lives_offsetY;
+    always_comb begin
+        chosen_lives_square_DR = 1'b0;
+        chosen_lives_offsetX = 11'b0;
+        chosen_lives_offsetY = 11'b0;
+        for (int j = 0; j < LIVES_AMOUNT; j++) begin
+            // Only save the offset of the first square
+            if (lives_draw_requests[j] == 1'b1) begin
+                chosen_lives_square_DR = 1'b1;
+                chosen_lives_offsetX = lives_offsetX[j];
+                chosen_lives_offsetY = lives_offsetY[j];
+                break;
+            end
+        end
+    end
+
+    livesBitMap livesBitMap_inst(
+        .clk(clk),
+        .resetN(resetN),
+        .offsetX(chosen_lives_offsetX),
+        .offsetY(chosen_lives_offsetY),
+        .InsideRectangle(chosen_lives_square_DR),
+        .drawingRequest(livesDR),
+        .RGBout(livesRGB)
+    );
+
+    // assign livesDR = (lives_draw_requests != 0);
+    // assign livesRGB = 8'b00010000;
 
     shooting_cooldown shooting_cooldown_inst(
         .clk           (clk),
