@@ -10,7 +10,6 @@ module stage_controller
     input logic resetN,
 	input logic start_game,  //SW on the FPGA
 	input logic win_stage,   //monsters / boss / astro modules will sent this
-	input logic skip_stage,  //command on the FPGA
 	
     output logic game_won,
     output logic enable_monst,
@@ -45,23 +44,23 @@ always_comb
 			end
 			STAGE1: begin
 				stage_num = STAGE1;
-				if(win_stage || skip_stage) next_gameStage = STAGE2;
+				if(win_stage) next_gameStage = STAGE2;
 				enable_monst = 1'b1;
 			end
 			STAGE2: begin
 				stage_num = STAGE2;
-				if(win_stage || skip_stage) next_gameStage = STAGE3;
+				if(win_stage) next_gameStage = STAGE3;
 				enable_monst = 1'b1;
 			end
 			STAGE3: begin
 				stage_num = STAGE3;
-				if(win_stage || skip_stage) next_gameStage = STAGE4;
+				if(win_stage) next_gameStage = STAGE4;
 				enable_astero = 1'b1;
 			end
 			STAGE4: begin
 				stage_num = STAGE4;			
 				enable_boss = 1'b1;				
-				if(win_stage || skip_stage) begin
+				if(win_stage) begin
 					game_won = 1'b1;
 				end
 			end

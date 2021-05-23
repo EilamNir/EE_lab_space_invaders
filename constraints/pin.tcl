@@ -22,7 +22,7 @@ set_location_assignment PIN_AF14 -to CLOCK_50
 # KEY
 #============================================================
 set_location_assignment PIN_AJ4 -to resetN  ; # KEY[0]
- set_location_assignment PIN_AK4 -to skip_stage ; # KEY[1] 
+set_location_assignment PIN_AK4 -to cheatN ; # KEY[1]
 # set_location_assignment PIN_AA14 -to KEY[2]
 # set_location_assignment PIN_AA15 -to KEY[3]
 
