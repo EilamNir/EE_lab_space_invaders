@@ -55,6 +55,8 @@ module space_invaders_TOP
     logic [4:0] HitPulse;
     logic [6:0] collision;
 
+    logic all_monsters_dead;
+
     logic [0:1] sound_requests;
     assign sound_requests = {collision[0], collision[4]};
 
@@ -133,9 +135,8 @@ module space_invaders_TOP
         .monsterDR      (monsterDR),
         .monsterRGB     (monsterRGB),
         .missleDR       (monster_missleDR),
-        .missleRGB      (monster_missleRGB)
-        //.win_stage    (win_stage)
-        );
+        .missleRGB      (monster_missleRGB),
+        .all_monsters_dead(win_stage));
 
     hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (
         .clk            (clk),

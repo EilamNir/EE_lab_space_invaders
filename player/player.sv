@@ -38,6 +38,7 @@ module  player (
     logic shooting_pusle;
     logic [RGB_WIDTH - 1:0] bitmapRGB;
     logic player_faded;
+    logic player_damaged;
 
     logic upIsPress;
     keyToggle_decoder #(.KEY_VALUE(UP)) control_up_inst (
@@ -135,6 +136,7 @@ module  player (
         .startOfFrame     (startOfFrame & (enable)),
         .missile_collision(collision[4] || collision[6]),
         .player_faded     (player_faded),
+        .player_damaged   (player_damaged),
         .player_dead      (player_dead)
         );
 
@@ -144,7 +146,7 @@ module  player (
         .clk           (clk),
         .resetN        (resetN),
         .startOfFrame  (startOfFrame & (enable)),
-        .fire_command  (shotKeyIsPressed & (~player_faded)),
+        .fire_command  (shotKeyIsPressed & (~player_damaged)),
         .shooting_pusle(shooting_pusle)
         );
 
