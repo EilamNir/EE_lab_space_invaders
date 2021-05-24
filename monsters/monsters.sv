@@ -23,7 +23,7 @@ module monsters(
 	parameter int INITIAL_Y = 50;
 	parameter int X_SPEED = -24;
     parameter int Y_SPEED = -15;
-    parameter unsigned MONSTER_AMOUNT = 2;
+    parameter unsigned MONSTER_AMOUNT = 16;
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
     parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
 
@@ -71,7 +71,7 @@ module monsters(
                 .RGBout(squareRGB[i])
                 );
 
-            chicken_silhouette chicken_silhouette(
+            chicken_silhouette chicken_silhouette_inst(
                 .clk            (clk),
                 .resetN         (resetN),
                 .offsetX        (offsetX[i]),
