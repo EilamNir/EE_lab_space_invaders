@@ -14,6 +14,7 @@ module monsters(
     output logic missleDR,
     output logic [7:0] missleRGB,
 
+    output logic monster_died_pulse,
     output logic all_monsters_dead
 );
 
@@ -35,6 +36,7 @@ module monsters(
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
     logic [MONSTER_AMOUNT - 1:0] monsterIsHit;
     logic [MONSTER_AMOUNT - 1:0] monster_deactivated;
+    logic [MONSTER_AMOUNT - 1:0] previous_monster_deactivated;
     logic [MONSTER_AMOUNT - 1:0] shooting_pusle;
 
     logic [MONSTER_AMOUNT-1:0] missiles_draw_requests;
@@ -140,5 +142,16 @@ module monsters(
 
     // Only raise all_monsters_dead if monster_deactivated is all 1s
     assign all_monsters_dead = &monster_deactivated;
+
+    // Send a pulse when a monster dies
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            previous_monster_deactivated <= 0;
+        end else begin
+            previous_monster_deactivated <= monster_deactivated;
+        end
+    end
+    assign monster_died_pulse = (monster_deactivated != previous_monster_deactivated);
 
 endmodule
