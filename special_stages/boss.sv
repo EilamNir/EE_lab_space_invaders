@@ -18,8 +18,9 @@ module boss(
     parameter unsigned KEYCODE_WIDTH = 9;
 	parameter int INITIAL_X = 300;
 	parameter int INITIAL_Y = 200;
-	parameter int X_SPEED = 8;
-    parameter int Y_SPEED = -2;
+	parameter int X_SPEED = 64;
+    parameter int Y_SPEED = -16;
+    parameter int BOSS_MISSILE_AMOUNT = 5;
 
     logic [10:0] offsetX;
     logic [10:0] offsetY;
@@ -32,7 +33,7 @@ module boss(
     logic Boss_deactivated;
     logic shooting_pusle;
 
-    logic missiles_draw_requests;
+    logic [BOSS_MISSILE_AMOUNT-1:0] missiles_draw_requests;
     boss_move #(.X_SPEED(X_SPEED), .Y_SPEED(Y_SPEED), .INITIAL_X(INITIAL_X), .INITIAL_Y(INITIAL_Y)) boss_move_inst(
          .clk(clk),
          .resetN(resetN),
@@ -74,18 +75,23 @@ module boss(
         .shooting_pusle(shooting_pusle)
         );
 
-    missiles #(.SHOT_AMOUNT(4), .X_SPEED(0), .Y_SPEED(128), .X_OFFSET(60), .Y_OFFSET(28), .MISSILE_COLOR(8'hD0)) missiles_inst (
-        .clk            (clk),
-        .resetN         (resetN),
-        .shooting_pusle (shooting_pusle),
-        .startOfFrame   (startOfFrame & (enable)),
-        .collision      ((collision[4] | collision[2])),
-        .pixelX         (pixelX),
-        .pixelY         (pixelY),
-        .spaceShip_X    (topLeftX),
-        .spaceShip_Y    (topLeftY),
-        .missleDR       (missiles_draw_requests)
-        );
+    genvar i;
+    generate
+        for (i = 0; i < BOSS_MISSILE_AMOUNT; i++) begin : generate_missiles
+            missiles #(.SHOT_AMOUNT(4), .X_SPEED((i - 2) * 16), .Y_SPEED(128), .X_OFFSET(60), .Y_OFFSET(28), .MISSILE_COLOR(8'hD0)) missiles_inst (
+                .clk            (clk),
+                .resetN         (resetN),
+                .shooting_pusle (shooting_pusle),
+                .startOfFrame   (startOfFrame & (enable)),
+                .collision      ((collision[4] | collision[2])),
+                .pixelX         (pixelX),
+                .pixelY         (pixelY),
+                .spaceShip_X    (topLeftX),
+                .spaceShip_Y    (topLeftY),
+                .missleDR       (missiles_draw_requests[i])
+                );
+        end
+    endgenerate
   
 	
     ChickenautBitMap ChickenautBitMap_inst(

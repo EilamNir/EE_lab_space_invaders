@@ -173,6 +173,7 @@ module space_invaders_TOP
 		.asteroidsDR	(asteroidsDR),
 		.all_asteroids_destroied (win_astero_stage),
 		.asteroidsRGB	(asteroidsRGB));
+
 	boss boss_inst(	
         .clk            (clk),
         .resetN         (resetN  & resetN_Boss),
@@ -185,8 +186,7 @@ module space_invaders_TOP
 		.BossRGB		(BossRGB),
         .missleDR       (Boss_missleDR),
         .missleRGB      (Boss_missleRGB));
-	
-	
+
     hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (
         .clk            (clk),
         .resetN         (resetN),
