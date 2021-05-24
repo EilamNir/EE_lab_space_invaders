@@ -30,6 +30,7 @@ module monsters(
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetX;
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetY;
     logic [MONSTER_AMOUNT - 1:0] squareDR;
+    logic [MONSTER_AMOUNT - 1:0] previous_squareDR;
     logic [MONSTER_AMOUNT - 1:0] [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
@@ -47,8 +48,8 @@ module monsters(
             monsters_move #(.X_SPEED(X_SPEED + ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + (i * 2)), .INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((2'(i) & 2'b11) * 64))) monsters_move_inst(
                 .clk(clk),
                 .resetN(resetN),
-                .missile_collision(collision[0] & squareDR[i]),
-                .border_collision(collision[1] & squareDR[i]),
+                .missile_collision(collision[0] & previous_squareDR[i]),
+                .border_collision(collision[1] & previous_squareDR[i]),
                 .startOfFrame(startOfFrame & (enable)),
                 .HitEdgeCode(HitEdgeCode),
                 .monsterIsHit(monsterIsHit[i]),
@@ -99,6 +100,16 @@ module monsters(
                 );
                 end
     endgenerate
+
+    // Remember the previous draw requests, for collision detection
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            previous_squareDR <= 0;
+        end else begin
+            previous_squareDR <= squareDR;
+        end
+    end
 
     // Decide on which square object to pass into the bitmap
     logic chosen_square_DR;
