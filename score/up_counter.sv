@@ -23,12 +23,12 @@ module up_counter (
 
             if (count_pulse) begin
                 if (digit_score + count_pulse <= MAX_SCORE_PER_DIGIT) begin
-                    // Add one to the current digit
+                    // Add score to the current digit
                     digit_score <= digit_score + count_pulse;
                 end else begin
                     // Reset the current digit and output a carry pulse
                     digit_score <= digit_score + count_pulse - MAX_SCORE_PER_DIGIT - 1'b1;
-                    carry_pulse <= MAX_SCORE_PER_DIGIT - digit_score - count_pulse;
+                    carry_pulse <= carry_pulse + 1'b1;
                 end
             end
         end
