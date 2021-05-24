@@ -5,6 +5,7 @@ module monsters(
     input logic enable,
     input logic startOfFrame,
 	input logic [6:0] collision,
+	input logic [2:0] stage_num,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
 
@@ -23,9 +24,16 @@ module monsters(
 	parameter int INITIAL_Y = 50;
 	parameter int X_SPEED = -24;
     parameter int Y_SPEED = -15;
-    parameter unsigned MONSTER_AMOUNT = 2;
+	parameter unsigned MONSTER_AMOUNT_WIDTH = 4;
+    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 3;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 1;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 2;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 3;
+
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
     parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
+
+
 
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetX;
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetY;
@@ -37,10 +45,12 @@ module monsters(
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
     logic [MONSTER_AMOUNT - 1:0] monsterIsHit;
     logic [MONSTER_AMOUNT - 1:0] monster_deactivated;
-    logic [MONSTER_AMOUNT - 1:0] previous_monster_deactivated;
+	logic [MONSTER_AMOUNT - 1:0] monster_exploded;
+    logic [MONSTER_AMOUNT - 1:0] previous_monsterIsHit;
     logic [MONSTER_AMOUNT - 1:0] shooting_pusle;
-
+	logic [MONSTER_AMOUNT - 1:0] monster_amount;
     logic [MONSTER_AMOUNT-1:0] missiles_draw_requests;
+
 
     genvar i;
     generate
@@ -50,7 +60,7 @@ module monsters(
                 .resetN(resetN),
                 .missile_collision(collision[0] & previous_squareDR[i]),
                 .border_collision(collision[1] & previous_squareDR[i]),
-                .startOfFrame(startOfFrame & (enable)),
+                .startOfFrame(startOfFrame & enable & (i < monster_amount)),
                 .HitEdgeCode(HitEdgeCode),
                 .monsterIsHit(monsterIsHit[i]),
                 .topLeftX(topLeftX[i]),
@@ -73,15 +83,16 @@ module monsters(
             delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
                 .clk(clk),
                 .resetN(resetN),
-                .startOfFrame(startOfFrame & (enable)),
+                .startOfFrame(startOfFrame & enable & (i < monster_amount)),
                 .input_signal(monsterIsHit[i]),
-                .output_signal(monster_deactivated[i])
+                .output_signal(monster_exploded[i])
                 );
+			assign monster_deactivated[i] = monster_exploded[i] | (i >= monster_amount);
 
             shooting_cooldown #(.SHOOTING_COOLDOWN(60 + ((i>>2) * 2) + i)) shooting_cooldown_inst(
                 .clk           (clk),
                 .resetN        (resetN),
-                .startOfFrame  (startOfFrame & (enable)),
+                .startOfFrame  (startOfFrame & enable & (i < monster_amount)),
                 .fire_command  (~(monsterIsHit[i])),
                 .shooting_pusle(shooting_pusle[i])
                 );
@@ -90,7 +101,7 @@ module monsters(
                 .clk            (clk),
                 .resetN         (resetN),
                 .shooting_pusle (shooting_pusle[i]),
-                .startOfFrame   (startOfFrame & (enable)),
+                .startOfFrame   (startOfFrame & enable & (i < monster_amount)),
                 .collision      ((collision[4] | collision[2])),
                 .pixelX         (pixelX),
                 .pixelY         (pixelY),
@@ -147,6 +158,19 @@ module monsters(
         .RGBout(monsterRGB),
         .HitEdgeCode(HitEdgeCode)
     );
+    always_comb begin
+		monster_amount <= MONSTER_AMOUNT;
+		if(stage_num == 1) begin
+			monster_amount <= FIRST_STAGE_AMOUNT;
+		end
+		if(stage_num == 2) begin
+			monster_amount <= SECOND_STAGE_AMOUNT;
+		end
+		if(stage_num == 4) begin
+			monster_amount <= BOSS_STAGE_AMOUNT;
+		end
+	end
+
 
     assign missleRGB = 8'hD0;
     assign missleDR = (missiles_draw_requests != 0);
@@ -158,11 +182,11 @@ module monsters(
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
-            previous_monster_deactivated <= 0;
+            previous_monsterIsHit <= 0;
         end else begin
-            previous_monster_deactivated <= monster_deactivated;
+            previous_monsterIsHit <= monsterIsHit;
         end
     end
-    assign monster_died_pulse = (monster_deactivated != previous_monster_deactivated);
+    assign monster_died_pulse = (monsterIsHit != previous_monsterIsHit);
 
 endmodule

@@ -10,6 +10,7 @@ module boss(
 
     output logic BossDR,
     output logic [7:0] BossRGB,
+    output logic boss_dead,
 
     output logic missleDR,
     output logic [7:0] missleRGB
@@ -20,27 +21,31 @@ module boss(
 	parameter int INITIAL_Y = 200;
 	parameter int X_SPEED = 8;
     parameter int Y_SPEED = -2;
+	parameter unsigned LIVES_AMOUNT_WIDTH = 5;
+    parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 3;
+    parameter unsigned RGB_WIDTH = 8;
 
     logic [10:0] offsetX;
     logic [10:0] offsetY;
     logic squareDR;
+	logic previous_DR;
     logic [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
-    logic BossIsHit;
     logic Boss_deactivated;
     logic shooting_pusle;
+    logic boss_faded;
+    logic boss_damaged;
+	logic [RGB_WIDTH - 1:0] bitmapRGB;
 
     logic missiles_draw_requests;
     boss_move #(.X_SPEED(X_SPEED), .Y_SPEED(Y_SPEED), .INITIAL_X(INITIAL_X), .INITIAL_Y(INITIAL_Y)) boss_move_inst(
          .clk(clk),
          .resetN(resetN),
-         .missile_collision(collision[0] & squareDR),
          .border_collision(collision[1] & squareDR),
          .startOfFrame(startOfFrame & (enable)),
          .HitEdgeCode(HitEdgeCode),
-         .BossIsHit(BossIsHit),
          .topLeftX(topLeftX),
          .topLeftY(topLeftY)
      );
@@ -62,7 +67,7 @@ module boss(
         .clk(clk),
         .resetN(resetN),
         .startOfFrame(startOfFrame & (enable)),
-        .input_signal(BossIsHit),
+        .input_signal(boss_dead),
         .output_signal(Boss_deactivated)
         );
 
@@ -70,7 +75,7 @@ module boss(
         .clk           (clk),
         .resetN        (resetN),
         .startOfFrame  (startOfFrame & (enable)),
-        .fire_command  (~(BossIsHit)),
+        .fire_command  (~(boss_dead)),
         .shooting_pusle(shooting_pusle)
         );
 
@@ -87,6 +92,14 @@ module boss(
         .missleDR       (missiles_draw_requests)
         );
   
+      player_lives #(.LIVES_AMOUNT(LIVES_AMOUNT), .LIVES_AMOUNT_WIDTH(LIVES_AMOUNT_WIDTH), .PLAYER_DAMAGED_FRAME_AMOUNT(10)) player_lives_inst(
+        .clk              (clk),
+        .resetN           (resetN),
+        .startOfFrame     (startOfFrame & (enable)),
+        .missile_collision(collision[0] & previous_DR),
+        .player_faded     (boss_faded),
+        .player_dead      (boss_dead)
+        );
 	
     ChickenautBitMap ChickenautBitMap_inst(
         .clk(clk),
@@ -95,10 +108,21 @@ module boss(
         .offsetY(offsetY),
         .InsideRectangle(squareDR & !Boss_deactivated),
         .drawingRequest(BossDR),
-        .RGBout(BossRGB),
+        .RGBout(bitmapRGB),
         .HitEdgeCode(HitEdgeCode)
     );
-
+	
+	// Remember the previous draw requests, for collision detection
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            previous_DR <= 0;
+        end else begin
+            previous_DR <= BossDR;
+        end
+    end
+	
+	assign BossRGB = RGB_WIDTH'((boss_faded == 1'b1) ? RGB_WIDTH'('b0) : bitmapRGB) ;
     assign missleRGB = 8'hD0;
     assign missleDR = (missiles_draw_requests != 0);
 

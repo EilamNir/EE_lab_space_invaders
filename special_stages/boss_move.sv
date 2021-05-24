@@ -4,11 +4,9 @@ module  boss_move (
     input logic clk,
     input logic resetN,
     input logic startOfFrame,  // short pulse every start of frame 30Hz
-    input logic missile_collision,
     input logic border_collision,
     input logic [3:0] HitEdgeCode,
 
-    output logic BossIsHit,
     output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
     output logic signed [PIXEL_WIDTH - 1:0] topLeftY  // can be negative , if the object is partliy outside
 
@@ -19,8 +17,8 @@ module  boss_move (
     // TODO: Decide on a speed. If we use a multiplication of 64, the speed will be a multiplication
     // of a full pixel, so if we decide to change the speed to such a multiplication, we should also
     // change this module to not use enhanced precision and just work with pixels directly.
-    parameter int X_SPEED = 8;
-    parameter int Y_SPEED = 0;
+    parameter int X_SPEED = 24;
+    parameter int Y_SPEED = 24;
     parameter unsigned PIXEL_WIDTH = 11;
 
     const int   FIXED_POINT_MULTIPLIER  =   64;
@@ -38,15 +36,7 @@ module  boss_move (
             Yspeed  <= Y_SPEED;
             topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
-            BossIsHit <= 0;
         end else begin
-
-            if(BossIsHit || missile_collision) begin
-                // If the boss was hit by a missile, stop it
-                BossIsHit <= 1'b1;
-                Xspeed  <= 0;
-                Yspeed  <= 0;
-            end
 
             // Check border collisions
             if (border_collision) begin

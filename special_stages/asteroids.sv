@@ -9,6 +9,7 @@ module asteroids(
     input logic [10:0]pixelY,
 
     output logic asteroidsDR,
+	output logic asteroid_exploded_pulse,
 	output logic all_asteroids_destroied,
     output logic [7:0] asteroidsRGB
 );
@@ -24,12 +25,14 @@ module asteroids(
     logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetX;
     logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetY;
     logic [ASTEROIDS_AMOUNT - 1:0] squareDR;
+	logic [ASTEROIDS_AMOUNT - 1:0] previous_squareDR;
     logic [ASTEROIDS_AMOUNT - 1:0] [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
     logic signed [ASTEROIDS_AMOUNT - 1:0] [10:0] topLeftX;
     logic signed [ASTEROIDS_AMOUNT - 1:0] [10:0] topLeftY;
     logic [ASTEROIDS_AMOUNT - 1:0] asteroidIsHit;
     logic [ASTEROIDS_AMOUNT - 1:0] asteroids_deactivated;
+    logic [ASTEROIDS_AMOUNT - 1:0] previous_asteroidIsHit;
 
     genvar i;
     generate
@@ -38,8 +41,8 @@ module asteroids(
 			.INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING - (2'(i) & 2'b11) * 4)), .INITIAL_Y(INITIAL_Y + (2'(i) & 2'b11) * 32)) asteroids_move_inst(
 				.clk(clk),
                 .resetN(resetN),
-                .player_collision(collision[0] & squareDR[i]),
-                .border_collision(collision[5] & squareDR[i]),
+                .player_collision(collision[0] & previous_squareDR[i]),
+                .border_collision(collision[5] & previous_squareDR[i]),
                 .startOfFrame(startOfFrame & (enable)),
                 .HitEdgeCode(HitEdgeCode),
                 .asteroidIsHit(asteroidIsHit[i]),
@@ -96,6 +99,16 @@ module asteroids(
         end
     end
 
+    // Remember the previous draw requests, for collision detection
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            previous_squareDR <= 0;
+        end else begin
+            previous_squareDR <= squareDR;
+        end
+    end
+	
     asteroidBitMap asteroidBitMap_inst(
         .clk(clk),
         .resetN(resetN),
@@ -110,5 +123,16 @@ module asteroids(
 
     assign all_asteroids_destroied = &asteroids_deactivated;
 
+    // Send a pulse when a monster dies
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            previous_asteroidIsHit <= 0;
+        end else begin
+            previous_asteroidIsHit <= asteroidIsHit;
+        end
+    end
+    assign asteroid_exploded_pulse = (asteroidIsHit != previous_asteroidIsHit);
+	
 
 endmodule
