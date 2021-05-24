@@ -59,7 +59,8 @@ always_comb
 			end
 			STAGE4: begin
 				stage_num = STAGE4;			
-				enable_boss = 1'b1;	
+				enable_boss = 1'b1;
+				enable_monst = 1'b1;
 				if(win_stage) begin
 					game_won = 1'b1;
 					next_gameStage = STAGE1;

@@ -2,13 +2,13 @@
 module up_counter (
     input logic clk,
     input logic resetN,
-    input logic count_pulse,
+    input logic [2:0] count_pulse,
 
     output logic [DIGIT_WIDTH - 1:0] digit_score,
     output logic carry_pulse
 );
     parameter unsigned DIGIT_WIDTH = 4;
-    parameter unsigned MAX_SCORE_PER_DIGIT = 9;
+    parameter logic [DIGIT_WIDTH - 1:0] MAX_SCORE_PER_DIGIT = 9;
 
 
 
@@ -22,13 +22,13 @@ module up_counter (
             carry_pulse <= 0;
 
             if (count_pulse) begin
-                if (digit_score < MAX_SCORE_PER_DIGIT) begin
+                if (digit_score + count_pulse <= MAX_SCORE_PER_DIGIT) begin
                     // Add one to the current digit
-                    digit_score <= digit_score + 1'b1;
+                    digit_score <= digit_score + count_pulse;
                 end else begin
                     // Reset the current digit and output a carry pulse
-                    digit_score <= 0;
-                    carry_pulse <= 1;
+                    digit_score <= digit_score + count_pulse - MAX_SCORE_PER_DIGIT - 1'b1;
+                    carry_pulse <= MAX_SCORE_PER_DIGIT - digit_score - count_pulse;
                 end
             end
         end

@@ -105,13 +105,14 @@ module space_invaders_TOP
 	logic resetN_asteroids;
 	logic resetN_Boss;
 	logic [2:0] stage_num;
-
+	logic asteroid_exploded;
+	logic boss_dead;
 
     game_controller controller_inst(
         .clk            (clk),
         .resetN         (resetN),
 		.start_game		(start_game),
-		.win_stage		(win_stage | win_astero_stage), 
+		.win_stage		(win_stage | win_astero_stage | boss_dead), 
 		.player_dead	(player_dead), 
 		.skip_stage		(~cheatN), 
 		.pause			(pause), 
@@ -152,7 +153,7 @@ module space_invaders_TOP
 		.enable			(enable_monst),
         .startOfFrame   (startOfFrame),
         .collision      (collision),
-		//.stage_num    (stage_num),
+		.stage_num   	(stage_num),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .monsterDR      (monsterDR),
@@ -171,9 +172,11 @@ module space_invaders_TOP
         .pixelX         (pixelX),
         .pixelY         (pixelY),
 		.asteroidsDR	(asteroidsDR),
+		.asteroid_exploded_pulse(asteroid_exploded),
 		.all_asteroids_destroied (win_astero_stage),
 		.asteroidsRGB	(asteroidsRGB));
-	boss boss_inst(	
+	
+	boss #(.LIVES_AMOUNT(15)) boss_inst(	
         .clk            (clk),
         .resetN         (resetN  & resetN_Boss),
 		.enable			(enable_boss),
@@ -183,6 +186,7 @@ module space_invaders_TOP
         .pixelY         (pixelY),
 		.BossDR			(BossDR),
 		.BossRGB		(BossRGB),
+		.boss_dead		(boss_dead),
         .missleDR       (Boss_missleDR),
         .missleRGB      (Boss_missleRGB));
 	
@@ -229,7 +233,10 @@ module space_invaders_TOP
         .resetN(resetN),
         .pixelX(pixelX),
         .pixelY(pixelY),
+		.stage_num   	(stage_num),
         .monster_died_pulse(monster_died_pulse),
+		.boss_died_pulse(boss_dead),
+		.asteroid_exploded_pulse(asteroid_exploded),
 
         .scoreDR(scoreDR),
         .scoreRGB(scoreRGB),
