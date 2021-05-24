@@ -24,7 +24,7 @@ module space_invaders_TOP
     parameter unsigned KEYCODE_WIDTH = 9;
 
     parameter unsigned HIT_DETECTION_NUMBER_OF_OBJECTS = 6;
-    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 5;
+    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 6;
 
     logic clk;
     logic startOfFrame;
@@ -35,21 +35,23 @@ module space_invaders_TOP
 
     logic [RGB_WIDTH - 1:0] playerRGB;
     logic [RGB_WIDTH - 1:0] livesRGB;
+    logic [RGB_WIDTH - 1:0] scoreRGB;
     logic [RGB_WIDTH - 1:0] player_missleRGB;
     logic [RGB_WIDTH - 1:0] monster_missleRGB;
     logic [RGB_WIDTH - 1:0] monsterRGB;
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB;
-    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, livesRGB};
+    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, livesRGB, scoreRGB};
     logic player_missleDR;
     logic monster_missleDR;
     logic playerDR;
     logic livesDR;
+    logic scoreDR;
     logic monsterDR;
 
     logic [0:1] bordersDR;
     assign bordersDR = {bordersDR[0], bordersDR[1]};
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
-    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR, livesDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
+    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR, livesDR, scoreDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
     assign hit_request = {draw_requests[0:3], bordersDR};
 
@@ -191,8 +193,8 @@ module space_invaders_TOP
         .pixelY(pixelY),
         .monster_died_pulse(monster_died_pulse),
 
-        // .scoreDR(scoreDR),
-        // .scoreRGB(scoreRGB),
+        .scoreDR(scoreDR),
+        .scoreRGB(scoreRGB),
         .ss({HEX2, HEX1, HEX0})
     );
 
