@@ -30,6 +30,8 @@ module  asteroids_move (
 
     int Xspeed, topLeftX_FixedPoint; // local parameters
     int Yspeed, topLeftY_FixedPoint;
+    int gravity_counter;
+    const int FRAMES_WITHOUT_GRAVITY = 5;
 
     always_ff@(posedge clk or negedge resetN)
     begin
@@ -39,6 +41,7 @@ module  asteroids_move (
             topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
             asteroidIsHit <= 0;
+            gravity_counter <= 0;
         end else begin
 
             if(asteroidIsHit || player_collision) begin
@@ -50,12 +53,12 @@ module  asteroids_move (
 
             // Check border collisions
             if (border_collision) begin
-                if (((HitEdgeCode [2] == 1) && (Yspeed < 0)) || // monster hit ceiling while moving up
-                    ((HitEdgeCode [0] == 1) && (Yspeed > 0))) begin // monster hit ground while moving down
+                if (((HitEdgeCode [2] == 1) && (Yspeed < 0)) || // asteroid hit ceiling while moving up
+                    ((HitEdgeCode [0] == 1) && (Yspeed > 0))) begin // asteroid hit ground while moving down
                     topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
                 end
-                if (((HitEdgeCode [3] == 1) && (Xspeed < 0 )) || //monster got to the left border while moving left
-                    ((HitEdgeCode [1] == 1) && (Xspeed > 0))) begin //monster got to the right border while moving right
+                if (((HitEdgeCode [3] == 1) && (Xspeed < 0 )) || //asteroid got to the left border while moving left
+                    ((HitEdgeCode [1] == 1) && (Xspeed > 0))) begin //asteroid got to the right border while moving right
                     topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
 					topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
                 end
@@ -65,6 +68,15 @@ module  asteroids_move (
             if (startOfFrame == 1'b1) begin
                 topLeftX_FixedPoint  <= topLeftX_FixedPoint + Xspeed;
                 topLeftY_FixedPoint  <= topLeftY_FixedPoint + Yspeed;
+                // Add gravity to asteroid every frame
+                if (Yspeed < Y_SPEED * 3) begin
+                    if (gravity_counter < FRAMES_WITHOUT_GRAVITY) begin
+                        gravity_counter <= gravity_counter + 1'b1;
+                    end else begin
+                        gravity_counter <= 0;
+                        Yspeed <= Yspeed + 1'b1;
+                    end
+                end
             end
         end
     end
