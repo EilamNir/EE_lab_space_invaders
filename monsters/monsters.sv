@@ -38,7 +38,8 @@ module monsters(
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetX;
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetY;
     logic [MONSTER_AMOUNT - 1:0] squareDR;
-    logic [MONSTER_AMOUNT - 1:0] previous_squareDR;
+    logic [MONSTER_AMOUNT - 1:0] silhouetteDR;
+    logic [MONSTER_AMOUNT - 1:0] previousDR;
     logic [MONSTER_AMOUNT - 1:0] [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
@@ -58,8 +59,8 @@ module monsters(
             monsters_move #(.X_SPEED(X_SPEED + ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + (i * 2)), .INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((2'(i) & 2'b11) * 64))) monsters_move_inst(
                 .clk(clk),
                 .resetN(resetN),
-                .missile_collision(collision[0] & previous_squareDR[i]),
-                .border_collision(collision[1] & previous_squareDR[i]),
+                .missile_collision(collision[0] & previousDR[i]),
+                .border_collision(collision[1] & previousDR[i]),
                 .startOfFrame(startOfFrame & enable & (i < monster_amount)),
                 .HitEdgeCode(HitEdgeCode),
                 .monsterIsHit(monsterIsHit[i]),
@@ -78,6 +79,16 @@ module monsters(
                 .offsetY(offsetY[i]),
                 .drawingRequest(squareDR[i]),
                 .RGBout(squareRGB[i])
+                );
+
+            chicken_silhouette chicken_silhouette_inst(
+                .clk            (clk),
+                .resetN         (resetN),
+                .offsetX        (offsetX[i]),
+                .offsetY        (offsetY[i]),
+                .InsideRectangle(squareDR[i]),
+                .monsterIsHit   (monsterIsHit[i]),
+                .drawingRequest (silhouetteDR[i])
                 );
 
             delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
@@ -116,28 +127,28 @@ module monsters(
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
-            previous_squareDR <= 0;
+            previousDR <= 0;
         end else begin
-            previous_squareDR <= squareDR;
+            previousDR <= silhouetteDR;
         end
     end
 
     // Decide on which square object to pass into the bitmap
-    logic chosen_square_DR;
+    logic chosen_monster_DR;
     logic [10:0] chosen_offsetX;
     logic [10:0] chosen_offsetY;
     logic chosen_monster_is_hit;
     always_comb begin
-        chosen_square_DR = 1'b0;
+        chosen_monster_DR = 1'b0;
         chosen_offsetX = 11'b0;
         chosen_offsetY = 11'b0;
         chosen_monster_is_hit = 1'b0;
         for (int j = 0; j < MONSTER_AMOUNT; j++) begin
-            // Only save the offset of the first square
-            if (squareDR[j] == 1'b1) begin
+            // Only save the offset of the first monster
+            if (silhouetteDR[j] == 1'b1) begin
                 // Ignore deactivated monsters
                 if (monster_deactivated[j] == 1'b0) begin
-                    chosen_square_DR = 1'b1;
+                    chosen_monster_DR = 1'b1;
                     chosen_offsetX = offsetX[j];
                     chosen_offsetY = offsetY[j];
                     chosen_monster_is_hit = monsterIsHit[j];
@@ -152,7 +163,7 @@ module monsters(
         .resetN(resetN),
         .offsetX(chosen_offsetX),
         .offsetY(chosen_offsetY),
-        .InsideRectangle(chosen_square_DR),
+        .InsideRectangle(chosen_monster_DR),
         .monsterIsHit(chosen_monster_is_hit),
         .drawingRequest(monsterDR),
         .RGBout(monsterRGB),

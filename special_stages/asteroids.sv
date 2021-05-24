@@ -25,7 +25,8 @@ module asteroids(
     logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetX;
     logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetY;
     logic [ASTEROIDS_AMOUNT - 1:0] squareDR;
-	logic [ASTEROIDS_AMOUNT - 1:0] previous_squareDR;
+    logic [ASTEROIDS_AMOUNT - 1:0] silhouetteDR;
+	logic [ASTEROIDS_AMOUNT - 1:0] previous_silhouetteDR;
     logic [ASTEROIDS_AMOUNT - 1:0] [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
     logic signed [ASTEROIDS_AMOUNT - 1:0] [10:0] topLeftX;
@@ -41,8 +42,8 @@ module asteroids(
 			.INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING - (2'(i) & 2'b11) * 4)), .INITIAL_Y(INITIAL_Y + (2'(i) & 2'b11) * 32)) asteroids_move_inst(
 				.clk(clk),
                 .resetN(resetN),
-                .player_collision(collision[0] & previous_squareDR[i]),
-                .border_collision(collision[5] & previous_squareDR[i]),
+                .player_collision(collision[0] & previous_silhouetteDR[i]),
+                .border_collision(collision[5] & previous_silhouetteDR[i]),
                 .startOfFrame(startOfFrame & (enable)),
                 .HitEdgeCode(HitEdgeCode),
                 .asteroidIsHit(asteroidIsHit[i]),
@@ -63,6 +64,16 @@ module asteroids(
                 .RGBout(squareRGB[i])
                 );
 
+            asteroid_silhouette asteroid_silhouette_inst(
+                .clk            (clk),
+                .resetN         (resetN),
+                .offsetX        (offsetX[i]),
+                .offsetY        (offsetY[i]),
+                .InsideRectangle(squareDR[i]),
+                .asteroidIsHit  (asteroidIsHit[i]),
+                .drawingRequest (silhouetteDR[i])
+                );
+
             delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
                 .clk(clk),
                 .resetN(resetN),
@@ -75,21 +86,21 @@ module asteroids(
     endgenerate
 
     // Decide on which square object to pass into the bitmap
-    logic chosen_square_DR;
+    logic chosen_asteroid_DR;
     logic [10:0] chosen_offsetX;
     logic [10:0] chosen_offsetY;
     logic chosen_asteroids_is_hit;
     always_comb begin
-        chosen_square_DR = 1'b0;
+        chosen_asteroid_DR = 1'b0;
         chosen_offsetX = 11'b0;
         chosen_offsetY = 11'b0;
         chosen_asteroids_is_hit = 1'b0;
         for (int j = 0; j < ASTEROIDS_AMOUNT; j++) begin
-            // Only save the offset of the first square
-            if (squareDR[j] == 1'b1) begin
+            // Only save the offset of the first asteroid
+            if (silhouetteDR[j] == 1'b1) begin
                 // Ignore deactivated asteroids
                 if (asteroids_deactivated[j] == 1'b0) begin
-                    chosen_square_DR = 1'b1;
+                    chosen_asteroid_DR = 1'b1;
                     chosen_offsetX = offsetX[j];
                     chosen_offsetY = offsetY[j];
                     chosen_asteroids_is_hit = asteroidIsHit[j];
@@ -103,9 +114,9 @@ module asteroids(
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
-            previous_squareDR <= 0;
+            previous_silhouetteDR <= 0;
         end else begin
-            previous_squareDR <= squareDR;
+            previous_silhouetteDR <= silhouetteDR;
         end
     end
 	
@@ -115,7 +126,7 @@ module asteroids(
         .offsetX(chosen_offsetX),
         .offsetY(chosen_offsetY),
         .asteroidIsHit(chosen_asteroids_is_hit),
-        .InsideRectangle(chosen_square_DR),
+        .InsideRectangle(chosen_asteroid_DR),
         .drawingRequest(asteroidsDR),
         .RGBout(asteroidsRGB),
         .HitEdgeCode(HitEdgeCode)
