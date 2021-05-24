@@ -175,7 +175,7 @@ module space_invaders_TOP
 		.asteroid_exploded_pulse(asteroid_exploded),
 		.all_asteroids_destroied (win_astero_stage),
 		.asteroidsRGB	(asteroidsRGB));
-	
+
 	boss #(.LIVES_AMOUNT(15)) boss_inst(	
         .clk            (clk),
         .resetN         (resetN  & resetN_Boss),
@@ -189,8 +189,7 @@ module space_invaders_TOP
 		.boss_dead		(boss_dead),
         .missleDR       (Boss_missleDR),
         .missleRGB      (Boss_missleRGB));
-	
-	
+
     hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (
         .clk            (clk),
         .resetN         (resetN),
