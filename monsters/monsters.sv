@@ -14,6 +14,7 @@ module monsters(
     output logic missleDR,
     output logic [7:0] missleRGB,
 
+    output logic monster_died_pulse,
     output logic all_monsters_dead
 );
 
@@ -29,12 +30,14 @@ module monsters(
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetX;
     logic [MONSTER_AMOUNT - 1:0] [10:0] offsetY;
     logic [MONSTER_AMOUNT - 1:0] squareDR;
+    logic [MONSTER_AMOUNT - 1:0] previous_squareDR;
     logic [MONSTER_AMOUNT - 1:0] [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
     logic [MONSTER_AMOUNT - 1:0] monsterIsHit;
     logic [MONSTER_AMOUNT - 1:0] monster_deactivated;
+    logic [MONSTER_AMOUNT - 1:0] previous_monster_deactivated;
     logic [MONSTER_AMOUNT - 1:0] shooting_pusle;
 
     logic [MONSTER_AMOUNT-1:0] missiles_draw_requests;
@@ -45,8 +48,8 @@ module monsters(
             monsters_move #(.X_SPEED(X_SPEED + ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + (i * 2)), .INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((2'(i) & 2'b11) * 64))) monsters_move_inst(
                 .clk(clk),
                 .resetN(resetN),
-                .missile_collision(collision[0] & squareDR[i]),
-                .border_collision(collision[1] & squareDR[i]),
+                .missile_collision(collision[0] & previous_squareDR[i]),
+                .border_collision(collision[1] & previous_squareDR[i]),
                 .startOfFrame(startOfFrame & (enable)),
                 .HitEdgeCode(HitEdgeCode),
                 .monsterIsHit(monsterIsHit[i]),
@@ -98,6 +101,16 @@ module monsters(
                 end
     endgenerate
 
+    // Remember the previous draw requests, for collision detection
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            previous_squareDR <= 0;
+        end else begin
+            previous_squareDR <= squareDR;
+        end
+    end
+
     // Decide on which square object to pass into the bitmap
     logic chosen_square_DR;
     logic [10:0] chosen_offsetX;
@@ -140,5 +153,16 @@ module monsters(
 
     // Only raise all_monsters_dead if monster_deactivated is all 1s
     assign all_monsters_dead = &monster_deactivated;
+
+    // Send a pulse when a monster dies
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            previous_monster_deactivated <= 0;
+        end else begin
+            previous_monster_deactivated <= monster_deactivated;
+        end
+    end
+    assign monster_died_pulse = (monster_deactivated != previous_monster_deactivated);
 
 endmodule
