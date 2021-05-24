@@ -14,7 +14,7 @@ module asteroids(
 );
 
     parameter unsigned KEYCODE_WIDTH = 9;
-	parameter int INITIAL_X = 21;
+	parameter int INITIAL_X = 33;
 	parameter int INITIAL_Y = 21;
 	parameter int X_SPEED = 90;
     parameter int Y_SPEED = 60;
@@ -35,7 +35,7 @@ module asteroids(
     generate
         for (i = 0; i < ASTEROIDS_AMOUNT; i++) begin : generate_asteroids
             asteroids_move #(.X_SPEED(X_SPEED - ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + (2'(i) & 2'b11) * 16), 
-			.INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y)) asteroids_move_inst(
+			.INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING - (2'(i) & 2'b11) * 4)), .INITIAL_Y(INITIAL_Y + (2'(i) & 2'b11) * 32)) asteroids_move_inst(
 				.clk(clk),
                 .resetN(resetN),
                 .player_collision(collision[0] & squareDR[i]),
