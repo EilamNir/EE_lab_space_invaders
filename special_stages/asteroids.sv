@@ -14,12 +14,12 @@ module asteroids(
 );
 
     parameter unsigned KEYCODE_WIDTH = 9;
-	parameter int INITIAL_X = 50;
-	parameter int INITIAL_Y = 20;
-	parameter int X_SPEED = 10;
+	parameter int INITIAL_X = 21;
+	parameter int INITIAL_Y = 21;
+	parameter int X_SPEED = 90;
     parameter int Y_SPEED = 60;
     parameter unsigned ASTEROIDS_AMOUNT = 20;
-    parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
+    parameter unsigned X_SPACING = 96; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
 
     logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetX;
     logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetY;
@@ -34,7 +34,8 @@ module asteroids(
     genvar i;
     generate
         for (i = 0; i < ASTEROIDS_AMOUNT; i++) begin : generate_asteroids
-            asteroids_move #(.X_SPEED(X_SPEED + ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + ((i>>2) * 8)), .INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((2'(i) & 2'b11) * 64))) asteroids_move_inst(
+            asteroids_move #(.X_SPEED(X_SPEED - ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + (2'(i) & 2'b11) * 16), 
+			.INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y)) asteroids_move_inst(
 				.clk(clk),
                 .resetN(resetN),
                 .player_collision(collision[0] & squareDR[i]),

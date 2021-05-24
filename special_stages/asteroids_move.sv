@@ -57,6 +57,7 @@ module  asteroids_move (
                 if (((HitEdgeCode [3] == 1) && (Xspeed < 0 )) || //monster got to the left border while moving left
                     ((HitEdgeCode [1] == 1) && (Xspeed > 0))) begin //monster got to the right border while moving right
                     topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
+					topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
                 end
             end
 
