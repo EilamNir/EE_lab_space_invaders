@@ -83,7 +83,7 @@ module boss(
     genvar i;
     generate
         for (i = 0; i < BOSS_MISSILE_AMOUNT; i++) begin : generate_missiles
-            missiles #(.SHOT_AMOUNT(4), .X_SPEED((i - 2) * 16), .Y_SPEED(128), .X_OFFSET(60), .Y_OFFSET(28), .MISSILE_COLOR(8'hD0)) missiles_inst (
+            missiles #(.SHOT_AMOUNT(4), .X_SPEED((i - 2) * 16), .Y_SPEED(128), .X_OFFSET(31), .Y_OFFSET(60), .MISSILE_COLOR(8'hD0)) missiles_inst (
                 .clk            (clk),
                 .resetN         (resetN),
                 .shooting_pusle (shooting_pusle),
