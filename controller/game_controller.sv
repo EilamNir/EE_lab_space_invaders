@@ -22,6 +22,8 @@ module game_controller
     output logic enable_astero,
     output logic resetN_player,
     output logic resetN_monst,
+    output logic resetN_astero,
+    output logic resetN_Boss,
     output logic [2:0] stage_num
 );
 
@@ -35,6 +37,8 @@ module game_controller
     logic stable_start_game;
     logic stable_pause;
 	logic run_resetN_monst;
+	logic run_resetN_astero;
+	logic run_resetN_Boss;
 	logic run_enable_astero;
 	logic run_enable_boss;
     // Create a short pulse when the skip_stage starts
@@ -80,10 +84,14 @@ always_comb
         game_over    = 1'b0;
         resetN_player= 1'b1;
         run_resetN_monst = 1'b1;
+		run_resetN_astero = 1'b1;
+        run_resetN_Boss = 1'b1;
         case (pres_st)
             RESET: begin
                 resetN_player = 1'b0;
                 run_resetN_monst  = 1'b0;
+				run_resetN_astero = 1'b0;
+				run_resetN_Boss = 1'b0;
                 enable_player = 1'b0;
                 pause_enable_monst = 1'b0;
 				pause_enable_astero = 1'b0;
@@ -95,7 +103,7 @@ always_comb
                 if(stable_pause)                        next_st = PAUSE;
                 else if(player_dead)                    next_st = GAME_OVER;
                 else if(win_stage || skip_stage_pulse)  next_st = STAGE_WON;
-                if(!stable_start_game)                         next_st = RESET;
+                if(!stable_start_game)                  next_st = RESET;
             end // run game
 
             PAUSE: begin
@@ -118,6 +126,8 @@ always_comb
                 if(!game_won) game_over = 1'b1;
                 enable_player = 1'b0;
                 run_resetN_monst = 1'b0;
+				run_resetN_astero = 1'b0;
+				run_resetN_Boss = 1'b0;
                 pause_enable_monst = 1'b0;
 				pause_enable_astero = 1'b0;
 				pause_enable_boss 	= 1'b0;
@@ -139,9 +149,11 @@ always_comb
         .stage_num(stage_num)
     );
 
-	assign enable_monst = pause_enable_monst & run_enable_monst;
-	assign resetN_monst = run_resetN_monst & run_enable_monst;
-	assign enable_astero = pause_enable_astero & run_enable_astero;
-	assign enable_boss = pause_enable_boss & run_enable_boss;
-	
+	assign enable_monst  = pause_enable_monst 	& run_enable_monst;
+	assign enable_astero = pause_enable_astero 	& run_enable_astero;
+	assign enable_boss	 = pause_enable_boss 	& run_enable_boss;
+	assign resetN_monst	 = run_resetN_monst 	& run_enable_monst;
+	assign resetN_astero = run_resetN_astero	& run_enable_astero;
+	assign resetN_Boss	 = run_resetN_Boss		& run_enable_boss;
+
 endmodule

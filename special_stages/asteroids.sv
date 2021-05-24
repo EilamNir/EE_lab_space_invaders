@@ -37,7 +37,7 @@ module asteroids(
             asteroids_move #(.X_SPEED(X_SPEED + ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + ((i>>2) * 8)), .INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((2'(i) & 2'b11) * 64))) asteroids_move_inst(
 				.clk(clk),
                 .resetN(resetN),
-                .missile_collision(collision[0] & squareDR[i]),
+                .player_collision(collision[0] & squareDR[i]),
                 .border_collision(collision[5] & squareDR[i]),
                 .startOfFrame(startOfFrame & (enable)),
                 .HitEdgeCode(HitEdgeCode),

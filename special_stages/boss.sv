@@ -45,7 +45,7 @@ module boss(
          .topLeftY(topLeftY)
      );
 
-    square_object #(.OBJECT_WIDTH_X(128), .OBJECT_HEIGHT_Y(128)) square_object_inst(
+    square_object #(.OBJECT_WIDTH_X(64), .OBJECT_HEIGHT_Y(64)) square_object_inst(
         .clk(clk),
         .resetN(resetN),
         .pixelX(pixelX),
@@ -74,7 +74,7 @@ module boss(
         .shooting_pusle(shooting_pusle)
         );
 
-    missiles #(.SHOT_AMOUNT(40), .X_SPEED(0), .Y_SPEED(128), .X_OFFSET(60), .Y_OFFSET(28), .MISSILE_COLOR(8'hD0)) missiles_inst (
+    missiles #(.SHOT_AMOUNT(4), .X_SPEED(0), .Y_SPEED(128), .X_OFFSET(60), .Y_OFFSET(28), .MISSILE_COLOR(8'hD0)) missiles_inst (
         .clk            (clk),
         .resetN         (resetN),
         .shooting_pusle (shooting_pusle),
@@ -86,14 +86,14 @@ module boss(
         .spaceShip_Y    (topLeftY),
         .missleDR       (missiles_draw_requests)
         );
-    
-		
+  
+	
     ChickenautBitMap ChickenautBitMap_inst(
         .clk(clk),
         .resetN(resetN),
         .offsetX(offsetX),
         .offsetY(offsetY),
-        .InsideRectangle(squareDR),
+        .InsideRectangle(squareDR & !Boss_deactivated),
         .drawingRequest(BossDR),
         .RGBout(BossRGB),
         .HitEdgeCode(HitEdgeCode)

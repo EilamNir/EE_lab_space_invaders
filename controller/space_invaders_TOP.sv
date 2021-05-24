@@ -94,6 +94,8 @@ module space_invaders_TOP
 	logic game_over;
 	logic resetN_player;
 	logic resetN_monst;
+	logic resetN_asteroids;
+	logic resetN_Boss;
 	logic [2:0] stage_num;
 
 
@@ -113,6 +115,8 @@ module space_invaders_TOP
 		.enable_astero  (enable_astero),
 		.resetN_player	(resetN_player),
 		.resetN_monst	(resetN_monst),
+		.resetN_astero	(resetN_asteroids),
+		.resetN_Boss	(resetN_Boss),
 		.stage_num		(stage_num));
 
     player player_inst (
@@ -149,7 +153,7 @@ module space_invaders_TOP
 	
 	asteroids asteroids_inst(
         .clk            (clk),
-        .resetN         (resetN & enable_astero),
+        .resetN         (resetN & resetN_asteroids),
 		.enable			(enable_astero),
         .startOfFrame   (startOfFrame),
         .collision      (collision),
@@ -160,7 +164,7 @@ module space_invaders_TOP
 		.asteroidsRGB	(asteroidsRGB));
 	boss boss_inst(	
         .clk            (clk),
-        .resetN         (resetN & enable_boss),
+        .resetN         (resetN  & resetN_Boss),
 		.enable			(enable_boss),
         .startOfFrame   (startOfFrame),
         .collision      (collision),
