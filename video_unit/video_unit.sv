@@ -18,7 +18,6 @@ module video_unit
 
     logic [RGB_WIDTH - 1:0] RGBOut;
 
-    // TODO: Pass the amount of objects as parameter
     objects_mux #(.NUMBER_OF_OBJECTS(NUMBER_OF_OBJECTS)) objects_mux_inst (
         .clk           (clk),
         .resetN        (resetN),
