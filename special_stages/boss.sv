@@ -20,8 +20,8 @@ module boss(
 	parameter int INITIAL_X = 300;
 	parameter int INITIAL_Y = 200;
 	parameter int X_SPEED = 64;
-    parameter int Y_SPEED = -16;
-    parameter int BOSS_MISSILE_AMOUNT = 5;
+    parameter int Y_SPEED = -25;
+    parameter int BOSS_MISSILE_AMOUNT = 8;
 	parameter unsigned LIVES_AMOUNT_WIDTH = 5;
     parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 3;
     parameter unsigned RGB_WIDTH = 8;
@@ -83,7 +83,7 @@ module boss(
     genvar i;
     generate
         for (i = 0; i < BOSS_MISSILE_AMOUNT; i++) begin : generate_missiles
-            missiles #(.SHOT_AMOUNT(4), .X_SPEED((i - 2) * 16), .Y_SPEED(128), .X_OFFSET(31), .Y_OFFSET(60), .MISSILE_COLOR(8'hD0)) missiles_inst (
+            missiles #(.SHOT_AMOUNT(4), .X_SPEED(8 + ((i - 4) * 16)), .Y_SPEED(128), .X_OFFSET(31), .Y_OFFSET(60), .MISSILE_COLOR(8'hD0)) missiles_inst (
                 .clk            (clk),
                 .resetN         (resetN),
                 .shooting_pusle (shooting_pusle),
