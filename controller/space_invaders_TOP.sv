@@ -23,8 +23,8 @@ module space_invaders_TOP
     parameter unsigned PIXEL_WIDTH = 11;
     parameter unsigned KEYCODE_WIDTH = 9;
 
-    parameter unsigned HIT_DETECTION_NUMBER_OF_OBJECTS = 6;
-    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 6;
+    parameter unsigned HIT_DETECTION_NUMBER_OF_OBJECTS = 9;
+    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 9;
 
     logic clk;
     logic startOfFrame;
@@ -39,27 +39,35 @@ module space_invaders_TOP
     logic [RGB_WIDTH - 1:0] player_missleRGB;
     logic [RGB_WIDTH - 1:0] monster_missleRGB;
     logic [RGB_WIDTH - 1:0] monsterRGB;
+    logic [RGB_WIDTH - 1:0] asteroidsRGB;
+    logic [RGB_WIDTH - 1:0] BossRGB;
+	logic [RGB_WIDTH - 1:0] Boss_missleRGB;
+	
+	
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB;
-    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, livesRGB, scoreRGB};
+    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB};
     logic player_missleDR;
     logic monster_missleDR;
     logic playerDR;
     logic livesDR;
     logic scoreDR;
     logic monsterDR;
-
+    logic asteroidsDR;
+    logic BossDR;	
+    logic Boss_missleDR;
+	
     logic [0:1] bordersDR;
-    assign bordersDR = {bordersDR[0], bordersDR[1]};
+    assign bordersDR = {bordersDR[0], bordersDR[1]}; //bordersDR[0] = all around borders, bordersDR[1] = player end zone
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
-    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR, livesDR, scoreDR};//bordersDR[0] = all around borders, bordersDR[1] = player end zone
+    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR, livesDR, scoreDR};
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
-    assign hit_request = {draw_requests[0:3], bordersDR};
+    assign hit_request = {draw_requests[0:6], bordersDR};
 
     logic [KEYCODE_WIDTH - 1:0] keyCode;
     logic make;
     logic brake;
 
-    logic [4:0] HitPulse;
+    logic [6:0] HitPulse;
     logic [6:0] collision;
 
     logic monster_died_pulse;
@@ -85,6 +93,7 @@ module space_invaders_TOP
 
 	logic player_dead;
 	logic win_stage;
+	logic win_astero_stage;
 	logic enable_player;
 	logic enable_monst;
 	logic enable_boss;
@@ -93,6 +102,8 @@ module space_invaders_TOP
 	logic game_over;
 	logic resetN_player;
 	logic resetN_monst;
+	logic resetN_asteroids;
+	logic resetN_Boss;
 	logic [2:0] stage_num;
 
 
@@ -100,7 +111,7 @@ module space_invaders_TOP
         .clk            (clk),
         .resetN         (resetN),
 		.start_game		(start_game),
-		.win_stage		(win_stage), 
+		.win_stage		(win_stage | win_astero_stage), 
 		.player_dead	(player_dead), 
 		.skip_stage		(~cheatN), 
 		.pause			(pause), 
@@ -112,6 +123,8 @@ module space_invaders_TOP
 		.enable_astero  (enable_astero),
 		.resetN_player	(resetN_player),
 		.resetN_monst	(resetN_monst),
+		.resetN_astero	(resetN_asteroids),
+		.resetN_Boss	(resetN_Boss),
 		.stage_num		(stage_num));
 
     player player_inst (
@@ -148,7 +161,32 @@ module space_invaders_TOP
         .missleRGB      (monster_missleRGB),
         .monster_died_pulse(monster_died_pulse),
         .all_monsters_dead(win_stage));
-
+	
+	asteroids asteroids_inst(
+        .clk            (clk),
+        .resetN         (resetN & resetN_asteroids),
+		.enable			(enable_astero),
+        .startOfFrame   (startOfFrame),
+        .collision      (collision),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+		.asteroidsDR	(asteroidsDR),
+		.all_asteroids_destroied (win_astero_stage),
+		.asteroidsRGB	(asteroidsRGB));
+	boss boss_inst(	
+        .clk            (clk),
+        .resetN         (resetN  & resetN_Boss),
+		.enable			(enable_boss),
+        .startOfFrame   (startOfFrame),
+        .collision      (collision),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+		.BossDR			(BossDR),
+		.BossRGB		(BossRGB),
+        .missleDR       (Boss_missleDR),
+        .missleRGB      (Boss_missleRGB));
+	
+	
     hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (
         .clk            (clk),
         .resetN         (resetN),

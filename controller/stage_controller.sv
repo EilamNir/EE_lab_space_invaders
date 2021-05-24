@@ -32,10 +32,10 @@ always_ff@(posedge clk or negedge resetN)
 always_comb
 	begin
         next_gameStage = pres_gameStage;
-        enable_monst = 1'b0;
-        enable_boss  = 1'b0;
-        enable_astero = 1'b0;
-        game_won 	 = 1'b0;
+        enable_monst   = 1'b0;
+        enable_boss    = 1'b0;
+        enable_astero  = 1'b0;
+        game_won 	   = 1'b0;
 		
 		case (pres_gameStage)
 			INIT: begin
@@ -59,9 +59,10 @@ always_comb
 			end
 			STAGE4: begin
 				stage_num = STAGE4;			
-				enable_boss = 1'b1;				
+				enable_boss = 1'b1;	
 				if(win_stage) begin
 					game_won = 1'b1;
+					next_gameStage = STAGE1;
 				end
 			end
 		endcase
