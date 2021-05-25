@@ -14,8 +14,11 @@ module background
     input logic resetN,
     input logic [PIXEL_WIDTH - 1:0] pixelX,
     input logic [PIXEL_WIDTH - 1:0] pixelY,
+    input logic game_won,
+    input logic game_over,
     output logic [RGB_WIDTH - 1:0] background_RGB,
-	output logic [0:1] bordersDR
+	output logic [0:1] bordersDR,
+	output logic end_gameDR
 );
 
     parameter unsigned RGB_WIDTH = 8;
@@ -40,19 +43,44 @@ module background
             background_RGB <= BACKGROUND_COLOR;
 			bordersDR <= 2'b0;
             // Check if we need to print the movement zone end
-            if ((pixelX == movement_zone_offset) ||
-				(pixelX == (xFrameSize - movement_zone_offset)) || 
-				(pixelY == (yFrameSize - statistics_zone_offset))||
-				(pixelY == (upperBorder))) begin
-                background_RGB <= MOVEMENT_ZONE_END_COLOR;
-				bordersDR[0] <= 1'b1;
-            end
-            // Check if we need to print the player zone end
-            if (pixelY == player_zone_y ) begin
-			    background_RGB <= STATISTICS_ZONE_COLOR;
-				bordersDR[1] <= 1'b1;
-            end
+			if (game_over | game_won) background_RGB <= end_gameRGB;
+			else begin
+				if ((pixelX == movement_zone_offset) ||
+					(pixelX == (xFrameSize - movement_zone_offset)) || 
+					(pixelY == (yFrameSize - statistics_zone_offset))||
+					(pixelY == (upperBorder))) begin
+					background_RGB <= MOVEMENT_ZONE_END_COLOR;
+					bordersDR[0] <= 1'b1;
+				end	
+				// Check if we need to print the player zone end
+				if (pixelY == player_zone_y ) begin
+					background_RGB <= STATISTICS_ZONE_COLOR;
+					bordersDR[1] <= 1'b1;
+				end
+			end
         end
     end
-
+	
+	square_object #(.OBJECT_WIDTH_X(64), .OBJECT_HEIGHT_Y(16)) square_object_end_game_inst(
+		.clk            (clk),
+		.resetN         (resetN),
+		.pixelX         (pixelX),
+		.pixelY         (pixelY),
+		.topLeftX       (256),
+		.topLeftY       (232),
+		.offsetX        (offsetX),
+		.offsetY        (offsetY),
+		.drawingRequest (square_DR)
+    );
+				
+	end_gameBitMap end_gameBitMap_inst(
+        .clk(clk),
+        .resetN(resetN),
+        .offsetX(offsetX),
+        .offsetY(offsetY),
+        .InsideRectangle(square_DR),
+        .game_won(game_won),
+        .drawingRequest(end_gameDR),
+        .RGBout(end_gameRGB)
+    );
 endmodule

@@ -27,8 +27,8 @@ module monsters(
 	parameter unsigned MONSTER_AMOUNT_WIDTH = 4;
     parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 3;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 1;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 2;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 3;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 3;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
 
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
     parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)

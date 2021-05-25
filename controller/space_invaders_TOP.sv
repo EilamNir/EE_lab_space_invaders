@@ -24,7 +24,7 @@ module space_invaders_TOP
     parameter unsigned KEYCODE_WIDTH = 9;
 
     parameter unsigned HIT_DETECTION_NUMBER_OF_OBJECTS = 9;
-    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 9;
+    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 10;
 
     logic clk;
     logic startOfFrame;
@@ -45,7 +45,7 @@ module space_invaders_TOP
 	
 	
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB;
-    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB};
+    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, background_RGB};
     logic player_missleDR;
     logic monster_missleDR;
     logic playerDR;
@@ -55,11 +55,11 @@ module space_invaders_TOP
     logic asteroidsDR;
     logic BossDR;	
     logic Boss_missleDR;
-	
+	logic end_gameDR;
     logic [0:1] bordersDR;
     assign bordersDR = {bordersDR[0], bordersDR[1]}; //bordersDR[0] = all around borders, bordersDR[1] = player end zone
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
-    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR, livesDR, scoreDR};
+    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR, livesDR, scoreDR, end_gameDR};
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
     assign hit_request = {draw_requests[0:6], bordersDR};
 
@@ -92,7 +92,7 @@ module space_invaders_TOP
         );
 
 	logic player_dead;
-	logic win_stage;
+	logic win_chicken_stage;
 	logic win_astero_stage;
 	logic enable_player;
 	logic enable_monst;
@@ -112,7 +112,7 @@ module space_invaders_TOP
         .clk            (clk),
         .resetN         (resetN),
 		.start_game		(start_game),
-		.win_stage		(win_stage | win_astero_stage | boss_dead), 
+		.win_stage		((win_chicken_stage & !enable_boss) | win_astero_stage | boss_dead), 
 		.player_dead	(player_dead), 
 		.skip_stage		(~cheatN), 
 		.pause			(pause), 
@@ -161,7 +161,7 @@ module space_invaders_TOP
         .missleDR       (monster_missleDR),
         .missleRGB      (monster_missleRGB),
         .monster_died_pulse(monster_died_pulse),
-        .all_monsters_dead(win_stage));
+        .all_monsters_dead(win_chicken_stage));
 	
 	asteroids asteroids_inst(
         .clk            (clk),
@@ -201,11 +201,12 @@ module space_invaders_TOP
     background background_inst (
         .clk            (clk),
         .resetN         (resetN),
-		//.game_over	(game_over),
-		//.game_won		(game_won),
+		.game_won		(game_won),
+		.game_over		(game_over),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .bordersDR      (bordersDR),
+		.end_gameDR		(end_gameDR),
         .background_RGB (background_RGB));
 
     video_unit #(.NUMBER_OF_OBJECTS(VIDEO_UNIT_NUMBER_OF_OBJECTS)) video_unit_inst (
@@ -220,26 +221,26 @@ module space_invaders_TOP
         .oVGA           (OVGA));
 
     sound_unit sound_unit_inst (
-        .clk(clk),
-        .resetN(resetN),
-        .sound_requests(sound_requests),
-        .startOfFrame(startOfFrame),
-        .AUD_ADCDAT(AUD_ADCDAT),
-        .AUDOUT(AUDOUT));
+        .clk			(clk),
+        .resetN			(resetN),
+        .sound_requests	(sound_requests),
+        .startOfFrame	(startOfFrame),
+        .AUD_ADCDAT		(AUD_ADCDAT),
+        .AUDOUT			(AUDOUT));
 
     score score_inst (
-        .clk(clk),
-        .resetN(resetN),
-        .pixelX(pixelX),
-        .pixelY(pixelY),
-		.stage_num   	(stage_num),
-        .monster_died_pulse(monster_died_pulse),
-		.boss_died_pulse(boss_dead),
+        .clk			(clk),
+        .resetN			(resetN),
+        .pixelX			(pixelX),
+        .pixelY			(pixelY),
+		.stage_num 	  	(stage_num),
+        .monster_died_pulse	(monster_died_pulse),
+		.boss_died_pulse	(boss_dead),
 		.asteroid_exploded_pulse(asteroid_exploded),
 
-        .scoreDR(scoreDR),
-        .scoreRGB(scoreRGB),
-        .ss({HEX2, HEX1, HEX0})
+        .scoreDR		(scoreDR),
+        .scoreRGB		(scoreRGB),
+        .ss				({HEX2, HEX1, HEX0})
     );
 
 endmodule

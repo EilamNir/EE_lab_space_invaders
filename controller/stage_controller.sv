@@ -63,7 +63,6 @@ always_comb
 				enable_monst = 1'b1;
 				if(win_stage) begin
 					game_won = 1'b1;
-					next_gameStage = STAGE1;
 				end
 			end
 		endcase

@@ -117,7 +117,7 @@ always_comb
 
             STAGE_WON: begin
                 run_resetN_monst = 1'b0;
-                if(stage_num == 3'b101) next_st = GAME_OVER;
+                if(game_won | game_over) next_st = GAME_OVER;
                 else next_st = RUN;
 
             end // STAGE_WON
@@ -148,6 +148,7 @@ always_comb
         .enable_astero(run_enable_astero),
         .stage_num(stage_num)
     );
+
 
 	assign enable_monst  = pause_enable_monst 	& run_enable_monst;
 	assign enable_astero = pause_enable_astero 	& run_enable_astero;
