@@ -7,7 +7,9 @@ module chicken_silhouette (
     input logic InsideRectangle, //input that the pixel is within a bracket
     input logic monsterIsHit,
 
-    output logic drawingRequest //output that the pixel should be dispalyed
+    output logic drawingRequest, //output that the pixel should be dispalyed
+    output logic [3:0] HitEdgeCode //one bit per edge
+
 );
 
     // generating the bitmap
@@ -80,11 +82,32 @@ module chicken_silhouette (
         {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
         {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}};
 
+    //hit bit map has one bit per edge: hit_edge_codes[3:0] = {Left, Top, Right, Bottom}
+    //there is one bit per edge, in the corner two bits are set
+    logic [0:3] [0:3] [3:0] hit_edge_codes = {
+        16'hC446,
+        16'h8C62,
+        16'h8932,
+        16'h9113};
+
+    always_ff@(posedge clk or negedge resetN)
+    begin
+        if(!resetN) begin
+            HitEdgeCode <= 4'h0;
+        end else begin
+            HitEdgeCode <= 4'h0;
+            if (InsideRectangle == 1'b1) begin
+                HitEdgeCode <= hit_edge_codes[offsetY >> 3][offsetX >> 3 ]; // get hitting edge from the colors table
+            end
+        end
+    end
 
     logic[0:31][0:31] object_colors;
     assign object_colors = (monsterIsHit == 1'b0) ? monster_colors : explosion_colors ;
 
     // decide if to draw the pixel or not
+    // This is in an always_comb, to not delay this a clock, because we must do this while we are still on the same
+    // clock cycle as the draw request from the square
     always_comb begin
         drawingRequest = 1'b0;
         if (InsideRectangle == 1'b1) begin
