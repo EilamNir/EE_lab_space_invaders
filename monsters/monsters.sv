@@ -25,9 +25,9 @@ module monsters(
 	parameter int X_SPEED = -24;
     parameter int Y_SPEED = -15;
 	parameter unsigned MONSTER_AMOUNT_WIDTH = 4;
-    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 3;
+    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 8;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 1;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 3;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 8;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
 
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
@@ -161,7 +161,7 @@ module monsters(
     end
 
     // Check if there is an overlap of monsters in this space
-    check_overlap check_overlap_inst(
+    check_overlap #(.OBJECT_AMOUNT_WIDTH(MONSTER_AMOUNT_WIDTH), .OBJECT_AMOUNT(MONSTER_AMOUNT)) check_overlap_inst(
         .clk(clk),
         .resetN(resetN),
         .startOfFrame(startOfFrame),
