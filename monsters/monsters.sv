@@ -25,9 +25,9 @@ module monsters(
 	parameter int X_SPEED = -24;
     parameter int Y_SPEED = -15;
 	parameter unsigned MONSTER_AMOUNT_WIDTH = 4;
-    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 3;
+    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 8;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 1;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 3;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 8;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
 
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
@@ -41,12 +41,13 @@ module monsters(
     logic [MONSTER_AMOUNT - 1:0] silhouetteDR;
     logic [MONSTER_AMOUNT - 1:0] previousDR;
     logic [MONSTER_AMOUNT - 1:0] [7:0] squareRGB;
-    logic [3:0] HitEdgeCode;
+    logic [MONSTER_AMOUNT - 1:0] [3:0] HitEdgeCode;
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
     logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
     logic [MONSTER_AMOUNT - 1:0] monsterIsHit;
     logic [MONSTER_AMOUNT - 1:0] monster_deactivated;
 	logic [MONSTER_AMOUNT - 1:0] monster_exploded;
+    logic monster_overlap;
     logic [MONSTER_AMOUNT - 1:0] previous_monsterIsHit;
     logic [MONSTER_AMOUNT - 1:0] shooting_pusle;
 	logic [MONSTER_AMOUNT - 1:0] monster_amount;
@@ -60,9 +61,9 @@ module monsters(
                 .clk(clk),
                 .resetN(resetN),
                 .missile_collision(collision[0] & previousDR[i]),
-                .border_collision(collision[1] & previousDR[i]),
+                .border_collision((monster_overlap | collision[1]) & previousDR[i]),
                 .startOfFrame(startOfFrame & enable & (i < monster_amount)),
-                .HitEdgeCode(HitEdgeCode),
+                .HitEdgeCode(HitEdgeCode[i]),
                 .monsterIsHit(monsterIsHit[i]),
                 .topLeftX(topLeftX[i]),
                 .topLeftY(topLeftY[i])
@@ -88,6 +89,7 @@ module monsters(
                 .offsetY        (offsetY[i]),
                 .InsideRectangle(squareDR[i]),
                 .monsterIsHit   (monsterIsHit[i]),
+                .HitEdgeCode    (HitEdgeCode[i]),
                 .drawingRequest (silhouetteDR[i])
                 );
 
@@ -158,6 +160,16 @@ module monsters(
         end
     end
 
+    // Check if there is an overlap of monsters in this space
+    check_overlap #(.OBJECT_AMOUNT_WIDTH(MONSTER_AMOUNT_WIDTH), .OBJECT_AMOUNT(MONSTER_AMOUNT)) check_overlap_inst(
+        .clk(clk),
+        .resetN(resetN),
+        .startOfFrame(startOfFrame),
+        .draw_request(silhouetteDR),
+        .object_deactivated(monster_deactivated),
+        .overlap(monster_overlap)
+        );
+
     chickenBitMap chickenBitMap_inst(
         .clk(clk),
         .resetN(resetN),
@@ -166,8 +178,7 @@ module monsters(
         .InsideRectangle(chosen_monster_DR),
         .monsterIsHit(chosen_monster_is_hit),
         .drawingRequest(monsterDR),
-        .RGBout(monsterRGB),
-        .HitEdgeCode(HitEdgeCode)
+        .RGBout(monsterRGB)
     );
     always_comb begin
 		monster_amount <= MONSTER_AMOUNT;
