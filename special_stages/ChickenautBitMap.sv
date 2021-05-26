@@ -92,11 +92,15 @@ logic[0:63][0:63][7:0] object_colors = {
 //////////--------------------------------------------------------------------------------------------------------------= 
 //hit bit map has one bit per edge:  hit_colors[3:0] =   {Left, Top, Right, Bottom}	 
 //there is one bit per edge, in the corner two bits are set  
- logic [0:3] [0:3] [3:0] hit_colors = 
-		   {16'hC446,     
-			16'h8C62,    
-			16'h8932, 
-			16'h9113}; 
+ logic [0:7] [0:7] [3:0] hit_colors =
+		   {32'hC4444446,
+			32'h8CCC6662,
+			32'h8CCC6662,
+			32'h8CCC6662,
+			32'h89993332,
+			32'h89993332,
+			32'h89993332,
+			32'h91111113};
  // pipeline (ff) to get the pixel color from the array 	 
 //////////--------------------------------------------------------------------------------------------------------------= 
 always_ff@(posedge clk or negedge resetN) 
@@ -111,7 +115,7 @@ begin
  
 		if (InsideRectangle == 1'b1 ) 
 		begin // inside an external bracket  
-			HitEdgeCode <= hit_colors[offsetY >> 4][offsetX >> 4 ]; // get hitting edge from the colors table
+			HitEdgeCode <= hit_colors[offsetY >> 3][offsetX >> 3 ]; // get hitting edge from the colors table
 			RGBout <= object_colors[offsetY][offsetX]; 
 		end  	 
 		 

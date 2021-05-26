@@ -6,6 +6,8 @@ module  boss_move (
     input logic startOfFrame,  // short pulse every start of frame 30Hz
     input logic border_collision,
     input logic [3:0] HitEdgeCode,
+    input logic switch_direction_pulse,
+    input logic random_axis,
 
     output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
     output logic signed [PIXEL_WIDTH - 1:0] topLeftY  // can be negative , if the object is partliy outside
@@ -37,6 +39,15 @@ module  boss_move (
             topLeftX_FixedPoint <= INITIAL_X * FIXED_POINT_MULTIPLIER;
             topLeftY_FixedPoint <= INITIAL_Y * FIXED_POINT_MULTIPLIER;
         end else begin
+
+            // Choose an axis to reverse when shooting
+            if (switch_direction_pulse) begin
+                if (random_axis) begin
+                    Yspeed <= -Yspeed;
+                end else begin
+                    Xspeed <= -Xspeed;
+                end
+            end
 
             // Check border collisions
             if (border_collision) begin
