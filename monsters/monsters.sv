@@ -58,7 +58,7 @@ module monsters(
     genvar i;
     generate
         for (i = 0; i < MONSTER_AMOUNT; i++) begin : generate_monsters
-            monsters_move #(.X_SPEED(X_SPEED + ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + (i * 2)), .INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((2'(i) & 2'b11) * 64))) monsters_move_inst(
+            monsters_move #(.X_SPEED(X_SPEED + (i * 2)), .Y_SPEED(Y_SPEED + ((i>>2) * 8) + i * 2), .INITIAL_X(INITIAL_X + ((2'(i) & 2'b11) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((i>>2) * 64))) monsters_move_inst(
                 .clk(clk),
                 .resetN(resetN),
                 .missile_collision(collision[0] & previousDR[i]),
@@ -104,7 +104,7 @@ module monsters(
                 );
 			assign monster_deactivated[i] = monster_exploded[i] | (i >= monster_amount);
 
-            shooting_cooldown #(.SHOOTING_COOLDOWN(60 + ((i>>2) * 2) + i)) shooting_cooldown_inst(
+            shooting_cooldown #(.SHOOTING_COOLDOWN(40 + ((2'(i) & 2'b11) * 2) + (2 * i))) shooting_cooldown_inst(
                 .clk           (clk),
                 .resetN        (resetN),
                 .startOfFrame  (startOfFrame & enable & (i < monster_amount)),
