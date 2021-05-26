@@ -7,6 +7,7 @@ module  monsters_move (
     input logic missile_collision,
     input logic border_collision,
     input logic [3:0] HitEdgeCode,
+    input logic random_bit,
 
     output logic monsterIsHit,
     output logic signed [PIXEL_WIDTH - 1:0] topLeftX, // output the top left corner
@@ -53,10 +54,18 @@ module  monsters_move (
                 if (((HitEdgeCode [2] == 1) && (Yspeed < 0)) || // monster hit ceiling while moving up
                     ((HitEdgeCode [0] == 1) && (Yspeed > 0))) begin // monster hit ground while moving down
                     Yspeed <= -Yspeed;
+                    // Randomize the direction of the x speed
+                    if (random_bit) begin
+                        Xspeed <= -Xspeed;
+                    end
                 end
                 if (((HitEdgeCode [3] == 1) && (Xspeed < 0 )) || //monster got to the left border while moving left
                     ((HitEdgeCode [1] == 1) && (Xspeed > 0))) begin //monster got to the right border while moving right
                     Xspeed <= -Xspeed;
+                    // Randomize the direction of the x speed
+                    if (random_bit) begin
+                        Yspeed <= -Yspeed;
+                    end
                 end
             end
 

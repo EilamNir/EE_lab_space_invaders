@@ -25,8 +25,8 @@ module monsters(
 	parameter int X_SPEED = -24;
     parameter int Y_SPEED = -15;
 	parameter unsigned MONSTER_AMOUNT_WIDTH = 5;
-    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 2;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 1;
+    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 4;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 4;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 0;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
 
@@ -52,6 +52,7 @@ module monsters(
     logic [MONSTER_AMOUNT - 1:0] shooting_pusle;
     logic [MONSTER_AMOUNT-1:0] missiles_draw_requests;
 	logic [MONSTER_AMOUNT_WIDTH - 1:0] monster_amount;
+    logic random_bit;
 
 
     genvar i;
@@ -64,6 +65,7 @@ module monsters(
                 .border_collision((monster_overlap | collision[1]) & previousDR[i]),
                 .startOfFrame(startOfFrame & enable & (i < monster_amount)),
                 .HitEdgeCode(HitEdgeCode[i]),
+                .random_bit(random_bit),
                 .monsterIsHit(monsterIsHit[i]),
                 .topLeftX(topLeftX[i]),
                 .topLeftY(topLeftY[i])
@@ -181,6 +183,14 @@ module monsters(
 			monster_amount <= BOSS_STAGE_AMOUNT;
 		end
 	end
+
+    // Choose a random bit for all the monsters each clock, to randomize movement when colliding with a border.
+    GARO_random_bit GARO_random_bit_inst(
+        .clk       (clk),
+        .resetN    (resetN),
+        .enable    (enable),
+        .random_bit(random_bit)
+        );
 
 
     assign missleRGB = 8'hD0;
