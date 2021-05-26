@@ -29,6 +29,7 @@ module background
     parameter logic [RGB_WIDTH - 1:0] STATISTICS_ZONE_COLOR = 8'b00000010;
     parameter logic [RGB_WIDTH - 1:0] BACKGROUND_COLOR = 8'b00000000;
     parameter logic [7:0] WORD_COLOR = 8'b10000000;
+    parameter unsigned LETTER_SIZE_MULTIPLIER = 3;
 
     const int xFrameSize = 639;
     const int yFrameSize = 479;
@@ -63,13 +64,13 @@ module background
     logic square_DR;
     logic signed [10:0] offsetX;
     logic signed [10:0] offsetY;
-    square_object #(.OBJECT_WIDTH_X(64), .OBJECT_HEIGHT_Y(16)) square_object_end_game_inst(
+    square_object #(.OBJECT_WIDTH_X(64 << LETTER_SIZE_MULTIPLIER), .OBJECT_HEIGHT_Y(16 << LETTER_SIZE_MULTIPLIER)) square_object_end_game_inst(
         .clk            (clk),
         .resetN         (resetN),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
-        .topLeftX       (256),
-        .topLeftY       (232),
+        .topLeftX       (63),
+        .topLeftY       (159),
         .offsetX        (offsetX),
         .offsetY        (offsetY),
         .drawingRequest (square_DR)
@@ -78,8 +79,8 @@ module background
     end_gameBitMap end_gameBitMap_inst(
         .clk(clk),
         .resetN(resetN),
-        .offsetX(offsetX),
-        .offsetY(offsetY),
+        .offsetX(offsetX >> LETTER_SIZE_MULTIPLIER),
+        .offsetY(offsetY >> LETTER_SIZE_MULTIPLIER),
         .InsideRectangle(game_over & square_DR),
         .game_won(game_won),
         .drawingRequest(end_gameDR)
