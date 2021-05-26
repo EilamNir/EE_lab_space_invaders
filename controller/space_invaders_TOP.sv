@@ -238,6 +238,7 @@ module space_invaders_TOP
         .monster_died_pulse	(monster_died_pulse),
 		.boss_died_pulse	(boss_dead),
 		.asteroid_exploded_pulse(asteroid_exploded),
+        .game_over          (game_over),
 
         .scoreDR		(scoreDR),
         .scoreRGB		(scoreRGB),
