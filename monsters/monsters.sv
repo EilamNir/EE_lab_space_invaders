@@ -25,10 +25,10 @@ module monsters(
 	parameter int X_SPEED = -24;
     parameter int Y_SPEED = -15;
 	parameter unsigned MONSTER_AMOUNT_WIDTH = 5;
-    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 16;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 8;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 16;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 12;
+    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 2;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 1;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 0;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
 
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
     parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
@@ -50,8 +50,8 @@ module monsters(
     logic monster_overlap;
     logic [MONSTER_AMOUNT - 1:0] previous_monsterIsHit;
     logic [MONSTER_AMOUNT - 1:0] shooting_pusle;
-	logic [MONSTER_AMOUNT - 1:0] monster_amount;
     logic [MONSTER_AMOUNT-1:0] missiles_draw_requests;
+	logic [MONSTER_AMOUNT_WIDTH - 1:0] monster_amount;
 
 
     genvar i;

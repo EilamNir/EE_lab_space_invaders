@@ -16,23 +16,25 @@ module background
     input logic [PIXEL_WIDTH - 1:0] pixelY,
     input logic game_won,
     input logic game_over,
+
     output logic [RGB_WIDTH - 1:0] background_RGB,
-	output logic [0:1] bordersDR,
-	output logic end_gameDR
+    output logic [0:1] bordersDR,
+    output logic [RGB_WIDTH - 1:0] end_game_RGB,
+    output logic end_gameDR
 );
 
     parameter unsigned RGB_WIDTH = 8;
     parameter unsigned PIXEL_WIDTH = 11;
-    parameter logic [RGB_WIDTH - 1:0] PLAYER_ZONE_END_COLOR = 8'b00010000;
     parameter logic [RGB_WIDTH - 1:0] MOVEMENT_ZONE_END_COLOR = 8'b10000000;
     parameter logic [RGB_WIDTH - 1:0] STATISTICS_ZONE_COLOR = 8'b00000010;
     parameter logic [RGB_WIDTH - 1:0] BACKGROUND_COLOR = 8'b00000000;
+    parameter logic [7:0] WORD_COLOR = 8'b10000000;
 
     const int xFrameSize = 639;
     const int yFrameSize = 479;
     const int movement_zone_offset = 20;
     const int statistics_zone_offset = 20;
-	const int upperBorder = 20;
+    const int upperBorder = 20;
     const int player_zone_y = 310;
 
     always_ff@(posedge clk or negedge resetN) begin
@@ -41,46 +43,48 @@ module background
         end else begin
             // Default to printing the background color
             background_RGB <= BACKGROUND_COLOR;
-			bordersDR <= 2'b0;
+            bordersDR <= 2'b0;
             // Check if we need to print the movement zone end
-			if (game_over | game_won) background_RGB <= end_gameRGB;
-			else begin
-				if ((pixelX == movement_zone_offset) ||
-					(pixelX == (xFrameSize - movement_zone_offset)) || 
-					(pixelY == (yFrameSize - statistics_zone_offset))||
-					(pixelY == (upperBorder))) begin
-					background_RGB <= MOVEMENT_ZONE_END_COLOR;
-					bordersDR[0] <= 1'b1;
-				end	
-				// Check if we need to print the player zone end
-				if (pixelY == player_zone_y ) begin
-					background_RGB <= STATISTICS_ZONE_COLOR;
-					bordersDR[1] <= 1'b1;
-				end
-			end
+            if ((pixelX == movement_zone_offset) ||
+                (pixelX == (xFrameSize - movement_zone_offset)) ||
+                (pixelY == (yFrameSize - statistics_zone_offset))||
+                (pixelY == (upperBorder))) begin
+                background_RGB <= MOVEMENT_ZONE_END_COLOR;
+                bordersDR[0] <= 1'b1;
+            end
+            // Check if we need to print the player zone end
+            if (pixelY == player_zone_y ) begin
+                background_RGB <= STATISTICS_ZONE_COLOR;
+                bordersDR[1] <= 1'b1;
+            end
         end
     end
-	
-	square_object #(.OBJECT_WIDTH_X(64), .OBJECT_HEIGHT_Y(16)) square_object_end_game_inst(
-		.clk            (clk),
-		.resetN         (resetN),
-		.pixelX         (pixelX),
-		.pixelY         (pixelY),
-		.topLeftX       (256),
-		.topLeftY       (232),
-		.offsetX        (offsetX),
-		.offsetY        (offsetY),
-		.drawingRequest (square_DR)
+
+    logic square_DR;
+    logic signed [10:0] offsetX;
+    logic signed [10:0] offsetY;
+    square_object #(.OBJECT_WIDTH_X(64), .OBJECT_HEIGHT_Y(16)) square_object_end_game_inst(
+        .clk            (clk),
+        .resetN         (resetN),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+        .topLeftX       (256),
+        .topLeftY       (232),
+        .offsetX        (offsetX),
+        .offsetY        (offsetY),
+        .drawingRequest (square_DR)
     );
-				
-	end_gameBitMap end_gameBitMap_inst(
+
+    end_gameBitMap end_gameBitMap_inst(
         .clk(clk),
         .resetN(resetN),
         .offsetX(offsetX),
         .offsetY(offsetY),
-        .InsideRectangle(square_DR),
+        .InsideRectangle(game_over & square_DR),
         .game_won(game_won),
-        .drawingRequest(end_gameDR),
-        .RGBout(end_gameRGB)
+        .drawingRequest(end_gameDR)
     );
+
+    assign end_game_RGB = WORD_COLOR;
+
 endmodule

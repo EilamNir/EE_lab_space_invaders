@@ -42,10 +42,10 @@ module space_invaders_TOP
     logic [RGB_WIDTH - 1:0] asteroidsRGB;
     logic [RGB_WIDTH - 1:0] BossRGB;
 	logic [RGB_WIDTH - 1:0] Boss_missleRGB;
-	
+	logic [RGB_WIDTH - 1:0] end_game_RGB;
 	
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB;
-    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, background_RGB};
+    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, end_game_RGB};
     logic player_missleDR;
     logic monster_missleDR;
     logic playerDR;
@@ -207,6 +207,7 @@ module space_invaders_TOP
         .pixelY         (pixelY),
         .bordersDR      (bordersDR),
 		.end_gameDR		(end_gameDR),
+		.end_game_RGB	(end_game_RGB),
         .background_RGB (background_RGB));
 
     video_unit #(.NUMBER_OF_OBJECTS(VIDEO_UNIT_NUMBER_OF_OBJECTS)) video_unit_inst (

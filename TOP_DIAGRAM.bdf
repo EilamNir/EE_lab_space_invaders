@@ -194,7 +194,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 520 472 752 616)
+	(rect 568 408 800 552)
 	(text "monsters" (rect 5 0 51 12)(font "Arial" ))
 	(text "inst5" (rect 8 128 30 145)(font "Intel Clear" ))
 	(port
@@ -300,7 +300,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 216 128))
 	)
-	(annotation_block (parameter)(rect 520 400 768 464))
+	(annotation_block (parameter)(rect 568 336 816 400))
 )
 (symbol
 	(rect -56 368 368 480)
@@ -361,7 +361,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 408 96)(color 0 0 0))
 	)
-	(annotation_block (parameter)(rect -48 304 189 361))
+	(annotation_block (parameter)(rect -48 336 176 360))
 )
 (symbol
 	(rect -48 544 320 656)
@@ -534,7 +534,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 448 128))
 	)
-	(annotation_block (parameter)(rect 1088 88 1216 184))
+	(annotation_block (parameter)(rect 1088 136 1216 184))
 )
 (symbol
 	(rect 1152 480 1376 608)
@@ -587,7 +587,7 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 504 152 816 360)
+	(rect 504 64 816 272)
 	(text "player" (rect 5 0 35 12)(font "Arial" ))
 	(text "inst" (rect 8 192 25 204)(font "Arial" ))
 	(port
@@ -714,7 +714,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 296 192))
 	)
-	(annotation_block (parameter)(rect 528 0 728 136))
+	(annotation_block (parameter)(rect 528 24 768 48))
 )
 (symbol
 	(rect 152 96 352 208)
@@ -774,9 +774,9 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 808 -72 1024 136)
+	(rect -464 200 -248 440)
 	(text "game_controller" (rect 5 0 82 12)(font "Arial" ))
-	(text "inst4" (rect 8 192 30 209)(font "Intel Clear" ))
+	(text "inst7" (rect 8 224 30 241)(font "Intel Clear" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -808,8 +808,8 @@ agreement for further details.
 	(port
 		(pt 0 96)
 		(input)
-		(text "player_dead" (rect 0 0 56 12)(font "Arial" ))
-		(text "player_dead" (rect 21 91 77 103)(font "Arial" ))
+		(text "player_dead" (rect 0 0 60 12)(font "Arial" ))
+		(text "player_dead" (rect 21 91 81 103)(font "Arial" ))
 		(line (pt 0 96)(pt 16 96))
 	)
 	(port
@@ -885,13 +885,382 @@ agreement for further details.
 	(port
 		(pt 216 160)
 		(output)
+		(text "resetN_astero" (rect 0 0 69 12)(font "Arial" ))
+		(text "resetN_astero" (rect 137 155 206 167)(font "Arial" ))
+		(line (pt 216 160)(pt 200 160))
+	)
+	(port
+		(pt 216 176)
+		(output)
+		(text "resetN_Boss" (rect 0 0 63 12)(font "Arial" ))
+		(text "resetN_Boss" (rect 142 171 205 183)(font "Arial" ))
+		(line (pt 216 176)(pt 200 176))
+	)
+	(port
+		(pt 216 192)
+		(output)
 		(text "stage_num[2..0]" (rect 0 0 80 12)(font "Arial" ))
-		(text "stage_num[2..0]" (rect 128 155 208 167)(font "Arial" ))
-		(line (pt 216 160)(pt 200 160)(line_width 3))
+		(text "stage_num[2..0]" (rect 128 187 208 199)(font "Arial" ))
+		(line (pt 216 192)(pt 200 192)(line_width 3))
 	)
 	(drawing
-		(rectangle (rect 16 16 200 192))
+		(rectangle (rect 16 16 200 224))
 	)
+)
+(symbol
+	(rect -376 704 -56 880)
+	(text "score" (rect 5 0 32 12)(font "Arial" ))
+	(text "inst12" (rect 8 160 36 177)(font "Intel Clear" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 14 12)(font "Arial" ))
+		(text "clk" (rect 21 27 35 39)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 33 12)(font "Arial" ))
+		(text "resetN" (rect 21 43 54 55)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "pixelX[10..0]" (rect 0 0 60 12)(font "Arial" ))
+		(text "pixelX[10..0]" (rect 21 59 81 71)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64)(line_width 3))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "pixelY[10..0]" (rect 0 0 62 12)(font "Arial" ))
+		(text "pixelY[10..0]" (rect 21 75 83 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80)(line_width 3))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "monster_died_pulse" (rect 0 0 97 12)(font "Arial" ))
+		(text "monster_died_pulse" (rect 21 91 118 103)(font "Arial" ))
+		(line (pt 0 96)(pt 16 96))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "boss_died_pulse" (rect 0 0 81 12)(font "Arial" ))
+		(text "boss_died_pulse" (rect 21 107 102 119)(font "Arial" ))
+		(line (pt 0 112)(pt 16 112))
+	)
+	(port
+		(pt 0 128)
+		(input)
+		(text "asteroid_exploded_pulse" (rect 0 0 120 12)(font "Arial" ))
+		(text "asteroid_exploded_pulse" (rect 21 123 141 135)(font "Arial" ))
+		(line (pt 0 128)(pt 16 128))
+	)
+	(port
+		(pt 0 144)
+		(input)
+		(text "stage_num[2..0]" (rect 0 0 80 12)(font "Arial" ))
+		(text "stage_num[2..0]" (rect 21 139 101 151)(font "Arial" ))
+		(line (pt 0 144)(pt 16 144)(line_width 3))
+	)
+	(port
+		(pt 320 32)
+		(output)
+		(text "scoreDR" (rect 0 0 43 12)(font "Arial" ))
+		(text "scoreDR" (rect 263 27 306 39)(font "Arial" ))
+		(line (pt 320 32)(pt 304 32))
+	)
+	(port
+		(pt 320 48)
+		(output)
+		(text "scoreRGB[7..0]" (rect 0 0 76 12)(font "Arial" ))
+		(text "scoreRGB[7..0]" (rect 235 43 311 55)(font "Arial" ))
+		(line (pt 320 48)(pt 304 48)(line_width 3))
+	)
+	(port
+		(pt 320 64)
+		(output)
+		(text "ss[DIGIT_AMOUNT-1..0][6..0]" (rect 0 0 148 12)(font "Arial" ))
+		(text "ss[DIGIT_AMOUNT-1..0][6..0]" (rect 174 59 322 71)(font "Arial" ))
+		(line (pt 320 64)(pt 304 64)(line_width 3))
+	)
+	(parameter
+		"MAX_SCORE_PER_DIGIT"
+		"00000000000000000000000000001001"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"DIGIT_AMOUNT"
+		"00000000000000000000000000000011"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(drawing
+		(rectangle (rect 16 16 304 160))
+	)
+	(annotation_block (parameter)(rect -360 664 -72 704))
+)
+(symbol
+	(rect 576 872 800 1048)
+	(text "boss" (rect 5 0 28 12)(font "Arial" ))
+	(text "inst13" (rect 8 160 36 177)(font "Intel Clear" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 14 12)(font "Arial" ))
+		(text "clk" (rect 21 27 35 39)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 33 12)(font "Arial" ))
+		(text "resetN" (rect 21 43 54 55)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "enable" (rect 0 0 31 12)(font "Arial" ))
+		(text "enable" (rect 21 59 52 71)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "startOfFrame" (rect 0 0 67 12)(font "Arial" ))
+		(text "startOfFrame" (rect 21 75 88 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "collision[6..0]" (rect 0 0 64 12)(font "Arial" ))
+		(text "collision[6..0]" (rect 21 91 85 103)(font "Arial" ))
+		(line (pt 0 96)(pt 16 96)(line_width 3))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "pixelX[10..0]" (rect 0 0 60 12)(font "Arial" ))
+		(text "pixelX[10..0]" (rect 21 107 81 119)(font "Arial" ))
+		(line (pt 0 112)(pt 16 112)(line_width 3))
+	)
+	(port
+		(pt 0 128)
+		(input)
+		(text "pixelY[10..0]" (rect 0 0 62 12)(font "Arial" ))
+		(text "pixelY[10..0]" (rect 21 123 83 135)(font "Arial" ))
+		(line (pt 0 128)(pt 16 128)(line_width 3))
+	)
+	(port
+		(pt 224 32)
+		(output)
+		(text "BossDR" (rect 0 0 41 12)(font "Arial" ))
+		(text "BossDR" (rect 169 27 210 39)(font "Arial" ))
+		(line (pt 224 32)(pt 208 32))
+	)
+	(port
+		(pt 224 48)
+		(output)
+		(text "BossRGB[7..0]" (rect 0 0 74 12)(font "Arial" ))
+		(text "BossRGB[7..0]" (rect 141 43 215 55)(font "Arial" ))
+		(line (pt 224 48)(pt 208 48)(line_width 3))
+	)
+	(port
+		(pt 224 64)
+		(output)
+		(text "boss_dead" (rect 0 0 53 12)(font "Arial" ))
+		(text "boss_dead" (rect 159 59 212 71)(font "Arial" ))
+		(line (pt 224 64)(pt 208 64))
+	)
+	(port
+		(pt 224 80)
+		(output)
+		(text "missleDR" (rect 0 0 48 12)(font "Arial" ))
+		(text "missleDR" (rect 163 75 211 87)(font "Arial" ))
+		(line (pt 224 80)(pt 208 80))
+	)
+	(port
+		(pt 224 96)
+		(output)
+		(text "missleRGB[7..0]" (rect 0 0 81 12)(font "Arial" ))
+		(text "missleRGB[7..0]" (rect 135 91 216 103)(font "Arial" ))
+		(line (pt 224 96)(pt 208 96)(line_width 3))
+	)
+	(parameter
+		"KEYCODE_WIDTH"
+		"00000000000000000000000000001001"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"INITIAL_X"
+		"300"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"INITIAL_Y"
+		"200"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"X_SPEED"
+		"64"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"Y_SPEED"
+		"-25"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"BOSS_MISSILE_AMOUNT"
+		"8"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"LIVES_AMOUNT_WIDTH"
+		"00000000000000000000000000000101"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"LIVES_AMOUNT"
+		"00011"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"RGB_WIDTH"
+		"00000000000000000000000000001000"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(drawing
+		(rectangle (rect 16 16 208 160))
+	)
+	(annotation_block (parameter)(rect 576 832 824 872))
+)
+(symbol
+	(rect 560 608 816 784)
+	(text "asteroids" (rect 5 0 49 12)(font "Arial" ))
+	(text "inst14" (rect 8 160 36 177)(font "Intel Clear" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 14 12)(font "Arial" ))
+		(text "clk" (rect 21 27 35 39)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 33 12)(font "Arial" ))
+		(text "resetN" (rect 21 43 54 55)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "enable" (rect 0 0 31 12)(font "Arial" ))
+		(text "enable" (rect 21 59 52 71)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "startOfFrame" (rect 0 0 67 12)(font "Arial" ))
+		(text "startOfFrame" (rect 21 75 88 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "collision[6..0]" (rect 0 0 64 12)(font "Arial" ))
+		(text "collision[6..0]" (rect 21 91 85 103)(font "Arial" ))
+		(line (pt 0 96)(pt 16 96)(line_width 3))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "pixelX[10..0]" (rect 0 0 60 12)(font "Arial" ))
+		(text "pixelX[10..0]" (rect 21 107 81 119)(font "Arial" ))
+		(line (pt 0 112)(pt 16 112)(line_width 3))
+	)
+	(port
+		(pt 0 128)
+		(input)
+		(text "pixelY[10..0]" (rect 0 0 62 12)(font "Arial" ))
+		(text "pixelY[10..0]" (rect 21 123 83 135)(font "Arial" ))
+		(line (pt 0 128)(pt 16 128)(line_width 3))
+	)
+	(port
+		(pt 256 32)
+		(output)
+		(text "asteroidsDR" (rect 0 0 61 12)(font "Arial" ))
+		(text "asteroidsDR" (rect 184 27 245 39)(font "Arial" ))
+		(line (pt 256 32)(pt 240 32))
+	)
+	(port
+		(pt 256 48)
+		(output)
+		(text "asteroid_exploded_pulse" (rect 0 0 120 12)(font "Arial" ))
+		(text "asteroid_exploded_pulse" (rect 134 43 254 55)(font "Arial" ))
+		(line (pt 256 48)(pt 240 48))
+	)
+	(port
+		(pt 256 64)
+		(output)
+		(text "all_asteroids_destroied" (rect 0 0 112 12)(font "Arial" ))
+		(text "all_asteroids_destroied" (rect 141 59 253 71)(font "Arial" ))
+		(line (pt 256 64)(pt 240 64))
+	)
+	(port
+		(pt 256 80)
+		(output)
+		(text "asteroidsRGB[7..0]" (rect 0 0 94 12)(font "Arial" ))
+		(text "asteroidsRGB[7..0]" (rect 156 75 250 87)(font "Arial" ))
+		(line (pt 256 80)(pt 240 80)(line_width 3))
+	)
+	(parameter
+		"KEYCODE_WIDTH"
+		"00000000000000000000000000001001"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"INITIAL_X"
+		"33"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"INITIAL_Y"
+		"21"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"X_SPEED"
+		"90"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"Y_SPEED"
+		"60"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"ASTEROIDS_AMOUNT"
+		"00000000000000000000000000010100"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(parameter
+		"X_SPACING"
+		"00000000000000000000000001100000"
+		""
+		(type "PARAMETER_UNSIGNED_BIN")	)
+	(drawing
+		(rectangle (rect 16 16 240 160))
+	)
+	(annotation_block (parameter)(rect 568 568 776 600))
 )
 (connector
 	(pt 136 -24)
@@ -923,134 +1292,9 @@ agreement for further details.
 	(pt 216 64)
 )
 (connector
-	(pt 504 216)
-	(pt 440 216)
-	(bus)
-)
-(connector
-	(pt 440 216)
-	(pt 440 128)
-	(bus)
-)
-(connector
-	(text "keyCode[8..0]" (rect 358 112 424 129)(font "Intel Clear" ))
-	(pt 352 128)
-	(pt 440 128)
-	(bus)
-)
-(connector
-	(pt 504 232)
-	(pt 424 232)
-)
-(connector
-	(pt 424 232)
-	(pt 424 144)
-)
-(connector
-	(text "make" (rect 361 128 388 145)(font "Intel Clear" ))
-	(pt 352 144)
-	(pt 424 144)
-)
-(connector
-	(pt 408 248)
-	(pt 504 248)
-)
-(connector
-	(text "clk" (rect 484 168 498 185)(font "Intel Clear" ))
-	(pt 504 184)
-	(pt 464 184)
-)
-(connector
-	(text "resetN" (rect 485 184 515 201)(font "Intel Clear" ))
-	(pt 504 200)
-	(pt 464 200)
-)
-(connector
 	(text "brake" (rect 362 144 389 161)(font "Intel Clear" ))
 	(pt 352 160)
 	(pt 408 160)
-)
-(connector
-	(pt 408 248)
-	(pt 408 160)
-)
-(connector
-	(text "startOfFrame" (rect 423 248 486 265)(font "Intel Clear" ))
-	(pt 504 264)
-	(pt 408 264)
-)
-(connector
-	(text "pixelX[10..0]" (rect 451 264 510 281)(font "Intel Clear" ))
-	(pt 504 280)
-	(pt 408 280)
-	(bus)
-)
-(connector
-	(text "pixelY[10..0]" (rect 446 280 505 297)(font "Intel Clear" ))
-	(pt 504 296)
-	(pt 408 296)
-	(bus)
-)
-(connector
-	(text "collision[4..0]" (rect 441 296 503 313)(font "Intel Clear" ))
-	(pt 504 312)
-	(pt 408 312)
-	(bus)
-)
-(connector
-	(text "pixelY[10..0]" (rect 470 568 529 585)(font "Intel Clear" ))
-	(pt 520 584)
-	(pt 424 584)
-	(bus)
-)
-(connector
-	(text "pixelX[10..0]" (rect 475 552 534 569)(font "Intel Clear" ))
-	(pt 424 568)
-	(pt 520 568)
-	(bus)
-)
-(connector
-	(text "collision[4..0]" (rect 461 536 523 553)(font "Intel Clear" ))
-	(pt 520 552)
-	(pt 424 552)
-	(bus)
-)
-(connector
-	(text "clk" (rect 480 488 494 505)(font "Intel Clear" ))
-	(pt 520 504)
-	(pt 424 504)
-)
-(connector
-	(text "resetN" (rect 463 504 493 521)(font "Intel Clear" ))
-	(pt 520 520)
-	(pt 424 520)
-)
-(connector
-	(text "startOfFrame" (rect 452 520 515 537)(font "Intel Clear" ))
-	(pt 520 536)
-	(pt 424 536)
-)
-(connector
-	(text "missileDR" (rect 778 520 825 537)(font "Intel Clear" ))
-	(pt 752 536)
-	(pt 848 536)
-)
-(connector
-	(text "missileRGB[7..0]" (rect 773 536 850 553)(font "Intel Clear" ))
-	(pt 752 552)
-	(pt 848 552)
-	(bus)
-)
-(connector
-	(text "monsterRGB[7..0]" (rect 790 504 873 521)(font "Intel Clear" ))
-	(pt 752 520)
-	(pt 848 520)
-	(bus)
-)
-(connector
-	(text "monsterDR" (rect 797 488 850 505)(font "Intel Clear" ))
-	(pt 752 504)
-	(pt 848 504)
 )
 (connector
 	(pt -56 448)
@@ -1186,35 +1430,405 @@ agreement for further details.
 	(pt 1000 240)
 )
 (connector
-	(text "playerDR" (rect 838 168 882 185)(font "Intel Clear" ))
-	(pt 816 184)
-	(pt 872 184)
-)
-(connector
-	(text "playerRGB[7..0]" (rect 819 184 894 201)(font "Intel Clear" ))
-	(pt 816 200)
-	(pt 872 200)
-	(bus)
-)
-(connector
-	(text "missileDR" (rect 826 200 873 217)(font "Intel Clear" ))
-	(pt 816 216)
-	(pt 872 216)
-)
-(connector
-	(text "missileRGB[7..0]" (rect 818 216 895 233)(font "Intel Clear" ))
-	(pt 816 232)
-	(pt 872 232)
-	(bus)
-)
-(connector
-	(text "<<__$DEF_ALIAS109>>" (rect 956 600 1068 617)(font "Intel Clear" )(invisible))
 	(pt 1064 576)
 	(pt 1152 576)
 	(bus)
 )
 (connector
-	(text "<<__$DEF_ALIAS111>>" (rect 1079 544 1191 561)(font "Intel Clear" )(invisible))
 	(pt 1064 560)
 	(pt 1152 560)
 )
+(connector
+	(text "stage_num[2..0]" (rect -240 376 -164 393)(font "Intel Clear" ))
+	(pt -248 392)
+	(pt -192 392)
+	(bus)
+)
+(connector
+	(text "clk" (rect -484 216 -470 233)(font "Intel Clear" ))
+	(pt -464 232)
+	(pt -520 232)
+)
+(connector
+	(text "resetN" (rect -486 232 -456 249)(font "Intel Clear" ))
+	(pt -464 248)
+	(pt -520 248)
+)
+(connector
+	(text "start_game" (rect -478 248 -424 265)(font "Intel Clear" ))
+	(pt -464 264)
+	(pt -520 264)
+)
+(connector
+	(text "win_stage" (rect -478 264 -430 281)(font "Intel Clear" ))
+	(pt -520 280)
+	(pt -464 280)
+)
+(connector
+	(text "player_dead" (rect -478 280 -418 297)(font "Intel Clear" ))
+	(pt -464 296)
+	(pt -520 296)
+)
+(connector
+	(text "skip_stage" (rect -486 296 -436 313)(font "Intel Clear" ))
+	(pt -464 312)
+	(pt -520 312)
+)
+(connector
+	(text "pause" (rect -489 312 -461 329)(font "Intel Clear" ))
+	(pt -520 328)
+	(pt -464 328)
+)
+(connector
+	(text "game_won" (rect -217 216 -164 233)(font "Intel Clear" ))
+	(pt -248 232)
+	(pt -192 232)
+)
+(connector
+	(text "game_over" (rect -198 232 -144 249)(font "Intel Clear" ))
+	(pt -248 248)
+	(pt -192 248)
+)
+(connector
+	(text "enb_player" (rect -206 248 -152 265)(font "Intel Clear" ))
+	(pt -248 264)
+	(pt -192 264)
+)
+(connector
+	(text "enb_most" (rect -214 264 -167 281)(font "Intel Clear" ))
+	(pt -248 280)
+	(pt -192 280)
+)
+(connector
+	(text "enb_boss" (rect -218 280 -174 297)(font "Intel Clear" ))
+	(pt -248 296)
+	(pt -192 296)
+)
+(connector
+	(text "enb_astero" (rect -206 296 -153 313)(font "Intel Clear" ))
+	(pt -248 312)
+	(pt -192 312)
+)
+(connector
+	(text "resetN_player" (rect -231 312 -164 329)(font "Intel Clear" ))
+	(pt -248 328)
+	(pt -192 328)
+)
+(connector
+	(text "resetN_monst" (rect -214 328 -148 345)(font "Intel Clear" ))
+	(pt -248 344)
+	(pt -192 344)
+)
+(connector
+	(text "resetN_astero" (rect -235 344 -169 361)(font "Intel Clear" ))
+	(pt -248 360)
+	(pt -192 360)
+)
+(connector
+	(text "resetN_boss" (rect -218 360 -161 377)(font "Intel Clear" ))
+	(pt -248 376)
+	(pt -192 376)
+)
+(connector
+	(pt 408 160)
+	(pt 408 128)
+)
+(connector
+	(text "keyCode[8..0]" (rect 358 112 424 129)(font "Intel Clear" ))
+	(pt 352 128)
+	(pt 408 128)
+	(bus)
+)
+(connector
+	(text "clk" (rect 484 80 498 97)(font "Intel Clear" ))
+	(pt 504 96)
+	(pt 464 96)
+)
+(connector
+	(text "resetN" (rect 485 96 515 113)(font "Intel Clear" ))
+	(pt 504 112)
+	(pt 464 112)
+)
+(connector
+	(text "pixelX[10..0]" (rect 451 176 510 193)(font "Intel Clear" ))
+	(pt 504 192)
+	(pt 408 192)
+	(bus)
+)
+(connector
+	(text "pixelY[10..0]" (rect 446 192 505 209)(font "Intel Clear" ))
+	(pt 504 208)
+	(pt 408 208)
+	(bus)
+)
+(connector
+	(text "collision[4..0]" (rect 441 208 503 225)(font "Intel Clear" ))
+	(pt 504 224)
+	(pt 408 224)
+	(bus)
+)
+(connector
+	(text "missileDR" (rect 826 112 873 129)(font "Intel Clear" ))
+	(pt 816 128)
+	(pt 872 128)
+)
+(connector
+	(text "missileRGB[7..0]" (rect 818 128 895 145)(font "Intel Clear" ))
+	(pt 816 144)
+	(pt 872 144)
+	(bus)
+)
+(connector
+	(pt 440 128)
+	(pt 440 160)
+)
+(connector
+	(pt 440 160)
+	(pt 504 160)
+)
+(connector
+	(pt 424 144)
+	(pt 424 176)
+)
+(connector
+	(text "startOfFrame,make" (rect 423 160 516 177)(font "Intel Clear" ))
+	(pt 424 176)
+	(pt 504 176)
+)
+(connector
+	(pt 408 128)
+	(pt 440 128)
+	(bus)
+)
+(connector
+	(pt 440 128)
+	(pt 504 128)
+	(bus)
+)
+(connector
+	(pt 352 144)
+	(pt 424 144)
+)
+(connector
+	(pt 424 144)
+	(pt 504 144)
+)
+(connector
+	(text "playerDR" (rect 838 80 882 97)(font "Intel Clear" ))
+	(pt 816 96)
+	(pt 872 96)
+)
+(connector
+	(text "playerRGB[7..0]" (rect 819 96 894 113)(font "Intel Clear" ))
+	(pt 816 112)
+	(pt 872 112)
+	(bus)
+)
+(connector
+	(text "collision[4..0]" (rect 509 472 571 489)(font "Intel Clear" ))
+	(pt 568 488)
+	(pt 472 488)
+	(bus)
+)
+(connector
+	(text "clk" (rect 528 424 542 441)(font "Intel Clear" ))
+	(pt 568 440)
+	(pt 472 440)
+)
+(connector
+	(text "resetN" (rect 511 440 541 457)(font "Intel Clear" ))
+	(pt 568 456)
+	(pt 472 456)
+)
+(connector
+	(text "startOfFrame" (rect 500 456 563 473)(font "Intel Clear" ))
+	(pt 568 472)
+	(pt 472 472)
+)
+(connector
+	(text "missileDR" (rect 826 456 873 473)(font "Intel Clear" ))
+	(pt 800 472)
+	(pt 896 472)
+)
+(connector
+	(text "missileRGB[7..0]" (rect 821 472 898 489)(font "Intel Clear" ))
+	(pt 800 488)
+	(pt 896 488)
+	(bus)
+)
+(connector
+	(text "monsterRGB[7..0]" (rect 838 440 921 457)(font "Intel Clear" ))
+	(pt 800 456)
+	(pt 896 456)
+	(bus)
+)
+(connector
+	(text "monsterDR" (rect 845 424 898 441)(font "Intel Clear" ))
+	(pt 800 440)
+	(pt 896 440)
+)
+(connector
+	(text "pixelX[10..0]" (rect 523 488 582 505)(font "Intel Clear" ))
+	(pt 472 504)
+	(pt 568 504)
+	(bus)
+)
+(connector
+	(text "pixelY[10..0]" (rect 518 504 577 521)(font "Intel Clear" ))
+	(pt 472 520)
+	(pt 568 520)
+	(bus)
+)
+(connector
+	(pt 560 640)
+	(pt 480 640)
+)
+(connector
+	(pt 560 656)
+	(pt 480 656)
+)
+(connector
+	(pt 560 672)
+	(pt 480 672)
+)
+(connector
+	(pt 480 688)
+	(pt 560 688)
+)
+(connector
+	(pt 816 640)
+	(pt 904 640)
+)
+(connector
+	(pt 816 672)
+	(pt 904 672)
+)
+(connector
+	(pt 816 656)
+	(pt 904 656)
+)
+(connector
+	(pt 816 688)
+	(pt 904 688)
+	(bus)
+)
+(connector
+	(pt 560 704)
+	(pt 480 704)
+	(bus)
+)
+(connector
+	(pt 560 720)
+	(pt 480 720)
+	(bus)
+)
+(connector
+	(pt 560 736)
+	(pt 480 736)
+	(bus)
+)
+(connector
+	(pt 800 936)
+	(pt 872 936)
+)
+(connector
+	(pt 800 904)
+	(pt 872 904)
+)
+(connector
+	(pt 800 952)
+	(pt 872 952)
+)
+(connector
+	(pt 576 904)
+	(pt 488 904)
+)
+(connector
+	(pt 576 920)
+	(pt 488 920)
+)
+(connector
+	(pt 576 936)
+	(pt 488 936)
+)
+(connector
+	(pt 576 952)
+	(pt 488 952)
+)
+(connector
+	(pt 576 968)
+	(pt 488 968)
+	(bus)
+)
+(connector
+	(pt 576 984)
+	(pt 488 984)
+	(bus)
+)
+(connector
+	(pt 488 1000)
+	(pt 576 1000)
+	(bus)
+)
+(connector
+	(pt 800 968)
+	(pt 872 968)
+	(bus)
+)
+(connector
+	(pt 800 920)
+	(pt 872 920)
+	(bus)
+)
+(connector
+	(pt -56 768)
+	(pt -8 768)
+	(bus)
+)
+(connector
+	(pt -56 752)
+	(pt -8 752)
+	(bus)
+)
+(connector
+	(pt -376 848)
+	(pt -440 848)
+	(bus)
+)
+(connector
+	(pt -376 784)
+	(pt -440 784)
+	(bus)
+)
+(connector
+	(pt -440 768)
+	(pt -376 768)
+	(bus)
+)
+(connector
+	(pt -376 736)
+	(pt -440 736)
+)
+(connector
+	(pt -376 752)
+	(pt -440 752)
+)
+(connector
+	(pt -376 800)
+	(pt -440 800)
+)
+(connector
+	(pt -56 736)
+	(pt -8 736)
+)
+(connector
+	(pt -440 816)
+	(pt -376 816)
+)
+(connector
+	(pt -440 832)
+	(pt -376 832)
+)
+(junction (pt 440 128))
+(junction (pt 424 144))
+(junction (pt 408 128))
