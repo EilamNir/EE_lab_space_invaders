@@ -28,7 +28,8 @@ module background
     parameter logic [RGB_WIDTH - 1:0] MOVEMENT_ZONE_END_COLOR = 8'b10000000;
     parameter logic [RGB_WIDTH - 1:0] STATISTICS_ZONE_COLOR = 8'b00000010;
     parameter logic [RGB_WIDTH - 1:0] BACKGROUND_COLOR = 8'b00000000;
-    parameter logic [7:0] WORD_COLOR = 8'b10000000;
+    parameter logic [7:0] GAME_WON_COLOR = 8'hFF;
+    parameter logic [7:0] GAME_OVER_COLOR = 8'b10000000;
     parameter unsigned LETTER_SIZE_MULTIPLIER = 3;
 
     const int xFrameSize = 639;
@@ -86,6 +87,6 @@ module background
         .drawingRequest(end_gameDR)
     );
 
-    assign end_game_RGB = WORD_COLOR;
+    assign end_game_RGB = game_won ? GAME_WON_COLOR : GAME_OVER_COLOR;
 
 endmodule
