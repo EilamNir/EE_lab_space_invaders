@@ -17,19 +17,18 @@ module boss(
 );
 
     parameter unsigned KEYCODE_WIDTH = 9;
-	parameter int INITIAL_X = 300;
-	parameter int INITIAL_Y = 200;
+	parameter int INITIAL_X = 287;
+	parameter int INITIAL_Y = 49;
 	parameter int X_SPEED = 64;
     parameter int Y_SPEED = -25;
     parameter int BOSS_MISSILE_AMOUNT = 8;
 	parameter unsigned LIVES_AMOUNT_WIDTH = 5;
-    parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 3;
+    parameter logic unsigned [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 3;
     parameter unsigned RGB_WIDTH = 8;
 
     logic [10:0] offsetX;
     logic [10:0] offsetY;
     logic squareDR;
-	logic previous_DR;
     logic [7:0] squareRGB;
     logic [3:0] HitEdgeCode;
     logic signed [10:0] topLeftX;
@@ -39,14 +38,17 @@ module boss(
     logic boss_faded;
     logic boss_damaged;
 	logic [RGB_WIDTH - 1:0] bitmapRGB;
+    logic random_axis;
 
     logic [BOSS_MISSILE_AMOUNT-1:0] missiles_draw_requests;
     boss_move #(.X_SPEED(X_SPEED), .Y_SPEED(Y_SPEED), .INITIAL_X(INITIAL_X), .INITIAL_Y(INITIAL_Y)) boss_move_inst(
          .clk(clk),
          .resetN(resetN),
-         .border_collision(collision[1] & squareDR),
+         .border_collision(collision[1] & BossDR),
          .startOfFrame(startOfFrame & (enable)),
          .HitEdgeCode(HitEdgeCode),
+         .switch_direction_pulse(shooting_pusle),
+         .random_axis(random_axis),
          .topLeftX(topLeftX),
          .topLeftY(topLeftY)
      );
@@ -102,7 +104,7 @@ module boss(
         .clk              (clk),
         .resetN           (resetN),
         .startOfFrame     (startOfFrame & (enable)),
-        .missile_collision(collision[0] & previous_DR),
+        .missile_collision(collision[0] & BossDR),
         .player_faded     (boss_faded),
         .player_dead      (boss_dead)
         );
@@ -117,17 +119,15 @@ module boss(
         .RGBout(bitmapRGB),
         .HitEdgeCode(HitEdgeCode)
     );
-	
-	// Remember the previous draw requests, for collision detection
-    always_ff@(posedge clk or negedge resetN)
-    begin
-        if(!resetN) begin
-            previous_DR <= 0;
-        end else begin
-            previous_DR <= BossDR;
-        end
-    end
-	
+
+    // Every time the boss shoots, it should reverse direction in a random axis
+    GARO_random_bit GARO_random_bit_inst(
+        .clk       (clk),
+        .resetN    (resetN),
+        .enable    (enable),
+        .random_bit(random_axis)
+        );
+
 	assign BossRGB = RGB_WIDTH'((boss_faded == 1'b1) ? RGB_WIDTH'('b0) : bitmapRGB) ;
     assign missleRGB = 8'hD0;
     assign missleDR = (missiles_draw_requests != 0);
