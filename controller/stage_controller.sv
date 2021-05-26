@@ -18,7 +18,7 @@ module stage_controller
 	output logic [2:0] stage_num 
 );
 
-	enum  logic [2:0] {INIT, STAGE1, STAGE2, STAGE3, STAGE4}  next_gameStage, pres_gameStage; //Game stages manager
+	enum  logic [2:0] {INIT, STAGE1, STAGE2, STAGE3, STAGE4, END_GAME}  next_gameStage, pres_gameStage; //Game stages manager
 
 always_ff@(posedge clk or negedge resetN)	
 	begin
@@ -61,9 +61,12 @@ always_comb
 				stage_num = STAGE4;			
 				enable_boss = 1'b1;
 				enable_monst = 1'b1;
-				if(win_stage) begin
-					game_won = 1'b1;
-				end
+				if(win_stage) next_gameStage = END_GAME;
+			end
+			
+			END_GAME: begin
+				stage_num = END_GAME;	
+				game_won = 1'b1;
 			end
 		endcase
 	end 

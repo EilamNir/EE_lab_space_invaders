@@ -117,14 +117,15 @@ always_comb
 
             STAGE_WON: begin
                 run_resetN_monst = 1'b0;
-                if(game_won | game_over) next_st = GAME_OVER;
+                if(game_won) next_st = GAME_OVER;
                 else next_st = RUN;
 
             end // STAGE_WON
 
             GAME_OVER: begin
-                if(!game_won) game_over = 1'b1;
+                game_over = 1'b1;
                 enable_player = 1'b0;
+                resetN_player = 1'b0;
                 run_resetN_monst = 1'b0;
 				run_resetN_astero = 1'b0;
 				run_resetN_Boss = 1'b0;

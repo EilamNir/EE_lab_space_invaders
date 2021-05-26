@@ -19,7 +19,7 @@ module asteroids(
 	parameter int INITIAL_Y = 21;
 	parameter int X_SPEED = 90;
     parameter int Y_SPEED = 60;
-    parameter unsigned ASTEROIDS_AMOUNT = 20;
+    parameter unsigned ASTEROIDS_AMOUNT = 4;
     parameter unsigned X_SPACING = 96; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
 
     logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetX;
