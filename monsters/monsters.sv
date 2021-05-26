@@ -24,11 +24,11 @@ module monsters(
 	parameter int INITIAL_Y = 50;
 	parameter int X_SPEED = -24;
     parameter int Y_SPEED = -15;
-	parameter unsigned MONSTER_AMOUNT_WIDTH = 4;
-    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 8;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 1;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 8;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
+	parameter unsigned MONSTER_AMOUNT_WIDTH = 5;
+    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 16;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 8;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 16;
+	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 12;
 
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
     parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
@@ -135,30 +135,12 @@ module monsters(
         end
     end
 
-    // Decide on which square object to pass into the bitmap
+    // Deal with multiple monsters in the same pixel
     logic chosen_monster_DR;
     logic [10:0] chosen_offsetX;
     logic [10:0] chosen_offsetY;
     logic chosen_monster_is_hit;
-    always_comb begin
-        chosen_monster_DR = 1'b0;
-        chosen_offsetX = 11'b0;
-        chosen_offsetY = 11'b0;
-        chosen_monster_is_hit = 1'b0;
-        for (int j = 0; j < MONSTER_AMOUNT; j++) begin
-            // Only save the offset of the first monster
-            if (silhouetteDR[j] == 1'b1) begin
-                // Ignore deactivated monsters
-                if (monster_deactivated[j] == 1'b0) begin
-                    chosen_monster_DR = 1'b1;
-                    chosen_offsetX = offsetX[j];
-                    chosen_offsetY = offsetY[j];
-                    chosen_monster_is_hit = monsterIsHit[j];
-                    break;
-                end
-            end
-        end
-    end
+    logic [MONSTER_AMOUNT_WIDTH - 1:0] chosen_monster_index;
 
     // Check if there is an overlap of monsters in this space
     check_overlap #(.OBJECT_AMOUNT_WIDTH(MONSTER_AMOUNT_WIDTH), .OBJECT_AMOUNT(MONSTER_AMOUNT)) check_overlap_inst(
@@ -167,8 +149,15 @@ module monsters(
         .startOfFrame(startOfFrame),
         .draw_request(silhouetteDR),
         .object_deactivated(monster_deactivated),
-        .overlap(monster_overlap)
+        .overlap(monster_overlap),
+        .any_DR(chosen_monster_DR),
+        .first_object_index(chosen_monster_index)
         );
+
+    // Decide on which square object to pass into the bitmap
+    assign chosen_offsetX = offsetX[chosen_monster_index];
+    assign chosen_offsetY = offsetY[chosen_monster_index];
+    assign chosen_monster_is_hit = monsterIsHit[chosen_monster_index];
 
     chickenBitMap chickenBitMap_inst(
         .clk(clk),
