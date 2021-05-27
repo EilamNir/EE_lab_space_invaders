@@ -25,7 +25,7 @@ module monsters(
 	parameter int X_SPEED = -24;
     parameter int Y_SPEED = -15;
 	parameter unsigned MONSTER_AMOUNT_WIDTH = 5;
-    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MONSTER_AMOUNT = 4;
+    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MAX_MONSTER_AMOUNT = 16;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 4;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 0;
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
@@ -34,30 +34,39 @@ module monsters(
     parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
 
 
-
-    logic [MONSTER_AMOUNT - 1:0] [10:0] offsetX;
-    logic [MONSTER_AMOUNT - 1:0] [10:0] offsetY;
-    logic [MONSTER_AMOUNT - 1:0] squareDR;
-    logic [MONSTER_AMOUNT - 1:0] silhouetteDR;
-    logic [MONSTER_AMOUNT - 1:0] previousDR;
-    logic [MONSTER_AMOUNT - 1:0] [7:0] squareRGB;
-    logic [MONSTER_AMOUNT - 1:0] [3:0] HitEdgeCode;
-    logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
-    logic signed [MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
-    logic [MONSTER_AMOUNT - 1:0] monsterIsHit;
-    logic [MONSTER_AMOUNT - 1:0] monster_deactivated;
-	logic [MONSTER_AMOUNT - 1:0] monster_exploded;
+    logic [MAX_MONSTER_AMOUNT - 1:0] [10:0] offsetX;
+    logic [MAX_MONSTER_AMOUNT - 1:0] [10:0] offsetY;
+    logic [MAX_MONSTER_AMOUNT - 1:0] squareDR;
+    logic [MAX_MONSTER_AMOUNT - 1:0] silhouetteDR;
+    logic [MAX_MONSTER_AMOUNT - 1:0] previousDR;
+    logic [MAX_MONSTER_AMOUNT - 1:0] [7:0] squareRGB;
+    logic [MAX_MONSTER_AMOUNT - 1:0] [3:0] HitEdgeCode;
+    logic signed [MAX_MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
+    logic signed [MAX_MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
+    logic [MAX_MONSTER_AMOUNT - 1:0] monsterIsHit;
+    logic [MAX_MONSTER_AMOUNT - 1:0] monster_deactivated;
+	logic [MAX_MONSTER_AMOUNT - 1:0] monster_exploded;
     logic monster_overlap;
-    logic [MONSTER_AMOUNT - 1:0] previous_monsterIsHit;
-    logic [MONSTER_AMOUNT - 1:0] shooting_pusle;
-    logic [MONSTER_AMOUNT-1:0] missiles_draw_requests;
+    logic [MAX_MONSTER_AMOUNT - 1:0] previous_monsterIsHit;
+    logic [MAX_MONSTER_AMOUNT - 1:0] shooting_pusle;
+    logic [MAX_MONSTER_AMOUNT-1:0] missiles_draw_requests;
 	logic [MONSTER_AMOUNT_WIDTH - 1:0] monster_amount;
     logic random_bit;
+
+    // Decide how many monsters in every stage
+    logic [0:4] [MONSTER_AMOUNT_WIDTH - 1:0] monsters_per_stage = {
+        MONSTER_AMOUNT_WIDTH'('d0),
+        MONSTER_AMOUNT_WIDTH'('d8),
+        MONSTER_AMOUNT_WIDTH'('d16),
+        MONSTER_AMOUNT_WIDTH'('d0),
+        MONSTER_AMOUNT_WIDTH'('d12)};
+
+    assign monster_amount = monsters_per_stage[stage_num];
 
 
     genvar i;
     generate
-        for (i = 0; i < MONSTER_AMOUNT; i++) begin : generate_monsters
+        for (i = 0; i < MAX_MONSTER_AMOUNT; i++) begin : generate_monsters
             monsters_move #(.X_SPEED(X_SPEED + (i * 2)), .Y_SPEED(Y_SPEED + ((i>>2) * 8) + i * 2), .INITIAL_X(INITIAL_X + ((2'(i) & 2'b11) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((i>>2) * 64))) monsters_move_inst(
                 .clk(clk),
                 .resetN(resetN),
@@ -145,7 +154,7 @@ module monsters(
     logic [MONSTER_AMOUNT_WIDTH - 1:0] chosen_monster_index;
 
     // Check if there is an overlap of monsters in this space
-    check_overlap #(.OBJECT_AMOUNT_WIDTH(MONSTER_AMOUNT_WIDTH), .OBJECT_AMOUNT(MONSTER_AMOUNT)) check_overlap_inst(
+    check_overlap #(.OBJECT_AMOUNT_WIDTH(MONSTER_AMOUNT_WIDTH), .OBJECT_AMOUNT(MAX_MONSTER_AMOUNT)) check_overlap_inst(
         .clk(clk),
         .resetN(resetN),
         .startOfFrame(startOfFrame),
@@ -171,18 +180,6 @@ module monsters(
         .drawingRequest(monsterDR),
         .RGBout(monsterRGB)
     );
-    always_comb begin
-		monster_amount <= MONSTER_AMOUNT;
-		if(stage_num == 1) begin
-			monster_amount <= FIRST_STAGE_AMOUNT;
-		end
-		if(stage_num == 2) begin
-			monster_amount <= SECOND_STAGE_AMOUNT;
-		end
-		if(stage_num == 4) begin
-			monster_amount <= BOSS_STAGE_AMOUNT;
-		end
-	end
 
     // Choose a random bit for all the monsters each clock, to randomize movement when colliding with a border.
     GARO_random_bit GARO_random_bit_inst(
@@ -197,7 +194,7 @@ module monsters(
     assign missleDR = (missiles_draw_requests != 0);
 
     // Only raise all_monsters_dead if monster_deactivated is all 1s
-    assign all_monsters_dead = &monster_deactivated;
+    assign all_monsters_dead = (&monster_deactivated) & (monster_amount != 0);
 
     // Send a pulse when a monster dies
     always_ff@(posedge clk or negedge resetN)
