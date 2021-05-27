@@ -12,6 +12,9 @@ module space_invaders_TOP
     output hex_dig HEX0,
     output hex_dig HEX1,
     output hex_dig HEX2,
+	output hex_dig HEX3,
+    output hex_dig HEX4,
+    output hex_dig HEX5,
     output VGA OVGA,
     inout audio AUDOUT
 );
@@ -28,6 +31,7 @@ module space_invaders_TOP
     RGB playerRGB;
     RGB livesRGB;
     RGB scoreRGB;
+	RGB timerRGB;
     RGB player_missleRGB;
     RGB monster_missleRGB;
     RGB monsterRGB;
@@ -37,12 +41,13 @@ module space_invaders_TOP
 	RGB end_game_RGB;
 	
     RGB [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] obj_RGB;
-    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, end_game_RGB};
+    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, timerRGB, end_game_RGB};
     logic player_missleDR;
     logic monster_missleDR;
     logic playerDR;
     logic livesDR;
     logic scoreDR;
+	logic timerDR;
     logic monsterDR;
     logic asteroidsDR;
     logic BossDR;	
@@ -53,7 +58,7 @@ module space_invaders_TOP
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1 - 2] draw_requests_for_hits;
     assign draw_requests_for_hits = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR};
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
-    assign draw_requests = {draw_requests_for_hits, livesDR, scoreDR, end_gameDR};
+    assign draw_requests = {draw_requests_for_hits, livesDR, scoreDR, timerDR, end_gameDR};
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
     assign hit_request = {draw_requests_for_hits, bordersDR};
 
@@ -237,6 +242,19 @@ module space_invaders_TOP
         .scoreDR		(scoreDR),
         .scoreRGB		(scoreRGB),
         .ss				({HEX2, HEX1, HEX0})
+    );
+	
+	    timer timer_inst (
+        .clk			(clk),
+        .resetN			(resetN),
+		.enable			(start_game & !pause & !game_over & !game_won),
+        .pixelX			(pixelX),
+        .pixelY			(pixelY),
+        .game_over      (game_over),
+
+        .timerDR		(timerDR),
+        .timerRGB		(timerRGB),
+        .ss				({HEX5, HEX4, HEX3})
     );
 
 endmodule
