@@ -8,10 +8,10 @@
 module	square_object	(	
     input logic clk,
     input logic resetN,
-    input logic signed	[10:0] pixelX,// current VGA pixel
-    input logic signed	[10:0] pixelY,
-    input logic signed	[10:0] topLeftX, //position on the screen
-    input logic signed  [10:0] topLeftY,   // can be negative , if the object is partliy outside
+    input coordinate pixelX,// current VGA pixel
+    input coordinate pixelY,
+    input coordinate topLeftX, //position on the screen
+    input coordinate topLeftY,   // can be negative , if the object is partliy outside
 
     output coordinate offsetX,// offset inside bracket from top left position
     output coordinate offsetY,

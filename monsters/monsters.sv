@@ -41,10 +41,10 @@ module monsters(
     logic [MAX_MONSTER_AMOUNT - 1:0] squareDR;
     logic [MAX_MONSTER_AMOUNT - 1:0] silhouetteDR;
     logic [MAX_MONSTER_AMOUNT - 1:0] previousDR;
-    logic [MAX_MONSTER_AMOUNT - 1:0] [7:0] squareRGB;
+    RGB [MAX_MONSTER_AMOUNT - 1:0] squareRGB;
     logic [MAX_MONSTER_AMOUNT - 1:0] [3:0] HitEdgeCode;
-    logic signed [MAX_MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
-    logic signed [MAX_MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
+    coordinate [MAX_MONSTER_AMOUNT - 1:0] topLeftX;
+    coordinate [MAX_MONSTER_AMOUNT - 1:0] topLeftY;
     logic [MAX_MONSTER_AMOUNT - 1:0] monsterIsHit;
     logic [MAX_MONSTER_AMOUNT - 1:0] monster_deactivated;
 	logic [MAX_MONSTER_AMOUNT - 1:0] monster_exploded;

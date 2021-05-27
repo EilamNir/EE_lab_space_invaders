@@ -29,10 +29,10 @@ module asteroids(
     logic [ASTEROIDS_AMOUNT - 1:0] squareDR;
     logic [ASTEROIDS_AMOUNT - 1:0] silhouetteDR;
 	logic [ASTEROIDS_AMOUNT - 1:0] previous_silhouetteDR;
-    logic [ASTEROIDS_AMOUNT - 1:0] [7:0] squareRGB;
+    RGB [ASTEROIDS_AMOUNT - 1:0] squareRGB;
     logic [3:0] HitEdgeCode;
-    logic signed [ASTEROIDS_AMOUNT - 1:0] [10:0] topLeftX;
-    logic signed [ASTEROIDS_AMOUNT - 1:0] [10:0] topLeftY;
+    coordinate [ASTEROIDS_AMOUNT - 1:0] topLeftX;
+    coordinate [ASTEROIDS_AMOUNT - 1:0] topLeftY;
     logic [ASTEROIDS_AMOUNT - 1:0] asteroidIsHit;
     logic [ASTEROIDS_AMOUNT - 1:0] asteroids_deactivated;
     logic [ASTEROIDS_AMOUNT - 1:0] previous_asteroidIsHit;

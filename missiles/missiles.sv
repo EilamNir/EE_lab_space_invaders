@@ -26,8 +26,8 @@ module missiles(
     parameter logic signed [PIXEL_WIDTH - 1:0] Y_OFFSET = 0;
 
 
-    logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftX;
-    logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftY;
+    coordinate [SHOT_AMOUNT-1:0] topLeftX;
+    coordinate [SHOT_AMOUNT-1:0] topLeftY;
     logic [SHOT_AMOUNT-1:0] draw_requests;
     logic [SHOT_AMOUNT-1:0] missile_active;
     logic [SHOT_AMOUNT-1:0] fire_commands;

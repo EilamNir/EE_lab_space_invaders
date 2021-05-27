@@ -32,8 +32,8 @@ module boss(
     logic squareDR;
     RGB squareRGB;
     logic [3:0] HitEdgeCode;
-    logic signed [10:0] topLeftX;
-    logic signed [10:0] topLeftY;
+    coordinate topLeftX;
+    coordinate topLeftY;
     logic Boss_deactivated;
     logic shooting_pusle;
     logic boss_faded;

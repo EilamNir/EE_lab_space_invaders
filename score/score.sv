@@ -26,12 +26,12 @@ module score (
     logic [DIGIT_AMOUNT - 1:0] [3:0] score_digits;
     logic [DIGIT_AMOUNT - 1:0] [3:0] carry_pulses;
 
-    logic [DIGIT_AMOUNT - 1:0] [10:0] digit_offsetX;
-    logic [DIGIT_AMOUNT - 1:0] [10:0] digit_offsetY;
-    logic [DIGIT_AMOUNT - 1:0] [10:0] digit_offsetX_small;
-    logic [DIGIT_AMOUNT - 1:0] [10:0] digit_offsetY_small;
-    logic [DIGIT_AMOUNT - 1:0] [10:0] digit_offsetX_large;
-    logic [DIGIT_AMOUNT - 1:0] [10:0] digit_offsetY_large;
+    coordinate [DIGIT_AMOUNT - 1:0] digit_offsetX;
+    coordinate [DIGIT_AMOUNT - 1:0] digit_offsetY;
+    coordinate [DIGIT_AMOUNT - 1:0] digit_offsetX_small;
+    coordinate [DIGIT_AMOUNT - 1:0] digit_offsetY_small;
+    coordinate [DIGIT_AMOUNT - 1:0] digit_offsetX_large;
+    coordinate [DIGIT_AMOUNT - 1:0] digit_offsetY_large;
     logic [DIGIT_AMOUNT - 1:0] digits_square_draw_requests;
     logic [DIGIT_AMOUNT - 1:0] digits_square_draw_requests_small;
     logic [DIGIT_AMOUNT - 1:0] digits_square_draw_requests_large;

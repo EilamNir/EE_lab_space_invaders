@@ -36,8 +36,8 @@ module  player (
     parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 4;
 
 
-    logic signed [10:0] topLeftX;
-    logic signed [10:0] topLeftY;
+    coordinate topLeftX;
+    coordinate topLeftY;
     coordinate offsetX;
     coordinate offsetY;
     logic squareDR;
@@ -154,8 +154,8 @@ module  player (
 
     logic [LIVES_AMOUNT - 1:0] lives_square_draw_requests;
     logic [LIVES_AMOUNT - 1:0] lives_draw_requests;
-    logic [LIVES_AMOUNT - 1:0] [10:0] lives_offsetX;
-    logic [LIVES_AMOUNT - 1:0] [10:0] lives_offsetY;
+    coordinate [LIVES_AMOUNT - 1:0] lives_offsetX;
+    coordinate [LIVES_AMOUNT - 1:0] lives_offsetY;
 
     genvar i;
     generate
