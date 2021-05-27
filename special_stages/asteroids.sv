@@ -4,7 +4,7 @@ module asteroids(
     input logic resetN,
     input logic enable,
     input logic startOfFrame,
-	input logic [6:0] collision,
+	input logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision,
     input coordinate pixelX,
     input coordinate pixelY,
 
@@ -16,22 +16,12 @@ module asteroids(
 
     `include "parameters.sv"
 
-    parameter unsigned KEYCODE_WIDTH = 9;
-	parameter coordinate INITIAL_X = 33;
-	parameter coordinate INITIAL_Y = 21;
-	parameter fixed_point X_SPEED = 90;
-    parameter fixed_point Y_SPEED = 60;
-    parameter unsigned ASTEROIDS_AMOUNT_WIDTH = 3;
-    parameter logic unsigned [ASTEROIDS_AMOUNT_WIDTH-1:0] ASTEROIDS_AMOUNT = 4;
-    parameter unsigned X_SPACING = 96;
-
     coordinate [ASTEROIDS_AMOUNT - 1:0] offsetX;
     coordinate [ASTEROIDS_AMOUNT - 1:0] offsetY;
     logic [ASTEROIDS_AMOUNT - 1:0] squareDR;
     logic [ASTEROIDS_AMOUNT - 1:0] silhouetteDR;
 	logic [ASTEROIDS_AMOUNT - 1:0] previous_silhouetteDR;
-    RGB [ASTEROIDS_AMOUNT - 1:0] squareRGB;
-    logic [3:0] HitEdgeCode;
+    edge_code HitEdgeCode;
     coordinate [ASTEROIDS_AMOUNT - 1:0] topLeftX;
     coordinate [ASTEROIDS_AMOUNT - 1:0] topLeftY;
     logic [ASTEROIDS_AMOUNT - 1:0] asteroidIsHit;
@@ -42,15 +32,15 @@ module asteroids(
     generate
         for (i = 0; i < ASTEROIDS_AMOUNT; i++) begin : generate_asteroids
             asteroids_move #(
-                .X_SPEED(fixed_point'(X_SPEED - ((i>>2) * 8) + i * 2)),
-                .Y_SPEED(fixed_point'(Y_SPEED + (2'(i) & 2'b11) * 16)),
-                .INITIAL_X(coordinate'(INITIAL_X + (((i>>2) * X_SPACING) - ((2'(i) & 2'b11) * 4)))),
-                .INITIAL_Y(coordinate'(INITIAL_Y + (2'(i) & 2'b11) * 32)))
+                .X_SPEED(fixed_point'(ASTEROIDS_X_SPEED - ((i>>2) * 8) + i * 2)),
+                .Y_SPEED(fixed_point'(ASTEROIDS_Y_SPEED + (2'(i) & 2'b11) * 16)),
+                .INITIAL_X(coordinate'(ASTEROIDS_INITIAL_X + (((i>>2) * ASTEROIDS_X_SPACING) - ((2'(i) & 2'b11) * 4)))),
+                .INITIAL_Y(coordinate'(ASTEROIDS_INITIAL_Y + (2'(i) & 2'b11) * ASTEROIDS_Y_SPACING)))
             asteroids_move_inst(
                 .clk(clk),
                 .resetN(resetN),
-                .player_collision(collision[0] & previous_silhouetteDR[i]),
-                .border_collision(collision[5] & previous_silhouetteDR[i]),
+                .player_collision(collision[COLLISION_ENEMY_MISSILE] & previous_silhouetteDR[i]),
+                .border_collision(collision[COLLISION_ENEMY_FAR_BOUNDARY] & previous_silhouetteDR[i]),
                 .startOfFrame(startOfFrame & (enable)),
                 .HitEdgeCode(HitEdgeCode),
                 .asteroidIsHit(asteroidIsHit[i]),
@@ -59,8 +49,8 @@ module asteroids(
                 );
 
             square_object #(
-                .OBJECT_WIDTH_X(32),
-                .OBJECT_HEIGHT_Y(32))
+                .OBJECT_WIDTH_X(ASTEROIDS_X_SIZE),
+                .OBJECT_HEIGHT_Y(ASTEROIDS_Y_SIZE))
             square_object_inst(
                 .clk(clk),
                 .resetN(resetN),
@@ -70,8 +60,7 @@ module asteroids(
                 .topLeftY(topLeftY[i]),
                 .offsetX(offsetX[i]),
                 .offsetY(offsetY[i]),
-                .drawingRequest(squareDR[i]),
-                .RGBout(squareRGB[i])
+                .drawingRequest(squareDR[i])
                 );
 
             asteroid_silhouette asteroid_silhouette_inst(
@@ -85,7 +74,7 @@ module asteroids(
                 );
 
             delay_signal_by_frames #(
-                .DELAY_FRAMES_AMOUNT(10))
+                .DELAY_FRAMES_AMOUNT(ASTEROIDS_EXPLOSION_DELAY))
             delay_signal_by_frames_inst(
                 .clk(clk),
                 .resetN(resetN),

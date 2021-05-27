@@ -13,16 +13,14 @@
  
 					output	logic	drawingRequest, //output that the pixel should be dispalyed 
 					output	RGB RGBout,  //rgb value from the bitmap 
-					output	logic	[3:0] HitEdgeCode //one bit per edge 
+					output	edge_code HitEdgeCode //one bit per edge 
  ) ; 
  
     `include "parameters.sv"
  
-// generating the bitmap 
- 
-
+// generating the bitmap
 localparam RGB TRANSPARENT_ENCODING = 8'h00 ;// RGB value in the bitmap representing a transparent pixel  
-RGB [0:31][0:31] object_colors = {
+RGB [0:PLAYER_Y_SIZE - 1][0:PLAYER_X_SIZE - 1] object_colors = {
 	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
 	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
 	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h4a,8'h01,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
@@ -61,7 +59,7 @@ RGB [0:31][0:31] object_colors = {
 //////////--------------------------------------------------------------------------------------------------------------= 
 //hit bit map has one bit per edge:  hit_colors[3:0] =   {Left, Top, Right, Bottom}	 
 //there is one bit per edge, in the corner two bits are set  
- logic [0:3] [0:3] [3:0] hit_colors = 
+ edge_code [0:3] [0:3] hit_colors = 
 		   {16'hC446,     
 			16'h8C62,    
 			16'h8132, 

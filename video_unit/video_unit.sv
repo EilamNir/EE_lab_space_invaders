@@ -2,8 +2,8 @@ module video_unit
 (
     input logic clk,
     input logic resetN,
-    input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
-    input RGB [0:NUMBER_OF_OBJECTS - 1] obj_RGB,
+    input logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests,
+    input RGB [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] obj_RGB,
     input RGB background_RGB,
     output coordinate pixelX,
     output coordinate pixelY,
@@ -13,12 +13,9 @@ module video_unit
 
     `include "parameters.sv"
 
-    parameter unsigned NUMBER_OF_OBJECTS = 3;
-
-
     RGB RGBOut;
 
-    objects_mux #(.NUMBER_OF_OBJECTS(NUMBER_OF_OBJECTS)) objects_mux_inst (
+    objects_mux #(.NUMBER_OF_OBJECTS(VIDEO_UNIT_NUMBER_OF_OBJECTS)) objects_mux_inst (
         .clk           (clk),
         .resetN        (resetN),
         .draw_requests (draw_requests),

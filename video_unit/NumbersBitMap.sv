@@ -19,7 +19,7 @@ module NumbersBitMap (
     `include "parameters.sv"
 
     // generating a numbers bitmap
-    bit [0:9] [0:9] [0:5] number_bitmap = {
+    bit [0:9] [0:NUMBERS_Y_SIZE - 1] [0:NUMBERS_X_SIZE - 1] number_bitmap = {
         {6'b 111111,
          6'b 111111,
          6'b 110011,

@@ -6,7 +6,7 @@ module  missile_movement
     input logic startOfFrame,  // short pulse every start of frame 30Hz
     input logic shooting_pulse,
     input logic collision,
-    input logic [3:0] HitEdgeCode,
+    input edge_code HitEdgeCode,
 
     input coordinate spaceShip_X,
     input coordinate spaceShip_Y,
@@ -18,16 +18,11 @@ module  missile_movement
 
     `include "parameters.sv"
 
-    parameter fixed_point X_SPEED = 0;
-    parameter fixed_point Y_SPEED = -256;
+    parameter fixed_point X_SPEED;
+    parameter fixed_point Y_SPEED;
 
-    parameter coordinate X_OFFSET = 15;
-    parameter coordinate Y_OFFSET = 0;
-
-    const fixed_point   FIXED_POINT_MULTIPLIER  =   64;
-    // FIXED_POINT_MULTIPLIER is used to enable working with integers in high resolution so that
-    // we do all calculations with topLeftX_FixedPoint to get a resolution of 1/64 pixel in calculations,
-    // we divide at the end by FIXED_POINT_MULTIPLIER which must be 2^n, to return to the initial proportions
+    parameter coordinate X_OFFSET;
+    parameter coordinate Y_OFFSET;
 
     logic shot_fired;
     fixed_point topLeftX_FixedPoint;

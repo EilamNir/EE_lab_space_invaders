@@ -24,7 +24,7 @@ module game_controller
     output logic resetN_monst,
     output logic resetN_astero,
     output logic resetN_Boss,
-    output logic [2:0] stage_num
+    output game_stage stage_num
 );
 
     `include "parameters.sv"

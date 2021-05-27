@@ -15,16 +15,13 @@ module	square_object	(
 
     output coordinate offsetX,// offset inside bracket from top left position
     output coordinate offsetY,
-    output logic drawingRequest, // indicates pixel inside the bracket
-    output RGB RGBout //optional color output for mux
+    output logic drawingRequest // indicates pixel inside the bracket
 );
 
     `include "parameters.sv"
 
-    parameter coordinate OBJECT_WIDTH_X = 100;
-    parameter coordinate OBJECT_HEIGHT_Y = 100;
-    parameter RGB OBJECT_COLOR = 8'h5b ;
-    localparam RGB TRANSPARENT_ENCODING = 8'hFF ;// bitmap  representation for a transparent pixel
+    parameter coordinate OBJECT_WIDTH_X;
+    parameter coordinate OBJECT_HEIGHT_Y;
 
     coordinate rightX ; //coordinates of the sides
     coordinate bottomY ;
@@ -43,19 +40,16 @@ module	square_object	(
 	always_ff@(posedge clk or negedge resetN)
 	begin
 		if(!resetN) begin
-			RGBout			<=	8'b0;
 			drawingRequest	<=	1'b0;
 		end	else begin
 		
 			// DEFUALT outputs
-				RGBout <= TRANSPARENT_ENCODING ; // so it will not be displayed
 				drawingRequest <= 1'b0 ;// transparent color
 				offsetX	<= 0; //no offset
 				offsetY	<= 0; //no offset
 	
 			if (insideBracket) // test if it is inside the rectangle
 			begin
-				RGBout  <= OBJECT_COLOR ;	// colors table
 				drawingRequest <= 1'b1 ;
 				offsetX	<= (pixelX - topLeftX); //calculate relative offsets from top left corner allways a positive number
 				offsetY	<= (pixelY - topLeftY);

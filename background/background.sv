@@ -25,38 +25,24 @@ module background
 
     `include "parameters.sv"
 
-    parameter RGB MOVEMENT_ZONE_END_COLOR = 8'b10000000;
-    parameter RGB STATISTICS_ZONE_COLOR = 8'b00000010;
-    parameter RGB BACKGROUND_COLOR = 8'b00000000;
-    parameter RGB GAME_WON_COLOR = 8'hFF;
-    parameter RGB GAME_OVER_COLOR = 8'b10000000;
-    parameter unsigned LETTER_SIZE_MULTIPLIER = 3;
-
-    const coordinate xFrameSize = 639;
-    const coordinate yFrameSize = 479;
-    const coordinate movement_zone_offset = 20;
-    const coordinate statistics_zone_offset = 20;
-    const coordinate upperBorder = 20;
-    const coordinate player_zone_y = 310;
-
     always_ff@(posedge clk or negedge resetN) begin
         if(!resetN) begin
-            background_RGB <= BACKGROUND_COLOR;
+            background_RGB <= BACKGROUND_BACKGROUND_COLOR;
         end else begin
             // Default to printing the background color
-            background_RGB <= BACKGROUND_COLOR;
+            background_RGB <= BACKGROUND_BACKGROUND_COLOR;
             bordersDR <= 2'b0;
             // Check if we need to print the movement zone end
-            if ((pixelX == movement_zone_offset) ||
-                (pixelX == (xFrameSize - movement_zone_offset)) ||
-                (pixelY == (yFrameSize - statistics_zone_offset))||
-                (pixelY == (upperBorder))) begin
-                background_RGB <= MOVEMENT_ZONE_END_COLOR;
+            if ((pixelX == BACKGROUND_MOVEMENT_ZONE_OFFSET) ||
+                (pixelX == (FRAMESIZE_X - BACKGROUND_MOVEMENT_ZONE_OFFSET)) ||
+                (pixelY == (FRAMESIZE_Y - BACKGROUND_STATISTICS_ZONE_OFFSET))||
+                (pixelY == (BACKGROUND_UPPERBORDER))) begin
+                background_RGB <= BACKGROUND_MOVEMENT_ZONE_END_COLOR;
                 bordersDR[0] <= 1'b1;
             end
             // Check if we need to print the player zone end
-            if (pixelY == player_zone_y ) begin
-                background_RGB <= STATISTICS_ZONE_COLOR;
+            if (pixelY == BACKGROUND_PLAYER_ZONE_Y ) begin
+                background_RGB <= BACKGROUND_STATISTICS_ZONE_COLOR;
                 bordersDR[1] <= 1'b1;
             end
         end
@@ -65,13 +51,16 @@ module background
     logic square_DR;
     coordinate offsetX;
     coordinate offsetY;
-    square_object #(.OBJECT_WIDTH_X(64 << LETTER_SIZE_MULTIPLIER), .OBJECT_HEIGHT_Y(16 << LETTER_SIZE_MULTIPLIER)) square_object_end_game_inst(
+    square_object #(
+        .OBJECT_WIDTH_X(BACKGROUND_LETTER_X_SIZE << BACKGROUND_LETTER_SIZE_MULTIPLIER),
+        .OBJECT_HEIGHT_Y(BACKGROUND_LETTER_Y_SIZE << BACKGROUND_LETTER_SIZE_MULTIPLIER))
+    square_object_end_game_inst(
         .clk            (clk),
         .resetN         (resetN),
         .pixelX         (pixelX),
         .pixelY         (pixelY),
-        .topLeftX       (63),
-        .topLeftY       (159),
+        .topLeftX       (BACKGROUND_LETTER_TOPLEFT_X),
+        .topLeftY       (BACKGROUND_LETTER_TOPLEFT_Y),
         .offsetX        (offsetX),
         .offsetY        (offsetY),
         .drawingRequest (square_DR)
@@ -80,13 +69,13 @@ module background
     end_gameBitMap end_gameBitMap_inst(
         .clk(clk),
         .resetN(resetN),
-        .offsetX(offsetX >> LETTER_SIZE_MULTIPLIER),
-        .offsetY(offsetY >> LETTER_SIZE_MULTIPLIER),
+        .offsetX(offsetX >> BACKGROUND_LETTER_SIZE_MULTIPLIER),
+        .offsetY(offsetY >> BACKGROUND_LETTER_SIZE_MULTIPLIER),
         .InsideRectangle(game_over & square_DR),
         .game_won(game_won),
         .drawingRequest(end_gameDR)
     );
 
-    assign end_game_RGB = game_won ? GAME_WON_COLOR : GAME_OVER_COLOR;
+    assign end_game_RGB = game_won ? BACKGROUND_GAME_WON_COLOR : BACKGROUND_GAME_OVER_COLOR;
 
 endmodule

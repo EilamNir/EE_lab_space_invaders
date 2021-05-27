@@ -13,8 +13,8 @@ module check_overlap(
 
     `include "parameters.sv"
 
-    parameter unsigned OBJECT_AMOUNT_WIDTH = 4;
-    parameter logic unsigned [OBJECT_AMOUNT_WIDTH - 1:0] OBJECT_AMOUNT = 3;
+    parameter unsigned OBJECT_AMOUNT_WIDTH;
+    parameter logic unsigned [OBJECT_AMOUNT_WIDTH - 1:0] OBJECT_AMOUNT;
 
     logic [OBJECT_AMOUNT_WIDTH - 1:0] last_object_index;
 
