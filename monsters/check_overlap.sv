@@ -10,6 +10,9 @@ module check_overlap(
     output logic any_DR,
     output logic [OBJECT_AMOUNT_WIDTH - 1:0] first_object_index
 );
+
+    `include "parameters.sv"
+
     parameter unsigned OBJECT_AMOUNT_WIDTH = 4;
     parameter logic unsigned [OBJECT_AMOUNT_WIDTH - 1:0] OBJECT_AMOUNT = 3;
 

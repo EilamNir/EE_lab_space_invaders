@@ -13,6 +13,7 @@ module bitrec
     output  logic qualifier_out
   ) ;
 
+    `include "parameters.sv"
 
  enum  logic [2:0] {IDLE_ST, // initial state
                     LOW_CLK_ST, // after clock low

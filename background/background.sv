@@ -17,19 +17,20 @@ module background
     input logic game_won,
     input logic game_over,
 
-    output logic [RGB_WIDTH - 1:0] background_RGB,
+    output RGB background_RGB,
     output logic [0:1] bordersDR,
-    output logic [RGB_WIDTH - 1:0] end_game_RGB,
+    output RGB end_game_RGB,
     output logic end_gameDR
 );
 
-    parameter unsigned RGB_WIDTH = 8;
+    `include "parameters.sv"
+
     parameter unsigned PIXEL_WIDTH = 11;
-    parameter logic [RGB_WIDTH - 1:0] MOVEMENT_ZONE_END_COLOR = 8'b10000000;
-    parameter logic [RGB_WIDTH - 1:0] STATISTICS_ZONE_COLOR = 8'b00000010;
-    parameter logic [RGB_WIDTH - 1:0] BACKGROUND_COLOR = 8'b00000000;
-    parameter logic [7:0] GAME_WON_COLOR = 8'hFF;
-    parameter logic [7:0] GAME_OVER_COLOR = 8'b10000000;
+    parameter RGB MOVEMENT_ZONE_END_COLOR = 8'b10000000;
+    parameter RGB STATISTICS_ZONE_COLOR = 8'b00000010;
+    parameter RGB BACKGROUND_COLOR = 8'b00000000;
+    parameter RGB GAME_WON_COLOR = 8'hFF;
+    parameter RGB GAME_OVER_COLOR = 8'b10000000;
     parameter unsigned LETTER_SIZE_MULTIPLIER = 3;
 
     const int xFrameSize = 639;
@@ -63,8 +64,8 @@ module background
     end
 
     logic square_DR;
-    logic signed [10:0] offsetX;
-    logic signed [10:0] offsetY;
+    coordinate offsetX;
+    coordinate offsetY;
     square_object #(.OBJECT_WIDTH_X(64 << LETTER_SIZE_MULTIPLIER), .OBJECT_HEIGHT_Y(16 << LETTER_SIZE_MULTIPLIER)) square_object_end_game_inst(
         .clk            (clk),
         .resetN         (resetN),

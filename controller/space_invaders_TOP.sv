@@ -16,10 +16,11 @@ module space_invaders_TOP
     inout [AUDIO_WIDTH - 1:0] AUDOUT
 );
 
+    `include "parameters.sv"
+
     parameter unsigned VGA_WIDTH = 29;
     parameter unsigned AUDIO_WIDTH = 8;
     parameter unsigned HEX_WIDTH = 7;
-    parameter unsigned RGB_WIDTH = 8;
     parameter unsigned PIXEL_WIDTH = 11;
     parameter unsigned KEYCODE_WIDTH = 9;
 
@@ -30,21 +31,21 @@ module space_invaders_TOP
     logic startOfFrame;
     logic [PIXEL_WIDTH - 1:0] pixelX;
     logic [PIXEL_WIDTH - 1:0] pixelY;
-    logic [RGB_WIDTH - 1:0] background_RGB;
+    RGB background_RGB;
 
 
-    logic [RGB_WIDTH - 1:0] playerRGB;
-    logic [RGB_WIDTH - 1:0] livesRGB;
-    logic [RGB_WIDTH - 1:0] scoreRGB;
-    logic [RGB_WIDTH - 1:0] player_missleRGB;
-    logic [RGB_WIDTH - 1:0] monster_missleRGB;
-    logic [RGB_WIDTH - 1:0] monsterRGB;
-    logic [RGB_WIDTH - 1:0] asteroidsRGB;
-    logic [RGB_WIDTH - 1:0] BossRGB;
-	logic [RGB_WIDTH - 1:0] Boss_missleRGB;
-	logic [RGB_WIDTH - 1:0] end_game_RGB;
+    RGB playerRGB;
+    RGB livesRGB;
+    RGB scoreRGB;
+    RGB player_missleRGB;
+    RGB monster_missleRGB;
+    RGB monsterRGB;
+    RGB asteroidsRGB;
+    RGB BossRGB;
+	RGB Boss_missleRGB;
+	RGB end_game_RGB;
 	
-    logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB;
+    RGB [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] obj_RGB;
     assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, end_game_RGB};
     logic player_missleDR;
     logic monster_missleDR;

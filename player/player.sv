@@ -7,21 +7,24 @@ module  player (
     input logic make,
     input logic brake,
     input logic startOfFrame,
-    input logic [10:0]pixelX,
-    input logic [10:0]pixelY,
+    input coordinate pixelX,
+    input coordinate pixelY,
     input logic [6:0] collision,
 
     output logic playerDR,
-    output logic [RGB_WIDTH - 1:0] playerRGB,
+    output RGB playerRGB,
 
     output logic missleDR,
-    output logic [RGB_WIDTH - 1:0] missleRGB,
+    output RGB missleRGB,
 
     output logic livesDR,
-    output logic [RGB_WIDTH - 1:0] livesRGB,
+    output RGB livesRGB,
 
     output logic player_dead
 );
+
+    `include "parameters.sv"
+
     parameter UP    = 9'h06C; // digit 7
     parameter DOWN  = 9'h075; // digit 8
     parameter RIGHT = 9'h14A; // key '/'
@@ -29,20 +32,19 @@ module  player (
     parameter STR_SHOT_KEY = 9'h15A; // enter key
     parameter unsigned KEYCODE_WIDTH = 9;
 
-    parameter unsigned RGB_WIDTH = 8;
     parameter unsigned LIVES_AMOUNT_WIDTH = 3;
     parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 4;
 
 
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
-    logic [10:0] offsetX;
-    logic [10:0] offsetY;
+    coordinate offsetX;
+    coordinate offsetY;
     logic squareDR;
-    logic [RGB_WIDTH - 1:0] squareRGB;
+    RGB squareRGB;
     logic [3:0] HitEdgeCode;
     logic shooting_pusle;
-    logic [RGB_WIDTH - 1:0] bitmapRGB;
+    RGB bitmapRGB;
     logic [LIVES_AMOUNT_WIDTH - 1:0] remaining_lives;
     logic player_faded;
     logic player_damaged;
@@ -148,7 +150,7 @@ module  player (
         .player_dead      (player_dead)
         );
 
-    assign playerRGB = RGB_WIDTH'((player_faded == 1'b1) ? RGB_WIDTH'('b0) : bitmapRGB) ;
+    assign playerRGB = RGB'((player_faded == 1'b1) ? RGB'('b0) : bitmapRGB) ;
 
     logic [LIVES_AMOUNT - 1:0] lives_square_draw_requests;
     logic [LIVES_AMOUNT - 1:0] lives_draw_requests;
@@ -176,8 +178,8 @@ module  player (
 
     // Decide on which square object to pass into the bitmap
     logic chosen_lives_square_DR;
-    logic [10:0] chosen_lives_offsetX;
-    logic [10:0] chosen_lives_offsetY;
+    coordinate chosen_lives_offsetX;
+    coordinate chosen_lives_offsetY;
     always_comb begin
         chosen_lives_square_DR = 1'b0;
         chosen_lives_offsetX = 11'b0;

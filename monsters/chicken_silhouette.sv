@@ -2,8 +2,8 @@
 module chicken_silhouette (
     input logic clk,
     input logic resetN,
-    input logic [10:0] offsetX,// offset from top left position
-    input logic [10:0] offsetY,
+    input coordinate offsetX,// offset from top left position
+    input coordinate offsetY,
     input logic InsideRectangle, //input that the pixel is within a bracket
     input logic monsterIsHit,
 
@@ -11,6 +11,8 @@ module chicken_silhouette (
     output logic [3:0] HitEdgeCode //one bit per edge
 
 );
+
+    `include "parameters.sv"
 
     // generating the bitmap
     logic[0:31][0:31] monster_colors = {

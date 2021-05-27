@@ -2,16 +2,17 @@ module  objects_mux (
     input logic clk,
     input logic resetN,
     input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
-    input logic [0:NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB,
-    input logic [RGB_WIDTH - 1:0] background_RGB,
-    output logic [RGB_WIDTH - 1:0] RGBOut
+    input RGB [0:NUMBER_OF_OBJECTS - 1] obj_RGB,
+    input RGB background_RGB,
+    output RGB RGBOut
 );
+
+    `include "parameters.sv"
 
     // Note: This parameter is used in a for loop, that is unrolled at compilation.
     // If this parameter ever gets too large, it may take a lot space, and we might
     // want to move to some other way to check for the first object to draw.
     parameter unsigned NUMBER_OF_OBJECTS = 5;
-    parameter unsigned RGB_WIDTH = 8;
 
     int first_draw_request_index;
     logic any_draw_request;
@@ -34,7 +35,7 @@ module  objects_mux (
     begin
         if(!resetN) begin
             // Reset RGB to zeros on reset
-            RGBOut  <= RGB_WIDTH'('b0);
+            RGBOut  <= RGB'('b0);
         end
 
         else begin

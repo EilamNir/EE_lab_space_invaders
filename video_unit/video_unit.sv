@@ -3,20 +3,22 @@ module video_unit
     input logic clk,
     input logic resetN,
     input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
-    input logic [0:NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB,
-    input logic [RGB_WIDTH - 1:0] background_RGB,
+    input RGB [0:NUMBER_OF_OBJECTS - 1] obj_RGB,
+    input RGB background_RGB,
     output logic [PIXEL_WIDTH - 1:0] pixelX,
     output logic [PIXEL_WIDTH - 1:0] pixelY,
     output logic startOfFrame,
     output logic [VGA_WIDTH - 1:0] oVGA
 );
+
+    `include "parameters.sv"
+
     parameter unsigned NUMBER_OF_OBJECTS = 3;
-    parameter unsigned RGB_WIDTH = 8;
     parameter unsigned PIXEL_WIDTH = 11;
     parameter unsigned VGA_WIDTH = 29;
 
 
-    logic [RGB_WIDTH - 1:0] RGBOut;
+    RGB RGBOut;
 
     objects_mux #(.NUMBER_OF_OBJECTS(NUMBER_OF_OBJECTS)) objects_mux_inst (
         .clk           (clk),

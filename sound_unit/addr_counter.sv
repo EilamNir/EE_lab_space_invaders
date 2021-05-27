@@ -15,6 +15,7 @@ module	addr_counter	 #(
 
 		);
 
+    `include "parameters.sv"
 
 
 logic [COUNT_SIZE-1:0] count_limit = {COUNT_SIZE{1'b1}};

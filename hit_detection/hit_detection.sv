@@ -9,6 +9,8 @@ module hit_detection(
     output logic [COLLISION_WIDTH - 1:0] HitPulse 
 	);
 
+	`include "parameters.sv"
+
     parameter unsigned NUMBER_OF_OBJECTS = 7;
     parameter unsigned COLLISION_WIDTH = 7;
 

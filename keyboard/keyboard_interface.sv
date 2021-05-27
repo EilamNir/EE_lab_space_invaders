@@ -9,6 +9,9 @@ module keyboard_interface
     output logic make,
     output logic brake
 );
+
+    `include "parameters.sv"
+
     logic kbd_clk;
     logic[7:0] d_bitrec;
     logic enb_byterec;

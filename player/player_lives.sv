@@ -10,6 +10,9 @@ module player_lives(
     output logic player_damaged,
     output logic player_dead
 );
+
+    `include "parameters.sv"
+
     parameter unsigned LIVES_AMOUNT_WIDTH = 3;
     parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 4;
 

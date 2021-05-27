@@ -5,16 +5,18 @@ module boss(
     input logic enable,
     input logic startOfFrame,
 	input logic [6:0] collision,
-    input logic [10:0]pixelX,
-    input logic [10:0]pixelY,
+    input coordinate pixelX,
+    input coordinate pixelY,
 
     output logic BossDR,
-    output logic [7:0] BossRGB,
+    output RGB BossRGB,
     output logic boss_dead,
 
     output logic missleDR,
-    output logic [7:0] missleRGB
+    output RGB missleRGB
 );
+
+    `include "parameters.sv"
 
     parameter unsigned KEYCODE_WIDTH = 9;
 	parameter int INITIAL_X = 287;
@@ -24,12 +26,11 @@ module boss(
     parameter int BOSS_MISSILE_AMOUNT = 8;
 	parameter unsigned LIVES_AMOUNT_WIDTH = 5;
     parameter logic unsigned [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 3;
-    parameter unsigned RGB_WIDTH = 8;
 
-    logic [10:0] offsetX;
-    logic [10:0] offsetY;
+    coordinate offsetX;
+    coordinate offsetY;
     logic squareDR;
-    logic [7:0] squareRGB;
+    RGB squareRGB;
     logic [3:0] HitEdgeCode;
     logic signed [10:0] topLeftX;
     logic signed [10:0] topLeftY;
@@ -37,7 +38,7 @@ module boss(
     logic shooting_pusle;
     logic boss_faded;
     logic boss_damaged;
-	logic [RGB_WIDTH - 1:0] bitmapRGB;
+	RGB bitmapRGB;
     logic random_axis;
 
     logic [BOSS_MISSILE_AMOUNT-1:0] missiles_draw_requests;
@@ -128,7 +129,7 @@ module boss(
         .random_bit(random_axis)
         );
 
-	assign BossRGB = RGB_WIDTH'((boss_faded == 1'b1) ? RGB_WIDTH'('b0) : bitmapRGB) ;
+	assign BossRGB = RGB'((boss_faded == 1'b1) ? RGB'('b0) : bitmapRGB) ;
     assign missleRGB = 8'hD0;
     assign missleDR = (missiles_draw_requests != 0);
 

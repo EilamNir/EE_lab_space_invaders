@@ -19,6 +19,8 @@ module	prescaler	(
 
 		);
 
+    `include "parameters.sv"
+
 int	counter;
 
 

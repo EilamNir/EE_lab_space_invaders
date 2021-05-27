@@ -6,18 +6,20 @@ module monsters(
     input logic startOfFrame,
 	input logic [6:0] collision,
 	input logic [2:0] stage_num,
-    input logic [10:0]pixelX,
-    input logic [10:0]pixelY,
+    input coordinate pixelX,
+    input coordinate pixelY,
 
     output logic monsterDR,
-    output logic [7:0] monsterRGB,
+    output RGB monsterRGB,
 
     output logic missleDR,
-    output logic [7:0] missleRGB,
+    output RGB missleRGB,
 
     output logic monster_died_pulse,
     output logic all_monsters_dead
 );
+
+    `include "parameters.sv"
 
     parameter unsigned KEYCODE_WIDTH = 9;
 	parameter int INITIAL_X = 100;
@@ -31,11 +33,11 @@ module monsters(
 	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
 
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
-    parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
+    parameter unsigned X_SPACING = 128;
 
 
-    logic [MAX_MONSTER_AMOUNT - 1:0] [10:0] offsetX;
-    logic [MAX_MONSTER_AMOUNT - 1:0] [10:0] offsetY;
+    coordinate [MAX_MONSTER_AMOUNT - 1:0] offsetX;
+    coordinate [MAX_MONSTER_AMOUNT - 1:0] offsetY;
     logic [MAX_MONSTER_AMOUNT - 1:0] squareDR;
     logic [MAX_MONSTER_AMOUNT - 1:0] silhouetteDR;
     logic [MAX_MONSTER_AMOUNT - 1:0] previousDR;
@@ -113,7 +115,7 @@ module monsters(
                 );
 			assign monster_deactivated[i] = monster_exploded[i] | (i >= monster_amount);
 
-            shooting_cooldown #(.SHOOTING_COOLDOWN(40 + ((2'(i) & 2'b11) * 2) + (2 * i))) shooting_cooldown_inst(
+            shooting_cooldown #(.SHOOTING_COOLDOWN(8'(40 + ((2'(i) & 2'b11) * 2) + (2 * i)))) shooting_cooldown_inst(
                 .clk           (clk),
                 .resetN        (resetN),
                 .startOfFrame  (startOfFrame & enable & (i < monster_amount)),
@@ -148,8 +150,8 @@ module monsters(
 
     // Deal with multiple monsters in the same pixel
     logic chosen_monster_DR;
-    logic [10:0] chosen_offsetX;
-    logic [10:0] chosen_offsetY;
+    coordinate chosen_offsetX;
+    coordinate chosen_offsetY;
     logic chosen_monster_is_hit;
     logic [MONSTER_AMOUNT_WIDTH - 1:0] chosen_monster_index;
 

@@ -13,6 +13,7 @@ module byterec
     output logic qualifier_out
   ) ;
 
+    `include "parameters.sv"
 
      enum  logic [3:0] { idle_ST     ,   // initial state
                    sample_nor_ST     ,   // sample out reg of normal scan

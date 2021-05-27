@@ -18,6 +18,8 @@ module stage_controller
 	output logic [2:0] stage_num 
 );
 
+	`include "parameters.sv"
+
 	enum  logic [2:0] {INIT, STAGE1, STAGE2, STAGE3, STAGE4, END_GAME}  next_gameStage, pres_gameStage; //Game stages manager
 
 always_ff@(posedge clk or negedge resetN)	

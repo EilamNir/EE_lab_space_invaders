@@ -15,6 +15,9 @@ module  missile_movement
     output logic signed [PIXEL_WIDTH - 1:0]  topLeftY,  // can be negative , if the object is partly outside
     output logic missile_active
 );
+
+    `include "parameters.sv"
+
     parameter int X_SPEED = 0;
     parameter int Y_SPEED = -256;
     parameter unsigned PIXEL_WIDTH = 11;

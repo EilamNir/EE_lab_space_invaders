@@ -8,13 +8,16 @@
 module NumbersBitMap (
     input logic clk,
     input logic resetN,
-    input logic [10:0] offsetX, // offset from top left position
-    input logic [10:0] offsetY,
+    input coordinate offsetX, // offset from top left position
+    input coordinate offsetY,
     input logic InsideRectangle, //input that the pixel is within a bracket
     input logic [3:0] digit, // digit to display
 
     output logic drawingRequest //output that the pixel should be dispalyed
 );
+
+    `include "parameters.sv"
+
     // generating a numbers bitmap
     bit [0:9] [0:9] [0:5] number_bitmap = {
         {6'b 111111,

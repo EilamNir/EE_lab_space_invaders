@@ -5,14 +5,16 @@ module asteroids(
     input logic enable,
     input logic startOfFrame,
 	input logic [6:0] collision,
-    input logic [10:0]pixelX,
-    input logic [10:0]pixelY,
+    input coordinate pixelX,
+    input coordinate pixelY,
 
     output logic asteroidsDR,
 	output logic asteroid_exploded_pulse,
 	output logic all_asteroids_destroied,
-    output logic [7:0] asteroidsRGB
+    output RGB asteroidsRGB
 );
+
+    `include "parameters.sv"
 
     parameter unsigned KEYCODE_WIDTH = 9;
 	parameter int INITIAL_X = 33;
@@ -20,10 +22,10 @@ module asteroids(
 	parameter int X_SPEED = 90;
     parameter int Y_SPEED = 60;
     parameter unsigned ASTEROIDS_AMOUNT = 4;
-    parameter unsigned X_SPACING = 96; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
+    parameter unsigned X_SPACING = 96;
 
-    logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetX;
-    logic [ASTEROIDS_AMOUNT - 1:0] [10:0] offsetY;
+    coordinate [ASTEROIDS_AMOUNT - 1:0] offsetX;
+    coordinate [ASTEROIDS_AMOUNT - 1:0] offsetY;
     logic [ASTEROIDS_AMOUNT - 1:0] squareDR;
     logic [ASTEROIDS_AMOUNT - 1:0] silhouetteDR;
 	logic [ASTEROIDS_AMOUNT - 1:0] previous_silhouetteDR;
@@ -38,9 +40,13 @@ module asteroids(
     genvar i;
     generate
         for (i = 0; i < ASTEROIDS_AMOUNT; i++) begin : generate_asteroids
-            asteroids_move #(.X_SPEED(X_SPEED - ((i>>2) * 8) + i * 2), .Y_SPEED(Y_SPEED + (2'(i) & 2'b11) * 16), 
-			.INITIAL_X(INITIAL_X + ((i>>2) * X_SPACING - (2'(i) & 2'b11) * 4)), .INITIAL_Y(INITIAL_Y + (2'(i) & 2'b11) * 32)) asteroids_move_inst(
-				.clk(clk),
+            asteroids_move #(
+                .X_SPEED(X_SPEED - ((i>>2) * 8) + i * 2),
+                .Y_SPEED(Y_SPEED + (2'(i) & 2'b11) * 16), 
+                .INITIAL_X(INITIAL_X + (((i>>2) * X_SPACING) - ((2'(i) & 2'b11) * 4))),
+                .INITIAL_Y(INITIAL_Y + (2'(i) & 2'b11) * 32))
+            asteroids_move_inst(
+                .clk(clk),
                 .resetN(resetN),
                 .player_collision(collision[0] & previous_silhouetteDR[i]),
                 .border_collision(collision[5] & previous_silhouetteDR[i]),
@@ -87,8 +93,8 @@ module asteroids(
 
     // Decide on which square object to pass into the bitmap
     logic chosen_asteroid_DR;
-    logic [10:0] chosen_offsetX;
-    logic [10:0] chosen_offsetY;
+    coordinate chosen_offsetX;
+    coordinate chosen_offsetY;
     logic chosen_asteroids_is_hit;
     always_comb begin
         chosen_asteroid_DR = 1'b0;

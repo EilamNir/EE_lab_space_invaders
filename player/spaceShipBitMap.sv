@@ -7,20 +7,21 @@
 
 					input	logic	clk, 
 					input	logic	resetN, 
-					input logic	[10:0] offsetX,// offset from top left  position 
-					input logic	[10:0] offsetY, 
+					input coordinate offsetX,// offset from top left  position 
+					input coordinate offsetY, 
 					input	logic	InsideRectangle, //input that the pixel is within a bracket 
  
 					output	logic	drawingRequest, //output that the pixel should be dispalyed 
-					output	logic	[7:0] RGBout,  //rgb value from the bitmap 
+					output	RGB RGBout,  //rgb value from the bitmap 
 					output	logic	[3:0] HitEdgeCode //one bit per edge 
  ) ; 
  
+    `include "parameters.sv"
  
 // generating the bitmap 
  
 
-localparam logic [7:0] TRANSPARENT_ENCODING = 8'h00 ;// RGB value in the bitmap representing a transparent pixel  
+localparam RGB TRANSPARENT_ENCODING = 8'h00 ;// RGB value in the bitmap representing a transparent pixel  
 logic[0:31][0:31][7:0] object_colors = {
 	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
 	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},

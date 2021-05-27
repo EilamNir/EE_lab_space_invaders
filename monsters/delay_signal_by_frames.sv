@@ -7,6 +7,9 @@ module delay_signal_by_frames(
 
     output logic output_signal
 );
+
+    `include "parameters.sv"
+
     parameter unsigned FRAMES_DELAY_WIDTH = 5;
     parameter logic [FRAMES_DELAY_WIDTH - 1:0] DELAY_FRAMES_AMOUNT = 5;
 

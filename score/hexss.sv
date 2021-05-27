@@ -9,6 +9,8 @@ module hexss
     output logic [6:0] ss   // Output for 7Seg display
     );
 
+    `include "parameters.sv"
+
     // Declaration of two-dimensional array that holds the 7seg codes
     logic [0:15] [6:0] SevenSeg = 
     {

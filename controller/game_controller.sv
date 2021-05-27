@@ -27,6 +27,8 @@ module game_controller
     output logic [2:0] stage_num
 );
 
+    `include "parameters.sv"
+
     enum  logic [2:0] {RESET, RUN, PAUSE, GAME_OVER, STAGE_WON}  next_st, pres_st; //state machine
     logic run_enable_monst;
     logic pause_enable_monst;

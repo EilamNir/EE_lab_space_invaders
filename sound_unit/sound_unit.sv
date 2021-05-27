@@ -15,6 +15,8 @@ module sound_unit
     output logic [7:0] AUDOUT
 );
 
+    `include "parameters.sv"
+
     logic [3:0] sound_signal;
     logic [9:0] preScaleValue;
     logic slowEnPulse;

@@ -14,6 +14,9 @@ module  monsters_move (
     output logic signed [PIXEL_WIDTH - 1:0] topLeftY  // can be negative , if the object is partliy outside
 
 );
+
+    `include "parameters.sv"
+
     parameter int INITIAL_X = 300;
     parameter int INITIAL_Y = 200;
 

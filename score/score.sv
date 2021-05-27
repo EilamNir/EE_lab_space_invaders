@@ -2,8 +2,8 @@
 module score (
     input logic clk,
     input logic resetN,
-    input logic [10:0]pixelX,
-    input logic [10:0]pixelY,
+    input coordinate pixelX,
+    input coordinate pixelY,
     input logic monster_died_pulse,
 	input logic boss_died_pulse,
 	input logic asteroid_exploded_pulse,
@@ -11,9 +11,12 @@ module score (
     input logic game_over,
 
     output logic scoreDR,
-    output logic [7:0] scoreRGB,
+    output RGB scoreRGB,
     output logic [DIGIT_AMOUNT - 1:0] [6:0] ss // Output for 7Seg display
 );
+
+    `include "parameters.sv"
+
     parameter unsigned MAX_SCORE_PER_DIGIT = 9;
     parameter unsigned DIGIT_AMOUNT = 3;
     parameter unsigned DIGIT_SIZE_MULTIPLIER = 3;
@@ -96,8 +99,8 @@ module score (
 
     // Decide on which square object to pass into the bitmap
     logic chosen_digit_square_DR;
-    logic [10:0] chosen_digit_offsetX;
-    logic [10:0] chosen_digit_offsetY;
+    coordinate chosen_digit_offsetX;
+    coordinate chosen_digit_offsetY;
     logic [3:0] chosen_digit_score;
     always_comb begin
         chosen_digit_square_DR = 1'b0;

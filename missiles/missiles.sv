@@ -5,18 +5,18 @@ module missiles(
     input logic shooting_pusle,
     input logic startOfFrame,
 	input logic collision,
-    input logic [10:0] pixelX,
-    input logic [10:0] pixelY,
-    input logic [10:0] spaceShip_X,
-    input logic [10:0] spaceShip_Y,
+    input coordinate pixelX,
+    input coordinate pixelY,
+    input coordinate spaceShip_X,
+    input coordinate spaceShip_Y,
 
     output logic missleDR,
-    output logic [7:0] missleRGB
+    output RGB missleRGB
 );
 
+    `include "parameters.sv"
 
-    parameter unsigned RGB_WIDTH = 8;
-    parameter [RGB_WIDTH - 1:0] MISSILE_COLOR = 8'h1F;
+    parameter RGB MISSILE_COLOR = 8'h1F;
     parameter unsigned SHOT_AMOUNT = 7;
     parameter unsigned PIXEL_WIDTH = 11;
 

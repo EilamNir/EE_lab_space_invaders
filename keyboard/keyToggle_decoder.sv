@@ -17,6 +17,7 @@ module keyToggle_decoder
  	 
   ) ;
 
+    `include "parameters.sv"
 
     parameter KEY_VALUE = 9'h029 ; // space is the default 
     

@@ -11,7 +11,7 @@
 module  VGA_Controller
 (
     //  Host Side
-    input logic [7:0]       RGBIn,
+    input RGB RGBIn,
     output logic [PIXEL_WIDTH - 1:0] pixelX,
     output logic [PIXEL_WIDTH - 1:0] pixelY,
     output logic startOfFrame,
@@ -21,6 +21,8 @@ module  VGA_Controller
     input logic clk,
     input logic resetN
 );
+
+    `include "parameters.sv"
 
     //  Internal Registers
     logic [PIXEL_WIDTH - 1:0] H_Cont;

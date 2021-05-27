@@ -7,9 +7,11 @@ module up_counter (
     output logic [DIGIT_WIDTH - 1:0] digit_score,
     output logic carry_pulse
 );
+
+    `include "parameters.sv"
+
     parameter unsigned DIGIT_WIDTH = 4;
     parameter logic [DIGIT_WIDTH - 1:0] MAX_SCORE_PER_DIGIT = 9;
-
 
 
     always_ff@(posedge clk or negedge resetN)
