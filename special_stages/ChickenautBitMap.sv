@@ -7,21 +7,22 @@
 
 					input	logic	clk, 
 					input	logic	resetN, 
-					input logic	[10:0] offsetX,// offset from top left  position 
-					input logic	[10:0] offsetY, 
+					input coordinate offsetX,// offset from top left  position 
+					input coordinate offsetY, 
 					input	logic	InsideRectangle, //input that the pixel is within a bracket 
  
 					output	logic	drawingRequest, //output that the pixel should be dispalyed 
-					output	logic	[7:0] RGBout,  //rgb value from the bitmap 
-					output	logic	[3:0] HitEdgeCode //one bit per edge 
+					output	RGB RGBout,  //rgb value from the bitmap 
+					output	edge_code HitEdgeCode //one bit per edge 
  ) ; 
- 
+
+    `include "parameters.sv" 
  
 // generating the bitmap 
  
 
-localparam logic [7:0] TRANSPARENT_ENCODING = 8'h00 ;// RGB value in the bitmap representing a transparent pixel  
-logic[0:63][0:63][7:0] object_colors = {
+localparam RGB TRANSPARENT_ENCODING = 8'h00 ;// RGB value in the bitmap representing a transparent pixel  
+RGB [0:BOSS_Y_SIZE - 1][0:BOSS_X_SIZE - 1] object_colors = {
 	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
 	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h02,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
 	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h04,8'h02,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
@@ -92,7 +93,7 @@ logic[0:63][0:63][7:0] object_colors = {
 //////////--------------------------------------------------------------------------------------------------------------= 
 //hit bit map has one bit per edge:  hit_colors[3:0] =   {Left, Top, Right, Bottom}	 
 //there is one bit per edge, in the corner two bits are set  
- logic [0:7] [0:7] [3:0] hit_colors =
+ edge_code [0:7] [0:7] hit_colors =
 		   {32'hC4444446,
 			32'h8CCC6662,
 			32'h8CCC6662,

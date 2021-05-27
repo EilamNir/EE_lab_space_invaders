@@ -7,12 +7,13 @@ module byterec
     input logic resetN,
     input logic din_new,
     input logic [7:0] din,
-    output logic [8:0]  keyCode,
+    output keycode  keyCode,
     output logic make,
     output logic brakk,
     output logic qualifier_out
   ) ;
 
+    `include "parameters.sv"
 
      enum  logic [3:0] { idle_ST     ,   // initial state
                    sample_nor_ST     ,   // sample out reg of normal scan

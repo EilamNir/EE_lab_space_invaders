@@ -12,6 +12,8 @@ module  sound_mux (
     output logic enable_sound
 );
 
+    `include "parameters.sv"
+
     parameter unsigned NUMBER_OF_OBJECTS = 4;
     parameter MONSTER_HIT_SOUND = 4'd7;
     parameter SPACESHIP_HIT_SOUND = 4'd1;

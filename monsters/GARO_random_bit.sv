@@ -7,6 +7,8 @@ module GARO_random_bit (
     output logic random_bit
 );
 
+    `include "parameters.sv"
+
     logic [31:1] stage /* synthesis keep */; //stop *altera* tools optimizing this away
     logic meta1, meta2;
 

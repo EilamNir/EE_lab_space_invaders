@@ -9,42 +9,34 @@ module space_invaders_TOP
     input logic PS2_DAT,
     input logic AUD_ADCDAT,
 
-    output logic [6:0] HEX0,
-    output logic [6:0] HEX1,
-    output logic [6:0] HEX2,
-    output logic [VGA_WIDTH - 1:0] OVGA,
-    inout [AUDIO_WIDTH - 1:0] AUDOUT
+    output hex_dig HEX0,
+    output hex_dig HEX1,
+    output hex_dig HEX2,
+    output VGA OVGA,
+    inout audio AUDOUT
 );
 
-    parameter unsigned VGA_WIDTH = 29;
-    parameter unsigned AUDIO_WIDTH = 8;
-    parameter unsigned HEX_WIDTH = 7;
-    parameter unsigned RGB_WIDTH = 8;
-    parameter unsigned PIXEL_WIDTH = 11;
-    parameter unsigned KEYCODE_WIDTH = 9;
-
-    parameter unsigned HIT_DETECTION_NUMBER_OF_OBJECTS = 9;
-    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 10;
+    `include "parameters.sv"
 
     logic clk;
     logic startOfFrame;
-    logic [PIXEL_WIDTH - 1:0] pixelX;
-    logic [PIXEL_WIDTH - 1:0] pixelY;
-    logic [RGB_WIDTH - 1:0] background_RGB;
+    coordinate pixelX;
+    coordinate pixelY;
+    RGB background_RGB;
 
 
-    logic [RGB_WIDTH - 1:0] playerRGB;
-    logic [RGB_WIDTH - 1:0] livesRGB;
-    logic [RGB_WIDTH - 1:0] scoreRGB;
-    logic [RGB_WIDTH - 1:0] player_missleRGB;
-    logic [RGB_WIDTH - 1:0] monster_missleRGB;
-    logic [RGB_WIDTH - 1:0] monsterRGB;
-    logic [RGB_WIDTH - 1:0] asteroidsRGB;
-    logic [RGB_WIDTH - 1:0] BossRGB;
-	logic [RGB_WIDTH - 1:0] Boss_missleRGB;
-	logic [RGB_WIDTH - 1:0] end_game_RGB;
+    RGB playerRGB;
+    RGB livesRGB;
+    RGB scoreRGB;
+    RGB player_missleRGB;
+    RGB monster_missleRGB;
+    RGB monsterRGB;
+    RGB asteroidsRGB;
+    RGB BossRGB;
+	RGB Boss_missleRGB;
+	RGB end_game_RGB;
 	
-    logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB;
+    RGB [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] obj_RGB;
     assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, end_game_RGB};
     logic player_missleDR;
     logic monster_missleDR;
@@ -58,23 +50,25 @@ module space_invaders_TOP
 	logic end_gameDR;
     logic [0:1] bordersDR;
     assign bordersDR = {bordersDR[0], bordersDR[1]}; //bordersDR[0] = all around borders, bordersDR[1] = player end zone
+    logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1 - 2] draw_requests_for_hits;
+    assign draw_requests_for_hits = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR};
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
-    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR, livesDR, scoreDR, end_gameDR};
+    assign draw_requests = {draw_requests_for_hits, livesDR, scoreDR, end_gameDR};
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
-    assign hit_request = {draw_requests[0:6], bordersDR};
+    assign hit_request = {draw_requests_for_hits, bordersDR};
 
-    logic [KEYCODE_WIDTH - 1:0] keyCode;
+    keycode keyCode;
     logic make;
     logic brake;
 
-    logic [6:0] HitPulse;
-    logic [6:0] collision;
+    logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] HitPulse;
+    logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision;
 
     logic monster_died_pulse;
     logic all_monsters_dead;
 
     logic [0:1] sound_requests;
-    assign sound_requests = {collision[0], collision[4]};
+    assign sound_requests = {collision[COLLISION_ENEMY_MISSILE], collision[COLLISION_PLAYER_MISSILE] | collision[COLLISION_PLAYER_ENEMY]};
 
     clock_divider clock_div_inst (
         .refclk(CLOCK_50),
@@ -104,7 +98,7 @@ module space_invaders_TOP
 	logic resetN_monst;
 	logic resetN_asteroids;
 	logic resetN_Boss;
-	logic [2:0] stage_num;
+	game_stage stage_num;
 	logic asteroid_exploded;
 	logic boss_dead;
 
@@ -176,7 +170,7 @@ module space_invaders_TOP
 		.all_asteroids_destroied (win_astero_stage),
 		.asteroidsRGB	(asteroidsRGB));
 
-	boss #(.LIVES_AMOUNT(15)) boss_inst(	
+	boss boss_inst(	
         .clk            (clk),
         .resetN         (resetN  & resetN_Boss),
 		.enable			(enable_boss),
@@ -190,7 +184,7 @@ module space_invaders_TOP
         .missleDR       (Boss_missleDR),
         .missleRGB      (Boss_missleRGB));
 
-    hit_detection #(.NUMBER_OF_OBJECTS(HIT_DETECTION_NUMBER_OF_OBJECTS)) hit_detection_inst (
+    hit_detection hit_detection_inst (
         .clk            (clk),
         .resetN         (resetN),
         .startOfFrame   (startOfFrame),
@@ -210,7 +204,7 @@ module space_invaders_TOP
 		.end_game_RGB	(end_game_RGB),
         .background_RGB (background_RGB));
 
-    video_unit #(.NUMBER_OF_OBJECTS(VIDEO_UNIT_NUMBER_OF_OBJECTS)) video_unit_inst (
+    video_unit video_unit_inst (
         .clk            (clk),
         .resetN         (resetN),
         .draw_requests  (draw_requests),

@@ -4,74 +4,65 @@ module monsters(
     input logic resetN,
     input logic enable,
     input logic startOfFrame,
-	input logic [6:0] collision,
-	input logic [2:0] stage_num,
-    input logic [10:0]pixelX,
-    input logic [10:0]pixelY,
+	input logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision,
+	input game_stage stage_num,
+    input coordinate pixelX,
+    input coordinate pixelY,
 
     output logic monsterDR,
-    output logic [7:0] monsterRGB,
+    output RGB monsterRGB,
 
     output logic missleDR,
-    output logic [7:0] missleRGB,
+    output RGB missleRGB,
 
     output logic monster_died_pulse,
     output logic all_monsters_dead
 );
 
-    parameter unsigned KEYCODE_WIDTH = 9;
-	parameter int INITIAL_X = 100;
-	parameter int INITIAL_Y = 50;
-	parameter int X_SPEED = -24;
-    parameter int Y_SPEED = -15;
-	parameter unsigned MONSTER_AMOUNT_WIDTH = 5;
-    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MAX_MONSTER_AMOUNT = 16;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 4;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 0;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
+    `include "parameters.sv"
 
-    parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
-    parameter unsigned X_SPACING = 128; // Change according to amount of monsters: 96 for 5 in a row (20 total), 128 for 4 in a row (16 total)
-
-
-    logic [MAX_MONSTER_AMOUNT - 1:0] [10:0] offsetX;
-    logic [MAX_MONSTER_AMOUNT - 1:0] [10:0] offsetY;
-    logic [MAX_MONSTER_AMOUNT - 1:0] squareDR;
-    logic [MAX_MONSTER_AMOUNT - 1:0] silhouetteDR;
-    logic [MAX_MONSTER_AMOUNT - 1:0] previousDR;
-    logic [MAX_MONSTER_AMOUNT - 1:0] [7:0] squareRGB;
-    logic [MAX_MONSTER_AMOUNT - 1:0] [3:0] HitEdgeCode;
-    logic signed [MAX_MONSTER_AMOUNT - 1:0] [10:0] topLeftX;
-    logic signed [MAX_MONSTER_AMOUNT - 1:0] [10:0] topLeftY;
-    logic [MAX_MONSTER_AMOUNT - 1:0] monsterIsHit;
-    logic [MAX_MONSTER_AMOUNT - 1:0] monster_deactivated;
-	logic [MAX_MONSTER_AMOUNT - 1:0] monster_exploded;
+    coordinate [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] offsetX;
+    coordinate [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] offsetY;
+    logic [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] squareDR;
+    logic [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] silhouetteDR;
+    logic [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] previousDR;
+    edge_code [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] HitEdgeCode;
+    coordinate [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] topLeftX;
+    coordinate [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] topLeftY;
+    logic [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] monsterIsHit;
+    logic [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] monster_deactivated;
+	logic [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] monster_exploded;
     logic monster_overlap;
-    logic [MAX_MONSTER_AMOUNT - 1:0] previous_monsterIsHit;
-    logic [MAX_MONSTER_AMOUNT - 1:0] shooting_pusle;
-    logic [MAX_MONSTER_AMOUNT-1:0] missiles_draw_requests;
-	logic [MONSTER_AMOUNT_WIDTH - 1:0] monster_amount;
+    logic [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] previous_monsterIsHit;
+    logic [MONSTERS_MAX_MONSTER_AMOUNT - 1:0] shooting_pusle;
+    logic [MONSTERS_MAX_MONSTER_AMOUNT-1:0] missiles_draw_requests;
+	logic [MONSTERS_MONSTER_AMOUNT_WIDTH - 1:0] monster_amount;
     logic random_bit;
 
     // Decide how many monsters in every stage
-    logic [0:4] [MONSTER_AMOUNT_WIDTH - 1:0] monsters_per_stage = {
-        MONSTER_AMOUNT_WIDTH'('d0),
-        MONSTER_AMOUNT_WIDTH'('d8),
-        MONSTER_AMOUNT_WIDTH'('d16),
-        MONSTER_AMOUNT_WIDTH'('d0),
-        MONSTER_AMOUNT_WIDTH'('d12)};
+    logic [0:4] [MONSTERS_MONSTER_AMOUNT_WIDTH - 1:0] monsters_per_stage = {
+        MONSTERS_MONSTER_AMOUNT_WIDTH'('d0), //leave at zero
+        MONSTERS_MONSTER_AMOUNT_WIDTH'('d8),
+        MONSTERS_MONSTER_AMOUNT_WIDTH'('d16),
+        MONSTERS_MONSTER_AMOUNT_WIDTH'('d0),
+        MONSTERS_MONSTER_AMOUNT_WIDTH'('d12)};
 
     assign monster_amount = monsters_per_stage[stage_num];
 
 
     genvar i;
     generate
-        for (i = 0; i < MAX_MONSTER_AMOUNT; i++) begin : generate_monsters
-            monsters_move #(.X_SPEED(X_SPEED + (i * 2)), .Y_SPEED(Y_SPEED + ((i>>2) * 8) + i * 2), .INITIAL_X(INITIAL_X + ((2'(i) & 2'b11) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((i>>2) * 64))) monsters_move_inst(
+        for (i = 0; i < MONSTERS_MAX_MONSTER_AMOUNT; i++) begin : generate_monsters
+            monsters_move #(
+                .X_SPEED(fixed_point'(MONSTERS_X_SPEED + (i * 2))),
+                .Y_SPEED(fixed_point'(MONSTERS_Y_SPEED + ((i>>2) * 8) + i * 2)),
+                .INITIAL_X(coordinate'(MONSTERS_INITIAL_X + ((2'(i) & 2'b11) * MONSTERS_X_SPACING))),
+                .INITIAL_Y(coordinate'(MONSTERS_INITIAL_Y + ((i>>2) * MONSTERS_Y_SPACING))))
+            monsters_move_inst(
                 .clk(clk),
                 .resetN(resetN),
-                .missile_collision(collision[0] & previousDR[i]),
-                .border_collision((monster_overlap | collision[1]) & previousDR[i]),
+                .missile_collision(collision[COLLISION_ENEMY_MISSILE] & previousDR[i]),
+                .border_collision((monster_overlap | collision[COLLISION_ENEMY_ANY_BOUNDARY]) & previousDR[i]),
                 .startOfFrame(startOfFrame & enable & (i < monster_amount)),
                 .HitEdgeCode(HitEdgeCode[i]),
                 .random_bit(random_bit),
@@ -80,7 +71,10 @@ module monsters(
                 .topLeftY(topLeftY[i])
                 );
 
-            square_object #(.OBJECT_WIDTH_X(32), .OBJECT_HEIGHT_Y(32)) square_object_inst(
+            square_object #(
+                .OBJECT_WIDTH_X(MONSTERS_X_SIZE),
+                .OBJECT_HEIGHT_Y(MONSTERS_Y_SIZE))
+            square_object_inst(
                 .clk(clk),
                 .resetN(resetN),
                 .pixelX(pixelX),
@@ -89,8 +83,7 @@ module monsters(
                 .topLeftY(topLeftY[i]),
                 .offsetX(offsetX[i]),
                 .offsetY(offsetY[i]),
-                .drawingRequest(squareDR[i]),
-                .RGBout(squareRGB[i])
+                .drawingRequest(squareDR[i])
                 );
 
             chicken_silhouette chicken_silhouette_inst(
@@ -104,7 +97,9 @@ module monsters(
                 .drawingRequest (silhouetteDR[i])
                 );
 
-            delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
+            delay_signal_by_frames #(
+                .DELAY_FRAMES_AMOUNT(MONSTERS_EXPLOSION_DELAY))
+            delay_signal_by_frames_inst(
                 .clk(clk),
                 .resetN(resetN),
                 .startOfFrame(startOfFrame & enable & (i < monster_amount)),
@@ -113,7 +108,9 @@ module monsters(
                 );
 			assign monster_deactivated[i] = monster_exploded[i] | (i >= monster_amount);
 
-            shooting_cooldown #(.SHOOTING_COOLDOWN(40 + ((2'(i) & 2'b11) * 2) + (2 * i))) shooting_cooldown_inst(
+            shooting_cooldown #(
+                .SHOOTING_COOLDOWN(8'(40 + ((2'(i) & 2'b11) * 2) + (2 * i))))
+            shooting_cooldown_inst(
                 .clk           (clk),
                 .resetN        (resetN),
                 .startOfFrame  (startOfFrame & enable & (i < monster_amount)),
@@ -121,12 +118,19 @@ module monsters(
                 .shooting_pusle(shooting_pusle[i])
                 );
 
-            missiles #(.SHOT_AMOUNT(4), .X_SPEED(0), .Y_SPEED(128), .X_OFFSET(15), .Y_OFFSET(28), .MISSILE_COLOR(8'hD0)) missiles_inst (
+            missiles #(
+                .SHOT_AMOUNT(MONSTERS_SHOT_AMOUNT),
+                .X_SPEED(MONSTERS_MISSILE_X_SPEED),
+                .Y_SPEED(MONSTERS_MISSILE_Y_SPEED),
+                .X_OFFSET(MONSTERS_MISSILE_X_OFFSET),
+                .Y_OFFSET(MONSTERS_MISSILE_Y_OFFSET),
+                .MISSILE_COLOR(MONSTERS_MISSILE_COLOR))
+            missiles_inst (
                 .clk            (clk),
                 .resetN         (resetN),
                 .shooting_pusle (shooting_pusle[i]),
                 .startOfFrame   (startOfFrame & enable & (i < monster_amount)),
-                .collision      ((collision[4] | collision[2])),
+                .collision      ((collision[COLLISION_PLAYER_MISSILE] | collision[COLLISION_MISSILE_FAR_BOUNDARY])),
                 .pixelX         (pixelX),
                 .pixelY         (pixelY),
                 .spaceShip_X    (topLeftX[i]),
@@ -148,13 +152,16 @@ module monsters(
 
     // Deal with multiple monsters in the same pixel
     logic chosen_monster_DR;
-    logic [10:0] chosen_offsetX;
-    logic [10:0] chosen_offsetY;
+    coordinate chosen_offsetX;
+    coordinate chosen_offsetY;
     logic chosen_monster_is_hit;
-    logic [MONSTER_AMOUNT_WIDTH - 1:0] chosen_monster_index;
+    logic [MONSTERS_MONSTER_AMOUNT_WIDTH - 1:0] chosen_monster_index;
 
     // Check if there is an overlap of monsters in this space
-    check_overlap #(.OBJECT_AMOUNT_WIDTH(MONSTER_AMOUNT_WIDTH), .OBJECT_AMOUNT(MAX_MONSTER_AMOUNT)) check_overlap_inst(
+    check_overlap #(
+        .OBJECT_AMOUNT_WIDTH(MONSTERS_MONSTER_AMOUNT_WIDTH),
+        .OBJECT_AMOUNT(MONSTERS_MAX_MONSTER_AMOUNT)
+    ) check_overlap_inst(
         .clk(clk),
         .resetN(resetN),
         .startOfFrame(startOfFrame),
@@ -190,7 +197,7 @@ module monsters(
         );
 
 
-    assign missleRGB = 8'hD0;
+    assign missleRGB = MONSTERS_MISSILE_COLOR;
     assign missleDR = (missiles_draw_requests != 0);
 
     // Only raise all_monsters_dead if monster_deactivated is all 1s

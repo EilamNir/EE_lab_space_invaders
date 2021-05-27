@@ -10,12 +10,15 @@ module player_lives(
     output logic player_damaged,
     output logic player_dead
 );
-    parameter unsigned LIVES_AMOUNT_WIDTH = 3;
-    parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 4;
 
-    parameter unsigned PLAYER_DAMAGED_FRAME_AMOUNT_WIDTH = 6;
-    parameter logic [PLAYER_DAMAGED_FRAME_AMOUNT_WIDTH - 1:0] PLAYER_DAMAGED_FRAME_AMOUNT = 30;
-    logic [PLAYER_DAMAGED_FRAME_AMOUNT_WIDTH - 1:0] damaged_timeout;
+    `include "parameters.sv"
+
+    parameter unsigned LIVES_AMOUNT_WIDTH;
+    parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT;
+
+    parameter unsigned DAMAGED_FRAME_AMOUNT_WIDTH;
+    parameter logic [DAMAGED_FRAME_AMOUNT_WIDTH - 1:0] DAMAGED_FRAME_AMOUNT;
+    logic [DAMAGED_FRAME_AMOUNT_WIDTH - 1:0] damaged_timeout;
 
     always_ff@(posedge clk or negedge resetN)
     begin
@@ -32,7 +35,7 @@ module player_lives(
                 player_damaged <= 1'b0;
             end else if (startOfFrame) begin
                 // Reduce the damaged timeout by one every frame
-                damaged_timeout <= PLAYER_DAMAGED_FRAME_AMOUNT_WIDTH'(damaged_timeout - 1);
+                damaged_timeout <= DAMAGED_FRAME_AMOUNT_WIDTH'(damaged_timeout - 1);
                 // Flip between the player being faded and not faded every few frames
                 if (damaged_timeout[3:0] == 4'b1000) begin
                     player_faded <= ~player_faded;
@@ -51,7 +54,7 @@ module player_lives(
                 player_faded <= 1'b1;
                 player_damaged <= 1'b1;
                 // Start the damaged timeout
-                damaged_timeout <= PLAYER_DAMAGED_FRAME_AMOUNT;
+                damaged_timeout <= DAMAGED_FRAME_AMOUNT;
                 // Remove one life from the player
                 remaining_lives <= LIVES_AMOUNT_WIDTH'(remaining_lives - 1);
             end

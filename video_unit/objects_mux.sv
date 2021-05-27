@@ -2,25 +2,23 @@ module  objects_mux (
     input logic clk,
     input logic resetN,
     input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
-    input logic [0:NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB,
-    input logic [RGB_WIDTH - 1:0] background_RGB,
-    output logic [RGB_WIDTH - 1:0] RGBOut
+    input RGB [0:NUMBER_OF_OBJECTS - 1] obj_RGB,
+    input RGB background_RGB,
+    output RGB RGBOut
 );
 
-    // Note: This parameter is used in a for loop, that is unrolled at compilation.
-    // If this parameter ever gets too large, it may take a lot space, and we might
-    // want to move to some other way to check for the first object to draw.
-    parameter unsigned NUMBER_OF_OBJECTS = 5;
-    parameter unsigned RGB_WIDTH = 8;
+    `include "parameters.sv"
 
-    int first_draw_request_index;
+    parameter [VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH - 1:0] NUMBER_OF_OBJECTS;
+
+    logic [VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH - 1:0] first_draw_request_index;
     logic any_draw_request;
 
     // Go over the draw requests and draw the first object that wants to be drawn
     always_comb begin
         first_draw_request_index = 0;
         any_draw_request = 1'b0;
-        for (int i = 0; i < NUMBER_OF_OBJECTS; i++) begin
+        for (logic [VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH - 1:0] i = 0; i < NUMBER_OF_OBJECTS; i++) begin
             if (draw_requests[i] == 1'b1) begin
                 first_draw_request_index = i;
                 any_draw_request = 1'b1;
@@ -34,7 +32,7 @@ module  objects_mux (
     begin
         if(!resetN) begin
             // Reset RGB to zeros on reset
-            RGBOut  <= RGB_WIDTH'('b0);
+            RGBOut  <= RGB'('b0);
         end
 
         else begin

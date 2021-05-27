@@ -2,18 +2,20 @@
 module chicken_silhouette (
     input logic clk,
     input logic resetN,
-    input logic [10:0] offsetX,// offset from top left position
-    input logic [10:0] offsetY,
+    input coordinate offsetX,// offset from top left position
+    input coordinate offsetY,
     input logic InsideRectangle, //input that the pixel is within a bracket
     input logic monsterIsHit,
 
     output logic drawingRequest, //output that the pixel should be dispalyed
-    output logic [3:0] HitEdgeCode //one bit per edge
+    output edge_code HitEdgeCode //one bit per edge
 
 );
 
+    `include "parameters.sv"
+
     // generating the bitmap
-    logic[0:31][0:31] monster_colors = {
+    logic [0:MONSTERS_Y_SIZE-1][0:MONSTERS_X_SIZE-1] monster_colors = {
         {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
         {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
         {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
@@ -48,7 +50,7 @@ module chicken_silhouette (
         {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}};
 
 
-     logic[0:31][0:31] explosion_colors = {
+     logic [0:MONSTERS_Y_SIZE-1][0:MONSTERS_X_SIZE-1] explosion_colors = {
         {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
         {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0},
         {1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0,1'b1,1'b1,1'b1,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b0},
@@ -84,7 +86,7 @@ module chicken_silhouette (
 
     //hit bit map has one bit per edge: hit_edge_codes[3:0] = {Left, Top, Right, Bottom}
     //there is one bit per edge, in the corner two bits are set
-    logic [0:3] [0:3] [3:0] hit_edge_codes = {
+    edge_code [0:3] [0:3] hit_edge_codes = {
         16'hC446,
         16'h8C62,
         16'h8932,
@@ -102,7 +104,7 @@ module chicken_silhouette (
         end
     end
 
-    logic[0:31][0:31] object_colors;
+    logic [0:MONSTERS_Y_SIZE-1][0:MONSTERS_X_SIZE-1] object_colors;
     assign object_colors = (monsterIsHit == 1'b0) ? monster_colors : explosion_colors ;
 
     // decide if to draw the pixel or not

@@ -7,10 +7,12 @@ module delay_signal_by_frames(
 
     output logic output_signal
 );
-    parameter unsigned FRAMES_DELAY_WIDTH = 5;
-    parameter logic [FRAMES_DELAY_WIDTH - 1:0] DELAY_FRAMES_AMOUNT = 5;
 
-    logic [FRAMES_DELAY_WIDTH - 1:0] delay_counter;
+    `include "parameters.sv"
+
+    parameter logic [DELAY_SIGNAL_FRAMES_DELAY_WIDTH - 1:0] DELAY_FRAMES_AMOUNT;
+
+    logic [DELAY_SIGNAL_FRAMES_DELAY_WIDTH - 1:0] delay_counter;
 
     always_ff@(posedge clk or negedge resetN)
     begin
@@ -21,7 +23,7 @@ module delay_signal_by_frames(
             // Check if we need to reduce the delay
             if (startOfFrame && input_signal) begin
                 if (delay_counter != 0) begin
-                    delay_counter <= FRAMES_DELAY_WIDTH'(delay_counter - 1);
+                    delay_counter <= DELAY_SIGNAL_FRAMES_DELAY_WIDTH'(delay_counter - 1);
                 end else begin
                     output_signal = 1'b1;
                 end

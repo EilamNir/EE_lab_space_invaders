@@ -16,6 +16,7 @@ module	sintable	 #(
 					output	logic [15:0]	Q // table function output 
 			);
 
+    `include "parameters.sv"
 
 
 

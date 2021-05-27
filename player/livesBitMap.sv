@@ -2,18 +2,19 @@ module livesBitMap (
 
     input logic clk,
     input logic resetN,
-    input logic [10:0] offsetX,
-    input logic [10:0] offsetY,
+    input coordinate offsetX,
+    input coordinate offsetY,
     input logic InsideRectangle,
 
     output logic drawingRequest,
-    output logic [7:0] RGBout
+    output RGB RGBout
 );
 
-    // generating the bitmap
+    `include "parameters.sv"
 
-    localparam logic [7:0] TRANSPARENT_ENCODING = 8'h00 ;// RGB value in the bitmap representing a transparent pixel
-    logic[0:7][0:7][7:0] object_colors = {
+    // generating the bitmap
+    localparam RGB TRANSPARENT_ENCODING = 8'h00 ;// RGB value in the bitmap representing a transparent pixel
+    RGB [0:PLAYER_LIVES_Y_SIZE-1][0:PLAYER_LIVES_X_SIZE-1] object_colors = {
         {8'h00,8'h00,8'h00,8'h4a,8'h4a,8'h00,8'h00,8'h00},
         {8'h00,8'h00,8'h4a,8'h01,8'h01,8'h4a,8'h00,8'h00},
         {8'h00,8'h00,8'h4a,8'h01,8'h01,8'h4a,8'h00,8'h00},
@@ -22,8 +23,6 @@ module livesBitMap (
         {8'h4a,8'h4a,8'h4a,8'h4a,8'h4a,8'h4a,8'h4a,8'h4a},
         {8'h4a,8'h4a,8'h4a,8'h4a,8'h4a,8'h4a,8'h4a,8'h4a},
         {8'h00,8'hc0,8'hc0,8'h00,8'h00,8'hc0,8'hc0,8'h00}};
-
-
 
     //////////--------------------------------------------------------------------------------------------------------------=
     always_ff@(posedge clk or negedge resetN)

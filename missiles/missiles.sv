@@ -5,29 +5,28 @@ module missiles(
     input logic shooting_pusle,
     input logic startOfFrame,
 	input logic collision,
-    input logic [10:0] pixelX,
-    input logic [10:0] pixelY,
-    input logic [10:0] spaceShip_X,
-    input logic [10:0] spaceShip_Y,
+    input coordinate pixelX,
+    input coordinate pixelY,
+    input coordinate spaceShip_X,
+    input coordinate spaceShip_Y,
 
     output logic missleDR,
-    output logic [7:0] missleRGB
+    output RGB missleRGB
 );
 
+    `include "parameters.sv"
 
-    parameter unsigned RGB_WIDTH = 8;
-    parameter [RGB_WIDTH - 1:0] MISSILE_COLOR = 8'h1F;
-    parameter unsigned SHOT_AMOUNT = 7;
-    parameter unsigned PIXEL_WIDTH = 11;
+    parameter RGB MISSILE_COLOR;
+    parameter logic [MISSILE_SHOT_AMOUNT_WIDTH-1:0] SHOT_AMOUNT;
 
-    parameter int X_SPEED = 0;
-    parameter int Y_SPEED = -256;
-    parameter logic signed [PIXEL_WIDTH - 1:0] X_OFFSET = 15;
-    parameter logic signed [PIXEL_WIDTH - 1:0] Y_OFFSET = 0;
+    parameter fixed_point X_SPEED;
+    parameter fixed_point Y_SPEED;
+    parameter coordinate X_OFFSET;
+    parameter coordinate Y_OFFSET;
 
 
-    logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftX;
-    logic signed [SHOT_AMOUNT-1:0] [10:0] topLeftY;
+    coordinate [SHOT_AMOUNT-1:0] topLeftX;
+    coordinate [SHOT_AMOUNT-1:0] topLeftY;
     logic [SHOT_AMOUNT-1:0] draw_requests;
     logic [SHOT_AMOUNT-1:0] missile_active;
     logic [SHOT_AMOUNT-1:0] fire_commands;
@@ -35,7 +34,7 @@ module missiles(
     // Choose which missile to send the key press to
     always_comb begin
         fire_commands = SHOT_AMOUNT'('b0);
-        for (int j = 0; j < SHOT_AMOUNT; j++) begin
+        for (logic [MISSILE_SHOT_AMOUNT_WIDTH-1:0] j = 0; j < SHOT_AMOUNT; j++) begin
             // Only send the key press to the first available shot
             if (missile_active[j] == 1'b0) begin
                 fire_commands[j] = shooting_pusle;

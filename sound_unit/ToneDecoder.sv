@@ -9,6 +9,8 @@ module  ToneDecoder (
     output  logic [9:0] preScaleValue
 );
 
+    `include "parameters.sv"
+
     logic [15:0] [9:0]  preScaleValueTable = { 
 
     //---------------VALUES for 50MHz------------------------

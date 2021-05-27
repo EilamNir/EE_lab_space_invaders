@@ -3,15 +3,13 @@ module hit_detection(
     input logic	clk,
     input logic	resetN,
     input logic	startOfFrame,  // short pulse every start of frame 30Hz 
-    input logic [0:NUMBER_OF_OBJECTS - 1] hit_request,
+    input logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request,
 	
-    output logic [COLLISION_WIDTH - 1:0] collision,
-    output logic [COLLISION_WIDTH - 1:0] HitPulse 
+    output logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision,
+    output logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] HitPulse 
 	);
 
-    parameter unsigned NUMBER_OF_OBJECTS = 7;
-    parameter unsigned COLLISION_WIDTH = 7;
-
+	`include "parameters.sv"
 
     logic eneny_missile;
 	logic player_missile;
@@ -40,16 +38,16 @@ module hit_detection(
     assign unconstrained_enemies = asteroid;
     assign any_enemy = constrained_enemies | unconstrained_enemies;
 
-    assign collision[0] = any_enemy & player_missile;
-	assign collision[1] = constrained_enemies & all_boundaries;
-	assign collision[2] = any_missile & edge_boundaries;
-	assign collision[3] = player & all_boundaries;
-    assign collision[4] = player & eneny_missile;
-	assign collision[5] = unconstrained_enemies & edge_boundaries;
-	assign collision[6] = player & any_enemy;
+    assign collision[COLLISION_ENEMY_MISSILE] = any_enemy & player_missile;
+	assign collision[COLLISION_ENEMY_ANY_BOUNDARY] = constrained_enemies & all_boundaries;
+	assign collision[COLLISION_MISSILE_FAR_BOUNDARY] = any_missile & edge_boundaries;
+	assign collision[COLLISION_PLAYER_ANY_BOUNDARY] = player & all_boundaries;
+    assign collision[COLLISION_PLAYER_MISSILE] = player & eneny_missile;
+	assign collision[COLLISION_ENEMY_FAR_BOUNDARY] = unconstrained_enemies & edge_boundaries;
+	assign collision[COLLISION_PLAYER_ENEMY] = player & any_enemy;
 
 
-	logic [COLLISION_WIDTH - 1:0] flags ; // a semaphore to set the output only once per frame / regardless of the number of collisions 
+	logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] flags ; // a semaphore to set the output only once per frame / regardless of the number of collisions 
 
 	always_ff@(posedge clk or negedge resetN)	
 	begin
@@ -60,7 +58,7 @@ module hit_detection(
 		else begin 
 			HitPulse <= 4'b0; 
 			if(startOfFrame) flags <= 4'b0 ; // reset for next time  
-			for (int k = 0 ; k < COLLISION_WIDTH - 1 ; k++) begin
+			for (int k = 0 ; k < HIT_DETECTION_COLLISION_WIDTH - 1 ; k++) begin
 				if (collision[k] && (flags[k] == 1'b0)) begin 
 					flags[k] <= 1'b1; // to enter only once 
 					HitPulse[k] <= 1'b1 ; 

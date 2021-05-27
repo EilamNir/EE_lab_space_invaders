@@ -7,7 +7,7 @@ module keyToggle_decoder
 ( 
     input logic clk,
     input logic resetN, 
-    input logic [8:0]keyCode,	
+    input keycode keyCode,	
     input logic make,	
     input logic brakee,  // warning "break" is a reserved SYSVerilog word 
 	 
@@ -17,6 +17,7 @@ module keyToggle_decoder
  	 
   ) ;
 
+    `include "parameters.sv"
 
     parameter KEY_VALUE = 9'h029 ; // space is the default 
     

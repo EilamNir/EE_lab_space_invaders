@@ -14,6 +14,7 @@ module lpf
  
   ) ;
 
+    `include "parameters.sv"
 
  enum  logic [0:0] {ONE, ZERO}  nxt_st, cur_st; // the two states 
 

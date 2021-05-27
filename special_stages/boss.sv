@@ -4,47 +4,42 @@ module boss(
     input logic resetN,
     input logic enable,
     input logic startOfFrame,
-	input logic [6:0] collision,
-    input logic [10:0]pixelX,
-    input logic [10:0]pixelY,
+	input logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision,
+    input coordinate pixelX,
+    input coordinate pixelY,
 
     output logic BossDR,
-    output logic [7:0] BossRGB,
+    output RGB BossRGB,
     output logic boss_dead,
 
     output logic missleDR,
-    output logic [7:0] missleRGB
+    output RGB missleRGB
 );
 
-    parameter unsigned KEYCODE_WIDTH = 9;
-	parameter int INITIAL_X = 287;
-	parameter int INITIAL_Y = 49;
-	parameter int X_SPEED = 64;
-    parameter int Y_SPEED = -25;
-    parameter int BOSS_MISSILE_AMOUNT = 8;
-	parameter unsigned LIVES_AMOUNT_WIDTH = 5;
-    parameter logic unsigned [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 3;
-    parameter unsigned RGB_WIDTH = 8;
+    `include "parameters.sv"
 
-    logic [10:0] offsetX;
-    logic [10:0] offsetY;
+    coordinate offsetX;
+    coordinate offsetY;
     logic squareDR;
-    logic [7:0] squareRGB;
-    logic [3:0] HitEdgeCode;
-    logic signed [10:0] topLeftX;
-    logic signed [10:0] topLeftY;
-    logic Boss_deactivated;
+    edge_code HitEdgeCode;
+    coordinate topLeftX;
+    coordinate topLeftY;
     logic shooting_pusle;
     logic boss_faded;
     logic boss_damaged;
-	logic [RGB_WIDTH - 1:0] bitmapRGB;
+	RGB bitmapRGB;
     logic random_axis;
 
     logic [BOSS_MISSILE_AMOUNT-1:0] missiles_draw_requests;
-    boss_move #(.X_SPEED(X_SPEED), .Y_SPEED(Y_SPEED), .INITIAL_X(INITIAL_X), .INITIAL_Y(INITIAL_Y)) boss_move_inst(
+    boss_move #(
+        .X_SPEED(BOSS_X_SPEED),
+        .Y_SPEED(BOSS_Y_SPEED),
+        .INITIAL_X(BOSS_INITIAL_X),
+        .INITIAL_Y(BOSS_INITIAL_Y)
+    ) boss_move_inst(
          .clk(clk),
          .resetN(resetN),
-         .border_collision(collision[1] & BossDR),
+         .border_collision(collision[COLLISION_ENEMY_ANY_BOUNDARY] & BossDR),
          .startOfFrame(startOfFrame & (enable)),
          .HitEdgeCode(HitEdgeCode),
          .switch_direction_pulse(shooting_pusle),
@@ -53,7 +48,10 @@ module boss(
          .topLeftY(topLeftY)
      );
 
-    square_object #(.OBJECT_WIDTH_X(64), .OBJECT_HEIGHT_Y(64)) square_object_inst(
+    square_object #(
+        .OBJECT_WIDTH_X(BOSS_X_SIZE),
+        .OBJECT_HEIGHT_Y(BOSS_Y_SIZE)
+    ) square_object_inst(
         .clk(clk),
         .resetN(resetN),
         .pixelX(pixelX),
@@ -62,19 +60,12 @@ module boss(
         .topLeftY(topLeftY),
         .offsetX(offsetX),
         .offsetY(offsetY),
-        .drawingRequest(squareDR),
-        .RGBout(squareRGB)
+        .drawingRequest(squareDR)
     );
 
-    delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
-        .clk(clk),
-        .resetN(resetN),
-        .startOfFrame(startOfFrame & (enable)),
-        .input_signal(boss_dead),
-        .output_signal(Boss_deactivated)
-        );
-
-    shooting_cooldown #(.SHOOTING_COOLDOWN(90)) shooting_cooldown_inst(
+    shooting_cooldown #(
+        .SHOOTING_COOLDOWN(90)
+    ) shooting_cooldown_inst(
         .clk           (clk),
         .resetN        (resetN),
         .startOfFrame  (startOfFrame & (enable)),
@@ -85,12 +76,19 @@ module boss(
     genvar i;
     generate
         for (i = 0; i < BOSS_MISSILE_AMOUNT; i++) begin : generate_missiles
-            missiles #(.SHOT_AMOUNT(4), .X_SPEED(8 + ((i - 4) * 16)), .Y_SPEED(128), .X_OFFSET(31), .Y_OFFSET(60), .MISSILE_COLOR(8'hD0)) missiles_inst (
+            missiles #(
+                .SHOT_AMOUNT(BOSS_SHOT_AMOUNT),
+                .X_SPEED(BOSS_MISSILE_X_SPEED),
+                .Y_SPEED(BOSS_MISSILE_Y_SPEED),
+                .X_OFFSET(BOSS_MISSILE_X_OFFSET),
+                .Y_OFFSET(BOSS_MISSILE_Y_OFFSET),
+                .MISSILE_COLOR(BOSS_MISSILE_COLOR)
+            ) missiles_inst(
                 .clk            (clk),
                 .resetN         (resetN),
                 .shooting_pusle (shooting_pusle),
                 .startOfFrame   (startOfFrame & (enable)),
-                .collision      ((collision[4] | collision[2])),
+                .collision      ((collision[COLLISION_PLAYER_MISSILE] | collision[COLLISION_MISSILE_FAR_BOUNDARY])),
                 .pixelX         (pixelX),
                 .pixelY         (pixelY),
                 .spaceShip_X    (topLeftX),
@@ -100,11 +98,16 @@ module boss(
         end
     endgenerate
   
-      player_lives #(.LIVES_AMOUNT(LIVES_AMOUNT), .LIVES_AMOUNT_WIDTH(LIVES_AMOUNT_WIDTH), .PLAYER_DAMAGED_FRAME_AMOUNT(10)) player_lives_inst(
+    player_lives #(
+        .LIVES_AMOUNT_WIDTH(BOSS_LIVES_AMOUNT_WIDTH),
+        .LIVES_AMOUNT(BOSS_LIVES_AMOUNT),
+        .DAMAGED_FRAME_AMOUNT_WIDTH(BOSS_DAMAGED_FRAME_AMOUNT_WIDTH),
+        .DAMAGED_FRAME_AMOUNT(BOSS_DAMAGED_FRAME_AMOUNT)
+    ) player_lives_inst(
         .clk              (clk),
         .resetN           (resetN),
         .startOfFrame     (startOfFrame & (enable)),
-        .missile_collision(collision[0] & BossDR),
+        .missile_collision(collision[COLLISION_ENEMY_MISSILE] & BossDR),
         .player_faded     (boss_faded),
         .player_dead      (boss_dead)
         );
@@ -114,7 +117,7 @@ module boss(
         .resetN(resetN),
         .offsetX(offsetX),
         .offsetY(offsetY),
-        .InsideRectangle(squareDR & !Boss_deactivated),
+        .InsideRectangle(squareDR),
         .drawingRequest(BossDR),
         .RGBout(bitmapRGB),
         .HitEdgeCode(HitEdgeCode)
@@ -128,8 +131,8 @@ module boss(
         .random_bit(random_axis)
         );
 
-	assign BossRGB = RGB_WIDTH'((boss_faded == 1'b1) ? RGB_WIDTH'('b0) : bitmapRGB) ;
-    assign missleRGB = 8'hD0;
+	assign BossRGB = RGB'((boss_faded == 1'b1) ? RGB'('b0) : bitmapRGB) ;
+    assign missleRGB = BOSS_MISSILE_COLOR;
     assign missleDR = (missiles_draw_requests != 0);
 
 endmodule

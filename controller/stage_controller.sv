@@ -15,8 +15,10 @@ module stage_controller
     output logic enable_monst,
 	output logic enable_boss,
     output logic enable_astero,
-	output logic [2:0] stage_num 
+	output game_stage stage_num 
 );
+
+	`include "parameters.sv"
 
 	enum  logic [2:0] {INIT, STAGE1, STAGE2, STAGE3, STAGE4, END_GAME}  next_gameStage, pres_gameStage; //Game stages manager
 
@@ -39,33 +41,33 @@ always_comb
 		
 		case (pres_gameStage)
 			INIT: begin
-				stage_num = INIT;
+				stage_num = game_stage'(0);
 				if(start_game) next_gameStage = STAGE1;
 			end
 			STAGE1: begin
-				stage_num = STAGE1;
+				stage_num = game_stage'(1);
 				if(win_stage) next_gameStage = STAGE2;
 				enable_monst = 1'b1;
 			end
 			STAGE2: begin
-				stage_num = STAGE2;
+				stage_num = game_stage'(2);
 				if(win_stage) next_gameStage = STAGE3;
 				enable_monst = 1'b1;
 			end
 			STAGE3: begin
-				stage_num = STAGE3;
+				stage_num = game_stage'(3);
 				if(win_stage) next_gameStage = STAGE4;
 				enable_astero = 1'b1;
 			end
 			STAGE4: begin
-				stage_num = STAGE4;			
+				stage_num = game_stage'(4);
 				enable_boss = 1'b1;
 				enable_monst = 1'b1;
 				if(win_stage) next_gameStage = END_GAME;
 			end
 			
 			END_GAME: begin
-				stage_num = END_GAME;	
+				stage_num = game_stage'(0);
 				game_won = 1'b1;
 			end
 		endcase

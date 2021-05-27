@@ -5,10 +5,13 @@ module keyboard_interface
     input logic PS2_CLK,
     input logic PS2_DAT,
 
-    output logic [8:0] keyCode,
+    output keycode keyCode,
     output logic make,
     output logic brake
 );
+
+    `include "parameters.sv"
+
     logic kbd_clk;
     logic[7:0] d_bitrec;
     logic enb_byterec;
