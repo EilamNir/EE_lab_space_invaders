@@ -6,14 +6,16 @@
  module one_sec_counter(
 	input  logic clk, 
 	input  logic resetN, 
-	output logic one_sec, 
+	input logic enable,
+	
+	output logic one_sec,
 	output logic duty50
    );
 	
 	int oneSecCount ;
 	
 //       ----------------------------------------------	
-	localparam oneSecVal = 26'd50_000_000; 
+	localparam oneSecVal = 26'd25_000_000; 
 //       ----------------------------------------------	
 		
    always_ff @( posedge clk or negedge resetN )
@@ -24,7 +26,7 @@
 			oneSecCount <= 26'd0;
 		end 
 		// executed once every clock 	
-		else begin
+		else if (enable) begin
 			if (oneSecCount >= oneSecVal) begin
 				one_sec <= 1'b1;
 				duty50 <= ~duty50;
@@ -32,7 +34,7 @@
 			end
 			else begin
 				oneSecCount <= oneSecCount + 1;
-				one_sec		<= 1'b0;
+				one_sec <= 1'b0;
 			end
 		end 
 	end 

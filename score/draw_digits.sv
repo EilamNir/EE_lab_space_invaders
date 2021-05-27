@@ -1,22 +1,23 @@
  
-module score (
+module draw_digits (
     input logic clk,
     input logic resetN,
     input logic [10:0]pixelX,
     input logic [10:0]pixelY,
-
+	input logic [2:0] add_amount,
+	input logic game_over,
+	
     output logic digitDR,
     output logic [7:0] digitRGB,
     output logic [DIGIT_AMOUNT - 1:0] [6:0] ss // Output for 7Seg display
 );
+
     parameter unsigned MAX_SCORE_PER_DIGIT = 9;
     parameter unsigned DIGIT_AMOUNT = 3;
-    parameter unsigned DIGIT_SIZE_MULTIPLIER = 3;
     parameter unsigned LEFT_DIGIT_POSITION_X = 600;
     parameter unsigned LEFT_DIGIT_POSITION_Y = 466;
     parameter unsigned DIGIT_SIZE_MULTIPLIER = 3;
-
-	logic [2:0] add_amount;
+	parameter unsigned DIGIT_COLOR = 8'b00010000;
     logic [DIGIT_AMOUNT - 1:0] [3:0] score_digits;
     logic [DIGIT_AMOUNT - 1:0] [3:0] carry_pulses;
 
@@ -30,6 +31,16 @@ module score (
     logic [DIGIT_AMOUNT - 1:0] digits_square_draw_requests_small;
     logic [DIGIT_AMOUNT - 1:0] digits_square_draw_requests_large;
     logic [DIGIT_AMOUNT - 1:0] digits_draw_requests;
+ 
+     // the up_counter of the first digit has a different count_pulse
+    up_counter #(.MAX_SCORE_PER_DIGIT(MAX_SCORE_PER_DIGIT)) digit_counter_0(
+        .clk        (clk),
+        .resetN     (resetN),
+        .count_pulse(add_amount),
+        .digit_score(score_digits[0]),
+        .carry_pulse(carry_pulses[0])
+        );
+	
  genvar i;
     generate
         // generate up counters for every digit but the first
@@ -113,7 +124,7 @@ module score (
         .drawingRequest(digitDR) 
         );
 
-    assign digitRGB = 8'b00010000;
+    assign digitRGB = DIGIT_COLOR;
 
 
 endmodule

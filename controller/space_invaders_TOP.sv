@@ -12,6 +12,9 @@ module space_invaders_TOP
     output logic [6:0] HEX0,
     output logic [6:0] HEX1,
     output logic [6:0] HEX2,
+	output logic [6:0] HEX3,
+    output logic [6:0] HEX4,
+    output logic [6:0] HEX5,
     output logic [VGA_WIDTH - 1:0] OVGA,
     inout [AUDIO_WIDTH - 1:0] AUDOUT
 );
@@ -24,7 +27,7 @@ module space_invaders_TOP
     parameter unsigned KEYCODE_WIDTH = 9;
 
     parameter unsigned HIT_DETECTION_NUMBER_OF_OBJECTS = 9;
-    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 10;
+    parameter unsigned VIDEO_UNIT_NUMBER_OF_OBJECTS = 11;
 
     logic clk;
     logic startOfFrame;
@@ -36,6 +39,7 @@ module space_invaders_TOP
     logic [RGB_WIDTH - 1:0] playerRGB;
     logic [RGB_WIDTH - 1:0] livesRGB;
     logic [RGB_WIDTH - 1:0] scoreRGB;
+	logic [RGB_WIDTH - 1:0] timerRGB;
     logic [RGB_WIDTH - 1:0] player_missleRGB;
     logic [RGB_WIDTH - 1:0] monster_missleRGB;
     logic [RGB_WIDTH - 1:0] monsterRGB;
@@ -45,12 +49,13 @@ module space_invaders_TOP
 	logic [RGB_WIDTH - 1:0] end_game_RGB;
 	
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] [RGB_WIDTH - 1:0] obj_RGB;
-    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, end_game_RGB};
+    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, timerRGB, end_game_RGB};
     logic player_missleDR;
     logic monster_missleDR;
     logic playerDR;
     logic livesDR;
     logic scoreDR;
+	logic timerDR;
     logic monsterDR;
     logic asteroidsDR;
     logic BossDR;	
@@ -59,7 +64,7 @@ module space_invaders_TOP
     logic [0:1] bordersDR;
     assign bordersDR = {bordersDR[0], bordersDR[1]}; //bordersDR[0] = all around borders, bordersDR[1] = player end zone
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
-    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR, livesDR, scoreDR, end_gameDR};
+    assign draw_requests = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR, livesDR, scoreDR, timerDR, end_gameDR};
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
     assign hit_request = {draw_requests[0:6], bordersDR};
 
@@ -245,4 +250,17 @@ module space_invaders_TOP
         .ss				({HEX2, HEX1, HEX0})
     );
 
+    timer timer_inst (
+        .clk			(clk),
+        .resetN			(resetN),
+		.enable			(!pause & start_game & !game_over),
+        .pixelX			(pixelX),
+        .pixelY			(pixelY),
+        .game_over      (game_over),
+
+        .timerDR		(timerDR),
+        .timerRGB		(timerRGB),
+        .ss				({HEX5, HEX4, HEX3})
+    );
+	
 endmodule
