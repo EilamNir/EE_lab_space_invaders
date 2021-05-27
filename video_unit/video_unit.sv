@@ -5,17 +5,15 @@ module video_unit
     input logic [0:NUMBER_OF_OBJECTS - 1] draw_requests,
     input RGB [0:NUMBER_OF_OBJECTS - 1] obj_RGB,
     input RGB background_RGB,
-    output logic [PIXEL_WIDTH - 1:0] pixelX,
-    output logic [PIXEL_WIDTH - 1:0] pixelY,
+    output coordinate pixelX,
+    output coordinate pixelY,
     output logic startOfFrame,
-    output logic [VGA_WIDTH - 1:0] oVGA
+    output VGA oVGA
 );
 
     `include "parameters.sv"
 
     parameter unsigned NUMBER_OF_OBJECTS = 3;
-    parameter unsigned PIXEL_WIDTH = 11;
-    parameter unsigned VGA_WIDTH = 29;
 
 
     RGB RGBOut;

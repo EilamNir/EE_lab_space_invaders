@@ -9,19 +9,20 @@ module  objects_mux (
 
     `include "parameters.sv"
 
+    parameter unsigned NUMBER_OF_OBJECTS_WIDTH = 4;
     // Note: This parameter is used in a for loop, that is unrolled at compilation.
     // If this parameter ever gets too large, it may take a lot space, and we might
     // want to move to some other way to check for the first object to draw.
-    parameter unsigned NUMBER_OF_OBJECTS = 5;
+    parameter [NUMBER_OF_OBJECTS_WIDTH - 1:0] NUMBER_OF_OBJECTS = NUMBER_OF_OBJECTS_WIDTH'(5);
 
-    int first_draw_request_index;
+    logic [NUMBER_OF_OBJECTS_WIDTH - 1:0] first_draw_request_index;
     logic any_draw_request;
 
     // Go over the draw requests and draw the first object that wants to be drawn
     always_comb begin
         first_draw_request_index = 0;
         any_draw_request = 1'b0;
-        for (int i = 0; i < NUMBER_OF_OBJECTS; i++) begin
+        for (logic [NUMBER_OF_OBJECTS_WIDTH - 1:0] i = 0; i < NUMBER_OF_OBJECTS; i++) begin
             if (draw_requests[i] == 1'b1) begin
                 first_draw_request_index = i;
                 any_draw_request = 1'b1;

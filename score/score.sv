@@ -12,13 +12,14 @@ module score (
 
     output logic scoreDR,
     output RGB scoreRGB,
-    output logic [DIGIT_AMOUNT - 1:0] [6:0] ss // Output for 7Seg display
+    output hex_dig [DIGIT_AMOUNT - 1:0] ss // Output for 7Seg display
 );
 
     `include "parameters.sv"
 
     parameter unsigned MAX_SCORE_PER_DIGIT = 9;
-    parameter unsigned DIGIT_AMOUNT = 3;
+    parameter unsigned DIGIT_AMOUNT_WIDTH = 2;
+    parameter logic unsigned [DIGIT_AMOUNT_WIDTH-1:0] DIGIT_AMOUNT = 3;
     parameter unsigned DIGIT_SIZE_MULTIPLIER = 3;
 
 	logic [2:0] add_amount;
@@ -107,7 +108,7 @@ module score (
         chosen_digit_offsetX = 11'b0;
         chosen_digit_offsetY = 11'b0;
         chosen_digit_score = 4'b0;
-        for (int j = 0; j < DIGIT_AMOUNT; j++) begin
+        for (logic unsigned [DIGIT_AMOUNT_WIDTH-1:0] j = 0; j < DIGIT_AMOUNT; j++) begin
             // Only save the offset of the first square
             if (digits_square_draw_requests[j] == 1'b1) begin
                 chosen_digit_square_DR = 1'b1;

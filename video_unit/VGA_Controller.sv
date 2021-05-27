@@ -12,8 +12,8 @@ module  VGA_Controller
 (
     //  Host Side
     input RGB RGBIn,
-    output logic [PIXEL_WIDTH - 1:0] pixelX,
-    output logic [PIXEL_WIDTH - 1:0] pixelY,
+    output coordinate pixelX,
+    output coordinate pixelY,
     output logic startOfFrame,
     //  VGA Side
     output logic [28:0] oVGA,
@@ -25,14 +25,13 @@ module  VGA_Controller
     `include "parameters.sv"
 
     //  Internal Registers
-    logic [PIXEL_WIDTH - 1:0] H_Cont;
-    logic [PIXEL_WIDTH - 1:0] V_Cont;
+    coordinate H_Cont;
+    coordinate V_Cont;
     logic oVGA_HS;
     logic oVGA_HS_d;
     logic oVGA_VS;
 
 
-    parameter unsigned PIXEL_WIDTH = 11;
 
     ////////////////////////////////////////////////////////////
     //  Horizontal  Parameter
@@ -61,8 +60,8 @@ module  VGA_Controller
     //                          8 bits Blue color     ,  8 bits Green color         ,    8 bits Red color
                           {RGBIn[1:0], {6{RGBIn[0]}}},{RGBIn[4:2], {5{RGBIn[2]}}},{RGBIn[7:5], {5{RGBIn[5]}}}};
 
-    assign  pixelX  =   PIXEL_WIDTH'((H_Cont>=H_BLANK)  ?   H_Cont-H_BLANK  :   11'h0)  ;
-    assign  pixelY  =   PIXEL_WIDTH'((V_Cont>=V_BLANK)  ?   V_Cont-V_BLANK  :   11'h0)  ;
+    assign  pixelX  =   coordinate'((H_Cont>=H_BLANK)  ?   H_Cont-H_BLANK  :   11'h0)  ;
+    assign  pixelY  =   coordinate'((V_Cont>=V_BLANK)  ?   V_Cont-V_BLANK  :   11'h0)  ;
 
     //  Horizontal Generator: Refer to the pixel clock
     always_ff@(posedge clk or negedge resetN)

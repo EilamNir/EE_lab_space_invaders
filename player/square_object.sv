@@ -21,13 +21,13 @@ module	square_object	(
 
     `include "parameters.sv"
 
-    parameter int OBJECT_WIDTH_X = 100;
-    parameter int OBJECT_HEIGHT_Y = 100;
+    parameter coordinate OBJECT_WIDTH_X = 100;
+    parameter coordinate OBJECT_HEIGHT_Y = 100;
     parameter RGB OBJECT_COLOR = 8'h5b ;
     localparam RGB TRANSPARENT_ENCODING = 8'hFF ;// bitmap  representation for a transparent pixel
 
-    int rightX ; //coordinates of the sides
-    int bottomY ;
+    coordinate rightX ; //coordinates of the sides
+    coordinate bottomY ;
     logic insideBracket ;
 
 //////////--------------------------------------------------------------------------------------------------------------=

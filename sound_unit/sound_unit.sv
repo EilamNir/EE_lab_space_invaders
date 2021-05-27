@@ -12,7 +12,7 @@ module sound_unit
     input logic startOfFrame,
     input logic AUD_ADCDAT,
 
-    output logic [7:0] AUDOUT
+    output audio AUDOUT
 );
 
     `include "parameters.sv"

@@ -7,7 +7,7 @@ module keyToggle_decoder
 ( 
     input logic clk,
     input logic resetN, 
-    input logic [8:0]keyCode,	
+    input keycode keyCode,	
     input logic make,	
     input logic brakee,  // warning "break" is a reserved SYSVerilog word 
 	 

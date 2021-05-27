@@ -7,7 +7,7 @@ module byterec
     input logic resetN,
     input logic din_new,
     input logic [7:0] din,
-    output logic [8:0]  keyCode,
+    output keycode  keyCode,
     output logic make,
     output logic brakk,
     output logic qualifier_out

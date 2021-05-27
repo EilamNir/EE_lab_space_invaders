@@ -9,19 +9,15 @@ module space_invaders_TOP
     input logic PS2_DAT,
     input logic AUD_ADCDAT,
 
-    output logic [6:0] HEX0,
-    output logic [6:0] HEX1,
-    output logic [6:0] HEX2,
-    output logic [VGA_WIDTH - 1:0] OVGA,
-    inout [AUDIO_WIDTH - 1:0] AUDOUT
+    output hex_dig HEX0,
+    output hex_dig HEX1,
+    output hex_dig HEX2,
+    output VGA OVGA,
+    inout audio AUDOUT
 );
 
     `include "parameters.sv"
 
-    parameter unsigned VGA_WIDTH = 29;
-    parameter unsigned AUDIO_WIDTH = 8;
-    parameter unsigned HEX_WIDTH = 7;
-    parameter unsigned PIXEL_WIDTH = 11;
     parameter unsigned KEYCODE_WIDTH = 9;
 
     parameter unsigned HIT_DETECTION_NUMBER_OF_OBJECTS = 9;
@@ -29,8 +25,8 @@ module space_invaders_TOP
 
     logic clk;
     logic startOfFrame;
-    logic [PIXEL_WIDTH - 1:0] pixelX;
-    logic [PIXEL_WIDTH - 1:0] pixelY;
+    coordinate pixelX;
+    coordinate pixelY;
     RGB background_RGB;
 
 

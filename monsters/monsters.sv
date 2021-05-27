@@ -22,15 +22,12 @@ module monsters(
     `include "parameters.sv"
 
     parameter unsigned KEYCODE_WIDTH = 9;
-	parameter int INITIAL_X = 100;
-	parameter int INITIAL_Y = 50;
-	parameter int X_SPEED = -24;
-    parameter int Y_SPEED = -15;
+	parameter coordinate INITIAL_X = 100;
+	parameter coordinate INITIAL_Y = 50;
+	parameter fixed_point X_SPEED = fixed_point'(-24);
+    parameter fixed_point Y_SPEED = fixed_point'(-15);
 	parameter unsigned MONSTER_AMOUNT_WIDTH = 5;
-    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MAX_MONSTER_AMOUNT = 16;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] FIRST_STAGE_AMOUNT = 4;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] SECOND_STAGE_AMOUNT = 0;
-	parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] BOSS_STAGE_AMOUNT = 1;
+    parameter logic unsigned [MONSTER_AMOUNT_WIDTH - 1:0] MAX_MONSTER_AMOUNT = 2;
 
     parameter unsigned NUMBER_OF_MONSTER_EXPLOSION_FRAMES = 3;
     parameter unsigned X_SPACING = 128;
@@ -58,10 +55,10 @@ module monsters(
     // Decide how many monsters in every stage
     logic [0:4] [MONSTER_AMOUNT_WIDTH - 1:0] monsters_per_stage = {
         MONSTER_AMOUNT_WIDTH'('d0),
-        MONSTER_AMOUNT_WIDTH'('d8),
-        MONSTER_AMOUNT_WIDTH'('d16),
+        MONSTER_AMOUNT_WIDTH'('d2),
+        MONSTER_AMOUNT_WIDTH'('d1),
         MONSTER_AMOUNT_WIDTH'('d0),
-        MONSTER_AMOUNT_WIDTH'('d12)};
+        MONSTER_AMOUNT_WIDTH'('d2)};
 
     assign monster_amount = monsters_per_stage[stage_num];
 
@@ -69,7 +66,12 @@ module monsters(
     genvar i;
     generate
         for (i = 0; i < MAX_MONSTER_AMOUNT; i++) begin : generate_monsters
-            monsters_move #(.X_SPEED(X_SPEED + (i * 2)), .Y_SPEED(Y_SPEED + ((i>>2) * 8) + i * 2), .INITIAL_X(INITIAL_X + ((2'(i) & 2'b11) * X_SPACING)), .INITIAL_Y(INITIAL_Y + ((i>>2) * 64))) monsters_move_inst(
+            monsters_move #(
+                .X_SPEED(fixed_point'(X_SPEED + (i * 2))),
+                .Y_SPEED(fixed_point'(Y_SPEED + ((i>>2) * 8) + i * 2)),
+                .INITIAL_X(coordinate'(INITIAL_X + ((2'(i) & 2'b11) * X_SPACING))),
+                .INITIAL_Y(coordinate'(INITIAL_Y + ((i>>2) * 64))))
+            monsters_move_inst(
                 .clk(clk),
                 .resetN(resetN),
                 .missile_collision(collision[0] & previousDR[i]),
@@ -82,7 +84,10 @@ module monsters(
                 .topLeftY(topLeftY[i])
                 );
 
-            square_object #(.OBJECT_WIDTH_X(32), .OBJECT_HEIGHT_Y(32)) square_object_inst(
+            square_object #(
+                .OBJECT_WIDTH_X(32),
+                .OBJECT_HEIGHT_Y(32))
+            square_object_inst(
                 .clk(clk),
                 .resetN(resetN),
                 .pixelX(pixelX),
@@ -106,7 +111,9 @@ module monsters(
                 .drawingRequest (silhouetteDR[i])
                 );
 
-            delay_signal_by_frames #(.DELAY_FRAMES_AMOUNT(10)) delay_signal_by_frames_inst(
+            delay_signal_by_frames #(
+                .DELAY_FRAMES_AMOUNT(10))
+            delay_signal_by_frames_inst(
                 .clk(clk),
                 .resetN(resetN),
                 .startOfFrame(startOfFrame & enable & (i < monster_amount)),
@@ -115,7 +122,9 @@ module monsters(
                 );
 			assign monster_deactivated[i] = monster_exploded[i] | (i >= monster_amount);
 
-            shooting_cooldown #(.SHOOTING_COOLDOWN(8'(40 + ((2'(i) & 2'b11) * 2) + (2 * i)))) shooting_cooldown_inst(
+            shooting_cooldown #(
+                .SHOOTING_COOLDOWN(8'(40 + ((2'(i) & 2'b11) * 2) + (2 * i))))
+            shooting_cooldown_inst(
                 .clk           (clk),
                 .resetN        (resetN),
                 .startOfFrame  (startOfFrame & enable & (i < monster_amount)),
@@ -123,7 +132,14 @@ module monsters(
                 .shooting_pusle(shooting_pusle[i])
                 );
 
-            missiles #(.SHOT_AMOUNT(4), .X_SPEED(0), .Y_SPEED(128), .X_OFFSET(15), .Y_OFFSET(28), .MISSILE_COLOR(8'hD0)) missiles_inst (
+            missiles #(
+                .SHOT_AMOUNT(4),
+                .X_SPEED(0),
+                .Y_SPEED(128),
+                .X_OFFSET(15),
+                .Y_OFFSET(28),
+                .MISSILE_COLOR(8'hD0))
+            missiles_inst (
                 .clk            (clk),
                 .resetN         (resetN),
                 .shooting_pusle (shooting_pusle[i]),

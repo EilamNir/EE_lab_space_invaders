@@ -6,13 +6,13 @@
 module hexss 
     (
     input logic [3:0] hexin, // Data input: hex numbers 0 to f
-    output logic [6:0] ss   // Output for 7Seg display
+    output hex_dig ss   // Output for 7Seg display
     );
 
     `include "parameters.sv"
 
     // Declaration of two-dimensional array that holds the 7seg codes
-    logic [0:15] [6:0] SevenSeg = 
+    hex_dig [0:15] SevenSeg = 
     {
         7'b1000000, // 0
         7'b1111001, // 1

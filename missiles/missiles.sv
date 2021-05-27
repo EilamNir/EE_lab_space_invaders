@@ -17,13 +17,13 @@ module missiles(
     `include "parameters.sv"
 
     parameter RGB MISSILE_COLOR = 8'h1F;
-    parameter unsigned SHOT_AMOUNT = 7;
-    parameter unsigned PIXEL_WIDTH = 11;
+    parameter unsigned SHOT_AMOUNT_WIDTH = 4;
+    parameter logic [SHOT_AMOUNT_WIDTH-1:0] SHOT_AMOUNT = 7;
 
-    parameter int X_SPEED = 0;
-    parameter int Y_SPEED = -256;
-    parameter logic signed [PIXEL_WIDTH - 1:0] X_OFFSET = 15;
-    parameter logic signed [PIXEL_WIDTH - 1:0] Y_OFFSET = 0;
+    parameter fixed_point X_SPEED = fixed_point'(0);
+    parameter fixed_point Y_SPEED = fixed_point'(-256);
+    parameter coordinate X_OFFSET = 15;
+    parameter coordinate Y_OFFSET = 0;
 
 
     coordinate [SHOT_AMOUNT-1:0] topLeftX;
@@ -35,7 +35,7 @@ module missiles(
     // Choose which missile to send the key press to
     always_comb begin
         fire_commands = SHOT_AMOUNT'('b0);
-        for (int j = 0; j < SHOT_AMOUNT; j++) begin
+        for (logic [SHOT_AMOUNT_WIDTH-1:0] j = 0; j < SHOT_AMOUNT; j++) begin
             // Only send the key press to the first available shot
             if (missile_active[j] == 1'b0) begin
                 fire_commands[j] = shooting_pusle;

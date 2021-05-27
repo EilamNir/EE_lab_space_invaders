@@ -5,7 +5,7 @@ module keyboard_interface
     input logic PS2_CLK,
     input logic PS2_DAT,
 
-    output logic [8:0] keyCode,
+    output keycode keyCode,
     output logic make,
     output logic brake
 );

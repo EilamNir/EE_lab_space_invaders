@@ -12,8 +12,8 @@ module background
 (
     input logic clk,
     input logic resetN,
-    input logic [PIXEL_WIDTH - 1:0] pixelX,
-    input logic [PIXEL_WIDTH - 1:0] pixelY,
+    input coordinate pixelX,
+    input coordinate pixelY,
     input logic game_won,
     input logic game_over,
 
@@ -25,7 +25,6 @@ module background
 
     `include "parameters.sv"
 
-    parameter unsigned PIXEL_WIDTH = 11;
     parameter RGB MOVEMENT_ZONE_END_COLOR = 8'b10000000;
     parameter RGB STATISTICS_ZONE_COLOR = 8'b00000010;
     parameter RGB BACKGROUND_COLOR = 8'b00000000;
@@ -33,12 +32,12 @@ module background
     parameter RGB GAME_OVER_COLOR = 8'b10000000;
     parameter unsigned LETTER_SIZE_MULTIPLIER = 3;
 
-    const int xFrameSize = 639;
-    const int yFrameSize = 479;
-    const int movement_zone_offset = 20;
-    const int statistics_zone_offset = 20;
-    const int upperBorder = 20;
-    const int player_zone_y = 310;
+    const coordinate xFrameSize = 639;
+    const coordinate yFrameSize = 479;
+    const coordinate movement_zone_offset = 20;
+    const coordinate statistics_zone_offset = 20;
+    const coordinate upperBorder = 20;
+    const coordinate player_zone_y = 310;
 
     always_ff@(posedge clk or negedge resetN) begin
         if(!resetN) begin

@@ -8,31 +8,30 @@ module  missile_movement
     input logic collision,
     input logic [3:0] HitEdgeCode,
 
-    input logic [PIXEL_WIDTH - 1:0] spaceShip_X,
-    input logic [PIXEL_WIDTH - 1:0] spaceShip_Y,
+    input coordinate spaceShip_X,
+    input coordinate spaceShip_Y,
 
-    output logic signed [PIXEL_WIDTH - 1:0]  topLeftX, // output the top left corner
-    output logic signed [PIXEL_WIDTH - 1:0]  topLeftY,  // can be negative , if the object is partly outside
+    output coordinate  topLeftX, // output the top left corner
+    output coordinate  topLeftY,  // can be negative , if the object is partly outside
     output logic missile_active
 );
 
     `include "parameters.sv"
 
-    parameter int X_SPEED = 0;
-    parameter int Y_SPEED = -256;
-    parameter unsigned PIXEL_WIDTH = 11;
+    parameter fixed_point X_SPEED = 0;
+    parameter fixed_point Y_SPEED = -256;
 
-    parameter logic signed [PIXEL_WIDTH - 1:0] X_OFFSET = 15;
-    parameter logic signed [PIXEL_WIDTH - 1:0] Y_OFFSET = 0;
+    parameter coordinate X_OFFSET = 15;
+    parameter coordinate Y_OFFSET = 0;
 
-    const int   FIXED_POINT_MULTIPLIER  =   64;
+    const fixed_point   FIXED_POINT_MULTIPLIER  =   64;
     // FIXED_POINT_MULTIPLIER is used to enable working with integers in high resolution so that
     // we do all calculations with topLeftX_FixedPoint to get a resolution of 1/64 pixel in calculations,
     // we divide at the end by FIXED_POINT_MULTIPLIER which must be 2^n, to return to the initial proportions
 
     logic shot_fired;
-    int topLeftX_FixedPoint;
-    int topLeftY_FixedPoint;
+    fixed_point topLeftX_FixedPoint;
+    fixed_point topLeftY_FixedPoint;
 
     always_ff@(posedge clk or negedge resetN)
     begin
@@ -76,8 +75,8 @@ module  missile_movement
         end
     end
     //get a better (64 times) resolution using integer
-    assign  topLeftX = PIXEL_WIDTH'(topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER);
-    assign  topLeftY = PIXEL_WIDTH'(topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER);
+    assign  topLeftX = coordinate'(topLeftX_FixedPoint / FIXED_POINT_MULTIPLIER);
+    assign  topLeftY = coordinate'(topLeftY_FixedPoint / FIXED_POINT_MULTIPLIER);
 
     // Send a short pulse when activating the missile
 

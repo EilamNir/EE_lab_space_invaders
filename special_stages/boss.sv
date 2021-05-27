@@ -19,11 +19,12 @@ module boss(
     `include "parameters.sv"
 
     parameter unsigned KEYCODE_WIDTH = 9;
-	parameter int INITIAL_X = 287;
-	parameter int INITIAL_Y = 49;
-	parameter int X_SPEED = 64;
-    parameter int Y_SPEED = -25;
-    parameter int BOSS_MISSILE_AMOUNT = 8;
+	parameter coordinate INITIAL_X = 287;
+	parameter coordinate INITIAL_Y = 49;
+	parameter fixed_point X_SPEED = fixed_point'(64);
+    parameter fixed_point Y_SPEED = fixed_point'(-25);
+    parameter unsigned BOSS_MISSILE_AMOUNT_WIDTH = 8;
+    parameter logic unsigned [BOSS_MISSILE_AMOUNT_WIDTH-1:0] BOSS_MISSILE_AMOUNT = 8;
 	parameter unsigned LIVES_AMOUNT_WIDTH = 5;
     parameter logic unsigned [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 3;
 

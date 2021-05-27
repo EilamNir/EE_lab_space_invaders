@@ -3,7 +3,7 @@ module  player (
     input logic clk,
     input logic resetN,
 	input logic enable,
-    input logic [KEYCODE_WIDTH - 1:0] keyCode,
+    input keycode keyCode,
     input logic make,
     input logic brake,
     input logic startOfFrame,
@@ -30,10 +30,9 @@ module  player (
     parameter RIGHT = 9'h14A; // key '/'
     parameter LEFT  = 9'h073; // digit 5
     parameter STR_SHOT_KEY = 9'h15A; // enter key
-    parameter unsigned KEYCODE_WIDTH = 9;
 
     parameter unsigned LIVES_AMOUNT_WIDTH = 3;
-    parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 4;
+    parameter logic unsigned [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT = 4;
 
 
     coordinate topLeftX;
@@ -184,7 +183,7 @@ module  player (
         chosen_lives_square_DR = 1'b0;
         chosen_lives_offsetX = 11'b0;
         chosen_lives_offsetY = 11'b0;
-        for (int j = 0; j < LIVES_AMOUNT; j++) begin
+        for (logic unsigned [LIVES_AMOUNT_WIDTH - 1:0] j = 0; j < LIVES_AMOUNT; j++) begin
             // Only save the offset of the first square
             if (lives_draw_requests[j] == 1'b1) begin
                 chosen_lives_square_DR = 1'b1;
