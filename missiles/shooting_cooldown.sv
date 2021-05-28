@@ -4,13 +4,12 @@ module shooting_cooldown(
     input logic resetN,
     input logic startOfFrame,
     input logic fire_command,
+    input logic [SHOOTING_COOLDOWN_WIDTH - 1:0] shooting_cooldown,
 
     output logic shooting_pusle
 );
 
     `include "parameters.sv"
-
-    parameter logic [SHOOTING_COOLDOWN_WIDTH - 1:0] SHOOTING_COOLDOWN;
 
     logic [SHOOTING_COOLDOWN_WIDTH - 1:0] count_down;
 
@@ -29,7 +28,7 @@ module shooting_cooldown(
                 // Fire a pulse
                 shooting_pusle <= 1'b1;
                 // Start the cooldown after shooting
-                count_down <= SHOOTING_COOLDOWN;
+                count_down <= shooting_cooldown;
             end else if (startOfFrame && (count_down != 0)) begin
                 // If we are not shooting and the cooldown is active, reduce it
                 count_down <= SHOOTING_COOLDOWN_WIDTH'(count_down - 1);

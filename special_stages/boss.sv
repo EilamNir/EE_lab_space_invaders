@@ -63,13 +63,12 @@ module boss(
         .drawingRequest(squareDR)
     );
 
-    shooting_cooldown #(
-        .SHOOTING_COOLDOWN(90)
-    ) shooting_cooldown_inst(
+    shooting_cooldown shooting_cooldown_inst(
         .clk           (clk),
         .resetN        (resetN),
         .startOfFrame  (startOfFrame & (enable)),
         .fire_command  (~(boss_dead)),
+        .shooting_cooldown(90),
         .shooting_pusle(shooting_pusle)
         );
 
@@ -93,6 +92,7 @@ module boss(
                 .pixelY         (pixelY),
                 .spaceShip_X    (topLeftX),
                 .spaceShip_Y    (topLeftY),
+                .double_y_speed (1'b0),
                 .missleDR       (missiles_draw_requests[i])
                 );
         end

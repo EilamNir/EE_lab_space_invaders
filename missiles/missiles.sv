@@ -9,6 +9,7 @@ module missiles(
     input coordinate pixelY,
     input coordinate spaceShip_X,
     input coordinate spaceShip_Y,
+    input logic double_y_speed,
 
     output logic missleDR,
     output RGB missleRGB
@@ -54,6 +55,7 @@ module missiles(
                 .collision		(collision & draw_requests[i]), // Only collide the missile that asked to be drawn in the collision pixel
                 .spaceShip_X	(spaceShip_X),
                 .spaceShip_Y	(spaceShip_Y),
+                .double_y_speed (double_y_speed),
                 .topLeftX		(topLeftX[i]),
                 .topLeftY		(topLeftY[i]),
                 .missile_active	(missile_active[i])

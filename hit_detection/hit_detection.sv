@@ -21,19 +21,21 @@ module hit_detection(
 	logic monster;
 	logic asteroid;
 	logic boss;
+	logic gift;
 	logic constrained_enemies;
 	logic unconstrained_enemies;
 	logic any_enemy;
-    assign eneny_missile = hit_request[3] | hit_request[6];
-    assign player_missile = hit_request[1];
+    assign eneny_missile = hit_request[5] | hit_request[8];
+    assign player_missile = hit_request[3];
     assign any_missile = eneny_missile | player_missile;
-    assign edge_boundaries = hit_request[7];
-    assign middle_boundary = hit_request[8];
+    assign edge_boundaries = hit_request[0];
+    assign middle_boundary = hit_request[1];
     assign all_boundaries = edge_boundaries | middle_boundary;
-    assign player = hit_request[0];
-    assign monster = hit_request[2];
-    assign asteroid = hit_request[4];
-    assign boss = hit_request[5];
+    assign player = hit_request[2];
+    assign monster = hit_request[4];
+    assign asteroid = hit_request[6];
+    assign boss = hit_request[7];
+    assign gift = hit_request[9];
     assign constrained_enemies = boss | monster;
     assign unconstrained_enemies = asteroid;
     assign any_enemy = constrained_enemies | unconstrained_enemies;
@@ -45,6 +47,8 @@ module hit_detection(
     assign collision[COLLISION_PLAYER_MISSILE] = player & eneny_missile;
 	assign collision[COLLISION_ENEMY_FAR_BOUNDARY] = unconstrained_enemies & edge_boundaries;
 	assign collision[COLLISION_PLAYER_ENEMY] = player & any_enemy;
+	assign collision[COLLISION_PLAYER_GIFT] = player & gift;
+	assign collision[COLLISION_GIFT_BOUNDARY] = gift & edge_boundaries;
 
 
 	logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] flags ; // a semaphore to set the output only once per frame / regardless of the number of collisions 

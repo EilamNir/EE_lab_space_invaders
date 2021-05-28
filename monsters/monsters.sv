@@ -108,13 +108,12 @@ module monsters(
                 );
 			assign monster_deactivated[i] = monster_exploded[i] | (i >= monster_amount);
 
-            shooting_cooldown #(
-                .SHOOTING_COOLDOWN(8'(40 + ((2'(i) & 2'b11) * 2) + (2 * i))))
-            shooting_cooldown_inst(
+            shooting_cooldown shooting_cooldown_inst(
                 .clk           (clk),
                 .resetN        (resetN),
                 .startOfFrame  (startOfFrame & enable & (i < monster_amount)),
                 .fire_command  (~(monsterIsHit[i])),
+                .shooting_cooldown(8'(40 + ((2'(i) & 2'b11) * 2) + (2 * i))),
                 .shooting_pusle(shooting_pusle[i])
                 );
 
@@ -135,6 +134,7 @@ module monsters(
                 .pixelY         (pixelY),
                 .spaceShip_X    (topLeftX[i]),
                 .spaceShip_Y    (topLeftY[i]),
+                .double_y_speed (1'b0),
                 .missleDR       (missiles_draw_requests[i])
                 );
                 end
