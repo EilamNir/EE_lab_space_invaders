@@ -14,11 +14,14 @@ module draw_digits (
 
     `include "parameters.sv"
 	
-	parameter coordinate   SMALL_TOPLEFT_X = 0;
-	parameter coordinate   SMALL_TOPLEFT_Y = 0;
-	parameter coordinate   LARGE_TOPLEFT_X = 0;
-	parameter coordinate   LARGE_TOPLEFT_Y = 0;
-	parameter unsigned 	DIGIT_COLOR = 8'b00010000;
+	parameter unsigned DIGIT_COLOR;
+    parameter unsigned DIGIT_AMOUNT_WIDTH;
+    parameter logic unsigned [DIGIT_AMOUNT_WIDTH-1:0] DIGIT_AMOUNT;
+	parameter coordinate SMALL_TOPLEFT_X;
+	parameter coordinate SMALL_TOPLEFT_Y;
+	parameter coordinate LARGE_TOPLEFT_X;
+	parameter coordinate LARGE_TOPLEFT_Y;
+
 	logic [DIGIT_AMOUNT - 1:0] [3:0] digits;
     logic [DIGIT_AMOUNT - 1:0] [3:0] carry_pulses;
     coordinate [DIGIT_AMOUNT - 1:0] digit_offsetX;
