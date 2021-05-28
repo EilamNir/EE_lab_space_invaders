@@ -159,14 +159,13 @@ localparam coordinate   BOSS_MISSILE_Y_OFFSET = 60;
 localparam RGB          BOSS_MISSILE_COLOR = 8'hC0;
 
 // -- Parameters for draw digit module --
-
 localparam unsigned     MAX_VALUE_PER_DIGIT = 9;
-localparam unsigned     DIGIT_AMOUNT_WIDTH = 2;
-localparam logic unsigned [DIGIT_AMOUNT_WIDTH-1:0] DIGIT_AMOUNT = 3;
 localparam unsigned     SIZE_MULTIPLIER = 3;
 
 // -- Parameters for score module --
 localparam unsigned 	SCORE_COLOR = 8'b00010000;
+localparam unsigned     SCORE_DIGIT_AMOUNT_WIDTH = 2;
+localparam logic unsigned [SCORE_DIGIT_AMOUNT_WIDTH-1:0] SCORE_DIGIT_AMOUNT = 3;
 // Initial parameters for each score digit in derived from these parameters.
 // For actual parameter for each score digit, look at the score module.
 localparam coordinate   SCORE_SMALL_TOPLEFT_X = 600;
@@ -175,6 +174,8 @@ localparam coordinate   SCORE_LARGE_TOPLEFT_X = 620;
 localparam coordinate   SCORE_LARGE_TOPLEFT_Y = 349;
 
 // -- Parameters for timer module --
+localparam unsigned     TIMER_DIGIT_AMOUNT_WIDTH = 2;
+localparam logic unsigned [TIMER_DIGIT_AMOUNT_WIDTH-1:0] TIMER_DIGIT_AMOUNT = 3;
 localparam unsigned 	TIMER_COLOR = 8'b10000000;
 localparam coordinate   TIMER_SMALL_TOPLEFT_X = 330;
 localparam coordinate   TIMER_SMALL_TOPLEFT_Y = 466;
