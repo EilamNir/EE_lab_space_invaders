@@ -1,6 +1,6 @@
 //-- this module control the high level game:
-//-- initialize, run the game, pause and winning or losing
-//-- also control the different stages
+//-- initialize, run , pause, announce the end of the game and control the differnt stages
+//-- using the stage controller
 //-- written by Nir Eilam and Gil Kapel, may 18th, 2021
 
 
@@ -14,8 +14,8 @@ module game_controller
     input logic skip_stage,  //command on the FPGA
     input logic pause,       //SW2 on the FPGA
 
-    output logic game_won,
-    output logic game_over,
+    output logic game_won,   // a declartion if you won the last stage
+    output logic game_over,  // a declartion if the player lost all lives and died
     output logic enable_player,
     output logic enable_monst,
     output logic enable_boss,
@@ -43,7 +43,7 @@ module game_controller
 	logic run_resetN_Boss;
 	logic run_enable_astero;
 	logic run_enable_boss;
-    // Create a short pulse when the skip_stage starts
+    // Create a synchronic pulse when the skip_stage starts
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
@@ -55,7 +55,7 @@ module game_controller
 
     assign skip_stage_pulse = skip_stage & (~previous_skip_stage);
 
-    //
+    //prevent click errors, if you try to turn on the pause switch and the turn off very fast, the game will behave properly
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
@@ -67,7 +67,7 @@ module game_controller
         end
     end
 
-always_ff@(posedge clk or negedge resetN)
+always_ff@(posedge clk or negedge resetN) //state machine
     begin
         if(!resetN) begin
             pres_st <= RESET;
@@ -144,7 +144,7 @@ always_comb
         .clk(clk),
         .resetN(resetN),
         .start_game(stable_start_game),
-        .win_stage(win_stage || skip_stage_pulse),
+        .win_stage(win_stage || skip_stage_pulse), //when runing, if you press the cheat buttom or you got a pulse from one of the enemies
         .game_won (game_won),
         .enable_monst(run_enable_monst),
         .enable_boss(run_enable_boss),
@@ -153,8 +153,8 @@ always_comb
     );
 
 
-	assign enable_monst  = pause_enable_monst 	& run_enable_monst;
-	assign enable_astero = pause_enable_astero 	& run_enable_astero;
+	assign enable_monst  = pause_enable_monst 	& run_enable_monst;  // determine the monster enable only if the stage and game state fits
+	assign enable_astero = pause_enable_astero 	& run_enable_astero; // same to all others
 	assign enable_boss	 = pause_enable_boss 	& run_enable_boss;
 	assign resetN_monst	 = run_resetN_monst 	& run_enable_monst;
 	assign resetN_astero = run_resetN_astero	& run_enable_astero;
