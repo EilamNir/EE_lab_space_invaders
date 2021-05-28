@@ -78,7 +78,7 @@ module boss(
         for (i = 0; i < BOSS_MISSILE_AMOUNT; i++) begin : generate_missiles
             missiles #(
                 .SHOT_AMOUNT(BOSS_SHOT_AMOUNT),
-                .X_SPEED(BOSS_MISSILE_X_SPEED),
+                .X_SPEED(BOSS_MISSILE_X_SPEED + ((i - 4) * 16)),
                 .Y_SPEED(BOSS_MISSILE_Y_SPEED),
                 .X_OFFSET(BOSS_MISSILE_X_OFFSET),
                 .Y_OFFSET(BOSS_MISSILE_Y_OFFSET),
