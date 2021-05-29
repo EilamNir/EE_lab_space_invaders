@@ -22,13 +22,11 @@ module score (
 
     `include "parameters.sv"
 
-	logic [2:0] add_amount;
-	logic [2:0] stage_amount;
+	logic [2:0] point_amount;
 	// add score duo to the current stage
-	assign stage_amount = ({(monster_died_pulse & (stage_num != 4)), boss_died_pulse, asteroid_exploded_pulse} != 0) ? stage_num : 1'b0;
-    // add different score when there are chickens and boss in the same stage
-	assign combined_stage_amount = (monster_died_pulse & (stage_num == 4)) ? 1'b1 : 1'b0;
-	assign add_amount = (monster_died_pulse & (stage_num == 4)) ? stage_amount : combined_stage_amount;
+	// every enemy killed should award points based on the stage number.
+	// monsters should not award points on the boss stage.
+	assign point_amount = ({(monster_died_pulse & (stage_num != 4)), boss_died_pulse, asteroid_exploded_pulse} != 0) ? stage_num : 1'b0;
 	
 	// draw the score digits in the right buttom of the screen (and big drawing when the game is over)
 	draw_digits #(
@@ -45,7 +43,7 @@ module score (
 		.resetN			(resetN),
 		.pixelX			(pixelX),	
 		.pixelY			(pixelY),
-		.add_amount		(add_amount),
+		.add_amount		(point_amount),
 		.game_over	 	(game_over),
 		
 		.digitDR		(scoreDR),
