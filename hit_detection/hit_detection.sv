@@ -21,7 +21,7 @@ module hit_detection(
 
 	`include "parameters.sv"
 
-    logic eneny_missile;
+    logic enemy_missile;
 	logic player_missile;
 	logic any_missile;
 	logic edge_boundaries;
@@ -34,9 +34,9 @@ module hit_detection(
 	logic constrained_enemies;
 	logic unconstrained_enemies;
 	logic any_enemy;
-    assign eneny_missile = hit_request[3] | hit_request[6];
+    assign enemy_missile = hit_request[3] | hit_request[6];
     assign player_missile = hit_request[1];
-    assign any_missile = eneny_missile | player_missile;
+    assign any_missile = enemy_missile | player_missile;
     assign edge_boundaries = hit_request[7];
     assign middle_boundary = hit_request[8];
     assign all_boundaries = edge_boundaries | middle_boundary;

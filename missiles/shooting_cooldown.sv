@@ -1,3 +1,6 @@
+/* shooting_cooldown module
+	delay the shot
+written by Nir Eilam and Gil Kapel, May 30th, 2021 */
 
 module shooting_cooldown(
     input logic clk,

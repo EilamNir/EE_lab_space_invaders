@@ -1,3 +1,10 @@
+/* Missiles module
+	get the inital place (the player / the enemy) and generate shots
+	its possible to change the speed, direction and amount of the missiles
+	this comintoric unit can generate varity amount of missiles to the screen moving in the same frame,
+	using draw and movment object for each missile, and drawing them using only one logic with the size of the rgb parameter
+	if the missile hits an object (player, enemy) or get out of the boundry, in "shot down" with the a missile active flag
+written by Nir Eilam and Gil Kapel, May 30th, 2021 */
 
 module missiles(
     input logic clk,

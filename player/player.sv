@@ -1,3 +1,7 @@
+/* player module
+
+written by Nir Eilam and Gil Kapel, may 18th, 2021 */
+
 
 module  player (
     input logic clk,
