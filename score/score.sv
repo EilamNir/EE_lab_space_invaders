@@ -1,3 +1,8 @@
+/* score module
+
+	a score counter, add amount duo to different enemies and different stages
+	
+written by Nir Eilam and Gil Kapel, May 20th, 2021 */
 
 module score (
     input logic clk,
@@ -18,8 +23,14 @@ module score (
     `include "parameters.sv"
 
 	logic [2:0] add_amount;
-	assign add_amount = ({monster_died_pulse, boss_died_pulse, asteroid_exploded_pulse} != 0) ? stage_num : 1'b0;
-    
+	logic [2:0] stage_amount;
+	// add score duo to the current stage
+	assign stage_amount = ({(monster_died_pulse & (stage_num != 4)), boss_died_pulse, asteroid_exploded_pulse} != 0) ? stage_num : 1'b0;
+    // add different score when there are chickens and boss in the same stage
+	assign combined_stage_amount = (monster_died_pulse & (stage_num == 4)) ? 1'b1 : 1'b0;
+	assign add_amount = (monster_died_pulse & (stage_num == 4)) ? stage_amount : combined_stage_amount;
+	
+	// draw the score digits in the right buttom of the screen (and big drawing when the game is over)
 	draw_digits #(
 		.DIGIT_COLOR(SCORE_COLOR),
 		.SMALL_TOPLEFT_X(SCORE_SMALL_TOPLEFT_X),

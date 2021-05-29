@@ -1,3 +1,15 @@
+/* monster module
+
+	control the speed, location and draw request of the monsters
+	control the missiles of each monster by the missile unit
+	the monsters will be initialzed to a certian number of groups, 
+	each group has a starting pattern which will change randomly duo to coliisions
+	
+	two important outpouts are that one monster died and all of the monster died
+	all monsters died will be use for determine that a stage is over (win stage)
+	
+written by Nir Eilam and Gil Kapel, May 18th, 2021 */
+
 
 module monsters(
     input logic clk,

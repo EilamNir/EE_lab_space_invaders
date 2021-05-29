@@ -1,3 +1,12 @@
+/* check_overlap module
+	
+	this module detect a coliision between two objects from the same module
+	run on two for loops, first will find the first object want to be drawn on a certian coordinate and isn't deactivated
+	second will find the last object in the same coordinate
+	if they are different, a single pulse will be turn on	
+	if they are the same, nothing will happen
+	
+written by Nir Eilam and Gil Kapel, May 25th, 2021 */
 
 module check_overlap(
     input logic clk,

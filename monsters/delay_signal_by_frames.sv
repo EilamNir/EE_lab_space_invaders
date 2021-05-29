@@ -1,3 +1,8 @@
+/*
+	delay a signal by a few frames to make the game look smoother,
+	an example of use is for the monster death, when we want to show a blust for a few frames
+		
+written by Nir Eilam and Gil Kapel, May 25th, 2021 */
 
 module delay_signal_by_frames(
     input logic clk,

@@ -1,3 +1,10 @@
+/* boss move module
+
+	control the speed, location and draw request of the boss using random bit
+	if the boss was hit by the boundry or if it makes a shot it will bounced back to the other side,
+	the coliision with a missile won't effect this module
+	
+written by Nir Eilam and Gil Kapel, May 25th, 2021 */
 
 module  boss_move (
 
