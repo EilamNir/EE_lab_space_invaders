@@ -1,8 +1,6 @@
 /* player lives module
 
-	count each time there is a coliision between the player and an enemy missile or asteroid 
-	and sent a pulse when the amount reaches a certian amount
-	sent a delay pulse to image a real hit
+	display icons for the player lives on the statistics zone of the screen
 	
 written by Nir Eilam and Gil Kapel, May 18th, 2021 */
 
@@ -10,65 +8,71 @@ written by Nir Eilam and Gil Kapel, May 18th, 2021 */
 module player_lives(
     input logic clk,
     input logic resetN,
-    input logic startOfFrame,
-    input logic missile_collision,
+    input coordinate pixelX,
+    input coordinate pixelY,
+    input logic [PLAYER_LIVES_AMOUNT_WIDTH - 1:0] remaining_lives,
 
-    output logic [LIVES_AMOUNT_WIDTH - 1:0] remaining_lives,
-    output logic player_faded,
-    output logic player_damaged,
-    output logic player_dead
+    output logic livesDR,
+    output RGB livesRGB
 );
 
     `include "parameters.sv"
 
-    parameter unsigned LIVES_AMOUNT_WIDTH;
-    parameter logic [LIVES_AMOUNT_WIDTH - 1:0] LIVES_AMOUNT;
+    logic [PLAYER_LIVES_AMOUNT - 1:0] lives_square_draw_requests;
+    logic [PLAYER_LIVES_AMOUNT - 1:0] lives_draw_requests;
+    coordinate [PLAYER_LIVES_AMOUNT - 1:0] lives_offsetX;
+    coordinate [PLAYER_LIVES_AMOUNT - 1:0] lives_offsetY;
 
-    parameter unsigned DAMAGED_FRAME_AMOUNT_WIDTH;
-    parameter logic [DAMAGED_FRAME_AMOUNT_WIDTH - 1:0] DAMAGED_FRAME_AMOUNT;
-    logic [DAMAGED_FRAME_AMOUNT_WIDTH - 1:0] damaged_timeout;
+    genvar i;
+    generate
+        for (i = 0; i < PLAYER_LIVES_AMOUNT; i++) begin : generate_lives
+            // Generate an icon for each possible life
+            square_object #(
+                .OBJECT_WIDTH_X(LIVES_X_SIZE),
+                .OBJECT_HEIGHT_Y(LIVES_Y_SIZE)
+            ) square_object_lives_inst(
+                .clk            (clk),
+                .resetN         (resetN),
+                .pixelX         (pixelX),
+                .pixelY         (pixelY),
+                .topLeftX       (LIVES_TOPLEFT_X + (i * 16)),
+                .topLeftY       (LIVES_TOPLEFT_Y),
+                .offsetX        (lives_offsetX[i]),
+                .offsetY        (lives_offsetY[i]),
+                .drawingRequest (lives_square_draw_requests[i])
+                );
 
-    always_ff@(posedge clk or negedge resetN)
-    begin
-        if(!resetN) begin
-            remaining_lives <= LIVES_AMOUNT;
-            player_faded <= 1'b0;
-            player_damaged <= 1'b0;
-            player_dead <= 1'b0;
-            damaged_timeout <= 0;
-        end else begin
-            // Reset the player damaged flag when the timeout is over
-            if (damaged_timeout == 0) begin
-                player_faded <= 1'b0;
-                player_damaged <= 1'b0;
-            end else if (startOfFrame) begin
-                // Reduce the damaged timeout by one every frame
-                damaged_timeout <= DAMAGED_FRAME_AMOUNT_WIDTH'(damaged_timeout - 1);
-                // Flip between the player being faded and not faded every few frames
-                if (damaged_timeout[3:0] == 4'b1000) begin
-                    player_faded <= ~player_faded;
-                end
+            // Only draw the remaining lives
+            assign lives_draw_requests[i] = lives_square_draw_requests[i] & (i < remaining_lives);
+        end
+    endgenerate
+
+    // Decide on which square object to pass into the bitmap
+    logic chosen_lives_square_DR;
+    coordinate chosen_lives_offsetX;
+    coordinate chosen_lives_offsetY;
+    always_comb begin
+        chosen_lives_square_DR = 1'b0;
+        chosen_lives_offsetX = 11'b0;
+        chosen_lives_offsetY = 11'b0;
+        for (logic unsigned [PLAYER_LIVES_AMOUNT_WIDTH - 1:0] j = 0; j < PLAYER_LIVES_AMOUNT; j++) begin
+            // Only save the offset of the first square
+            if (lives_draw_requests[j] == 1'b1) begin
+                chosen_lives_square_DR = 1'b1;
+                chosen_lives_offsetX = lives_offsetX[j];
+                chosen_lives_offsetY = lives_offsetY[j];
+                break;
             end
-
-            // Check if the player should be dead
-            if (remaining_lives == 0) begin
-                // Mark the player as dead
-                player_dead <= 1'b1;
-                // Dead player is always faded
-                player_faded <= 1'b1;
-                player_damaged <= 1'b1;
-            end else if (missile_collision && (damaged_timeout == 0)) begin // Check if the player hit a missile while not damaged
-                // Mark the player as damaged
-                player_faded <= 1'b1;
-                player_damaged <= 1'b1;
-                // Start the damaged timeout
-                damaged_timeout <= DAMAGED_FRAME_AMOUNT;
-                // Remove one life from the player
-                remaining_lives <= LIVES_AMOUNT_WIDTH'(remaining_lives - 1);
-            end
-
-
         end
     end
 
+    livesBitMap livesBitMap_inst(
+        .clk(clk),
+        .resetN(resetN),
+        .offsetX(chosen_lives_offsetX),
+        .offsetY(chosen_lives_offsetY),
+        .InsideRectangle(chosen_lives_square_DR),
+        .drawingRequest(livesDR),
+        .RGBout(livesRGB)
+    );
 endmodule
