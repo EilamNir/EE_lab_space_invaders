@@ -38,7 +38,7 @@ module  missile_movement
             missile_active <= 1'b0;
         end else begin
 
-            if (collision) begin
+            if (collision || (topLeftY_FixedPoint < 0)) begin
                 topLeftX_FixedPoint <= 0;
                 topLeftY_FixedPoint <= 0;
                 // Remove the missile from the screen
