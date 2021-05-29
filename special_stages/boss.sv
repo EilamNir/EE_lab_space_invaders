@@ -108,12 +108,12 @@ module boss(
         end
     endgenerate
   
-    player_lives #(
+    lives #(
         .LIVES_AMOUNT_WIDTH(BOSS_LIVES_AMOUNT_WIDTH),
         .LIVES_AMOUNT(BOSS_LIVES_AMOUNT),
         .DAMAGED_FRAME_AMOUNT_WIDTH(BOSS_DAMAGED_FRAME_AMOUNT_WIDTH),
         .DAMAGED_FRAME_AMOUNT(BOSS_DAMAGED_FRAME_AMOUNT)
-    ) player_lives_inst(
+    ) lives_inst(
         .clk              (clk),
         .resetN           (resetN),
         .startOfFrame     (startOfFrame & (enable)),

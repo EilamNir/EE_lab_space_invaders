@@ -20,7 +20,7 @@ module livesBitMap (
 
     // generating the bitmap
     localparam RGB TRANSPARENT_ENCODING = 8'h00 ;// RGB value in the bitmap representing a transparent pixel
-    RGB [0:PLAYER_LIVES_Y_SIZE-1][0:PLAYER_LIVES_X_SIZE-1] object_colors = {
+    RGB [0:LIVES_Y_SIZE-1][0:LIVES_X_SIZE-1] object_colors = {
         {8'h00,8'h00,8'h00,8'h4a,8'h4a,8'h00,8'h00,8'h00},
         {8'h00,8'h00,8'h4a,8'h01,8'h01,8'h4a,8'h00,8'h00},
         {8'h00,8'h00,8'h4a,8'h01,8'h01,8'h4a,8'h00,8'h00},

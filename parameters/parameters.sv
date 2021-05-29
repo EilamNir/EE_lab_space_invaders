@@ -97,12 +97,12 @@ localparam RGB          MONSTERS_MISSILE_COLOR = 8'hD0;
 
 
 // -- Parameters for player lives module --
-localparam coordinate   PLAYER_LIVES_X_SIZE = 8;
-localparam coordinate   PLAYER_LIVES_Y_SIZE = 8;
+localparam coordinate   LIVES_X_SIZE = 8;
+localparam coordinate   LIVES_Y_SIZE = 8;
 // Initial parameters for each lives icon in derived from these parameters.
 // For actual parameter for each lives icon, look at the player module.
-localparam coordinate   PLAYER_LIVES_TOPLEFT_X = 32;
-localparam coordinate   PLAYER_LIVES_TOPLEFT_Y = 467;
+localparam coordinate   LIVES_TOPLEFT_X = 32;
+localparam coordinate   LIVES_TOPLEFT_Y = 467;
 
 
 // -- Parameters for player module --
