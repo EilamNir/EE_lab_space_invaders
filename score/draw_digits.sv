@@ -31,7 +31,7 @@ module draw_digits (
 	parameter coordinate LARGE_TOPLEFT_Y;
 
 	logic [DIGIT_AMOUNT - 1:0] [3:0] digits;
-    logic [DIGIT_AMOUNT - 1:0] [3:0] carry_pulses;
+    logic [DIGIT_AMOUNT - 1:0] carry_pulses;
     coordinate [DIGIT_AMOUNT - 1:0] digit_offsetX;
     coordinate [DIGIT_AMOUNT - 1:0] digit_offsetY;
     coordinate [DIGIT_AMOUNT - 1:0] digit_offsetX_small;
