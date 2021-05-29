@@ -1,3 +1,9 @@
+/* a small model of the space ship that represent one live and will be shown in the buttom left of the screen
+
+drawing by Nir Eilam May 2021 */
+
+
+
 module livesBitMap (
 
     input logic clk,

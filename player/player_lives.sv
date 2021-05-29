@@ -1,3 +1,11 @@
+/* player lives module
+
+	count each time there is a coliision between the player and an enemy missile or asteroid 
+	and sent a pulse when the amount reaches a certian amount
+	sent a delay pulse to image a real hit
+	
+written by Nir Eilam and Gil Kapel, May 18th, 2021 */
+
 
 module player_lives(
     input logic clk,
