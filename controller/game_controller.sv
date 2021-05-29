@@ -32,19 +32,14 @@ module game_controller
     `include "parameters.sv"
 
     enum  logic [2:0] {RESET, RUN, PAUSE, GAME_OVER, STAGE_WON}  next_st, pres_st; //state machine
-    logic run_enable_monst;
-    logic pause_enable_monst;
-	logic pause_enable_astero;
-	logic pause_enable_boss;
-    logic pause_enable_gift;
+    logic pause_enable;
     logic skip_stage_pulse;
     logic previous_skip_stage;
     logic stable_start_game;
     logic stable_pause;
 	logic run_resetN_monst;
-	logic run_resetN_astero;
-	logic run_resetN_Boss;
-    logic run_resetN_gift;
+	logic run_resetN_others;
+	logic run_enable_monst;
 	logic run_enable_astero;
 	logic run_enable_boss;
     logic run_enable_gift;
@@ -85,28 +80,18 @@ always_comb
     begin
         next_st = pres_st;
         enable_player= 1'b1;
-        pause_enable_monst = 1'b1;
-		pause_enable_astero = 1'b1;
-		pause_enable_boss = 1'b1;
-        pause_enable_gift = 1'b1;
+        pause_enable = 1'b1;
         game_over    = 1'b0;
-        resetN_player= 1'b1;
         run_resetN_monst = 1'b1;
-		run_resetN_astero = 1'b1;
-        run_resetN_Boss = 1'b1;
-        run_resetN_gift = 1'b1;
+		run_resetN_others = 1'b1;
+		resetN_player = 1'b1;
         case (pres_st)
             RESET: begin
-                resetN_player = 1'b0;
+				resetN_player = 1'b0;
                 run_resetN_monst  = 1'b0;
-				run_resetN_astero = 1'b0;
-				run_resetN_Boss = 1'b0;
-                run_resetN_gift = 1'b0;
+				run_resetN_others = 1'b0;
                 enable_player = 1'b0;
-                pause_enable_monst = 1'b0;
-				pause_enable_astero = 1'b0;
-				pause_enable_boss 	= 1'b0;
-                pause_enable_gift   = 1'b0;
+                pause_enable = 1'b0;
                 if(stable_start_game) next_st = RUN;  //next state
             end // reset_game
 
@@ -119,10 +104,7 @@ always_comb
 
             PAUSE: begin
                 enable_player 		= 1'b0;
-                pause_enable_monst 	= 1'b0;
-				pause_enable_astero = 1'b0;
-				pause_enable_boss 	= 1'b0;
-                pause_enable_gift   = 1'b0;
+                pause_enable 	= 1'b0;
                 if(!stable_pause)          next_st = RUN;
                 if(!stable_start_game)     next_st = RESET;
             end // pause
@@ -137,15 +119,10 @@ always_comb
             GAME_OVER: begin
                 game_over = 1'b1;
                 enable_player = 1'b0;
-                resetN_player = 1'b0;
+				resetN_player = 1'b0;
                 run_resetN_monst = 1'b0;
-				run_resetN_astero = 1'b0;
-				run_resetN_Boss = 1'b0;
-                run_resetN_gift = 1'b0;
-                pause_enable_monst = 1'b0;
-				pause_enable_astero = 1'b0;
-				pause_enable_boss 	= 1'b0;
-                pause_enable_gift   = 1'b0;
+                run_resetN_others = 1'b0;
+                pause_enable = 1'b0;
                 if(!stable_start_game) next_st = RESET;
             end // GAME_OVER
 
@@ -166,13 +143,13 @@ always_comb
     );
 
 
-	assign enable_monst  = pause_enable_monst 	& run_enable_monst;  // determine the monster enable only if the stage and game state fits
-	assign enable_astero = pause_enable_astero 	& run_enable_astero; // same to all others
-	assign enable_boss	 = pause_enable_boss 	& run_enable_boss;
-    assign enable_gift   = pause_enable_gift    & run_enable_gift;
-	assign resetN_monst	 = run_resetN_monst 	& run_enable_monst;
-	assign resetN_astero = run_resetN_astero	& run_enable_astero;
-	assign resetN_Boss	 = run_resetN_Boss		& run_enable_boss;
-    assign resetN_gift   = run_resetN_gift      & run_enable_gift;
+	assign enable_monst  = pause_enable		& run_enable_monst;  // determine the monster enable only if the stage and game state fits
+	assign enable_astero = pause_enable		& run_enable_astero; // same to all others
+	assign enable_boss	 = pause_enable		& run_enable_boss;
+    assign enable_gift   = pause_enable		& run_enable_gift;
+	assign resetN_monst	 = run_resetN_monst & run_enable_monst;
+	assign resetN_astero = run_resetN_others& run_enable_astero;
+	assign resetN_Boss	 = run_resetN_others& run_enable_boss;
+    assign resetN_gift   = run_resetN_others& run_enable_gift;
 
 endmodule
