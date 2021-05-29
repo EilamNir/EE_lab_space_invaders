@@ -1,6 +1,7 @@
 /* asteroids module
 
-	control the speed, location and draw request of the asteroids
+	combines and controls the speed, location and draw request of all the asteroids
+
 	the asteroids will be initialzed to a certian number of groups, 
 	each group has a starting pattern which will change randomly duo to coliisions
 	the asteroids has a gravity effect that makes them go faster throw time until a max speed limit
@@ -29,12 +30,8 @@ module asteroids(
 
     coordinate [ASTEROIDS_AMOUNT - 1:0] offsetX;
     coordinate [ASTEROIDS_AMOUNT - 1:0] offsetY;
-    logic [ASTEROIDS_AMOUNT - 1:0] squareDR;
     logic [ASTEROIDS_AMOUNT - 1:0] silhouetteDR;
-	logic [ASTEROIDS_AMOUNT - 1:0] previous_silhouetteDR;
     edge_code HitEdgeCode;
-    coordinate [ASTEROIDS_AMOUNT - 1:0] topLeftX;
-    coordinate [ASTEROIDS_AMOUNT - 1:0] topLeftY;
     logic [ASTEROIDS_AMOUNT - 1:0] asteroidIsHit;
     logic [ASTEROIDS_AMOUNT - 1:0] asteroids_deactivated;
     logic [ASTEROIDS_AMOUNT - 1:0] previous_asteroidIsHit;
@@ -42,59 +39,26 @@ module asteroids(
     genvar i;
     generate
         for (i = 0; i < ASTEROIDS_AMOUNT; i++) begin : generate_asteroids
-            asteroids_move #(
+            asteroid #(
                 .X_SPEED(fixed_point'(ASTEROIDS_X_SPEED - ((i>>2) * 8) + i * 2)),
                 .Y_SPEED(fixed_point'(ASTEROIDS_Y_SPEED + (2'(i) & 2'b11) * 16)),
                 .INITIAL_X(coordinate'(ASTEROIDS_INITIAL_X + (((i>>2) * ASTEROIDS_X_SPACING) - ((2'(i) & 2'b11) * 4)))),
-                .INITIAL_Y(coordinate'(ASTEROIDS_INITIAL_Y + (2'(i) & 2'b11) * ASTEROIDS_Y_SPACING)))
-            asteroids_move_inst(
+                .INITIAL_Y(coordinate'(ASTEROIDS_INITIAL_Y + (2'(i) & 2'b11) * ASTEROIDS_Y_SPACING))
+            ) asteroid_inst(
                 .clk(clk),
                 .resetN(resetN),
-                .player_collision(collision[COLLISION_ENEMY_MISSILE] & previous_silhouetteDR[i]),
-                .border_collision(collision[COLLISION_ENEMY_FAR_BOUNDARY] & previous_silhouetteDR[i]),
+                .collision(collision),
                 .startOfFrame(startOfFrame & (enable)),
-                .HitEdgeCode(HitEdgeCode),
-                .asteroidIsHit(asteroidIsHit[i]),
-                .topLeftX(topLeftX[i]),
-                .topLeftY(topLeftY[i])
-                );
-
-            square_object #(
-                .OBJECT_WIDTH_X(ASTEROIDS_X_SIZE),
-                .OBJECT_HEIGHT_Y(ASTEROIDS_Y_SIZE))
-            square_object_inst(
-                .clk(clk),
-                .resetN(resetN),
                 .pixelX(pixelX),
                 .pixelY(pixelY),
-                .topLeftX(topLeftX[i]),
-                .topLeftY(topLeftY[i]),
+                .HitEdgeCode(HitEdgeCode),
+                .asteroidIsHit(asteroidIsHit[i]),
                 .offsetX(offsetX[i]),
                 .offsetY(offsetY[i]),
-                .drawingRequest(squareDR[i])
+                .asteroidDR(silhouetteDR[i]),
+                .asteroid_deactivated(asteroids_deactivated[i])
                 );
-
-            asteroid_silhouette asteroid_silhouette_inst(
-                .clk            (clk),
-                .resetN         (resetN),
-                .offsetX        (offsetX[i]),
-                .offsetY        (offsetY[i]),
-                .InsideRectangle(squareDR[i]),
-                .asteroidIsHit  (asteroidIsHit[i]),
-                .drawingRequest (silhouetteDR[i])
-                );
-
-            delay_signal_by_frames #(
-                .DELAY_FRAMES_AMOUNT(ASTEROIDS_EXPLOSION_DELAY))
-            delay_signal_by_frames_inst(
-                .clk(clk),
-                .resetN(resetN),
-                .startOfFrame(startOfFrame & (enable)),
-                .input_signal(asteroidIsHit[i]),
-                .output_signal(asteroids_deactivated[i])
-                );
-
-                end
+        end
     endgenerate
 
     // Decide on which square object to pass into the bitmap
@@ -122,16 +86,6 @@ module asteroids(
         end
     end
 
-    // Remember the previous draw requests, for collision detection
-    always_ff@(posedge clk or negedge resetN)
-    begin
-        if(!resetN) begin
-            previous_silhouetteDR <= 0;
-        end else begin
-            previous_silhouetteDR <= silhouetteDR;
-        end
-    end
-	
     asteroidBitMap asteroidBitMap_inst(
         .clk(clk),
         .resetN(resetN),
@@ -146,7 +100,7 @@ module asteroids(
 
     assign all_asteroids_destroied = &asteroids_deactivated;
 
-    // Send a pulse when a monster dies
+    // Send a pulse when an asteroid explodes
     always_ff@(posedge clk or negedge resetN)
     begin
         if(!resetN) begin
