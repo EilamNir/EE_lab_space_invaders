@@ -34,7 +34,9 @@ localparam
     COLLISION_PLAYER_ANY_BOUNDARY = 3,
     COLLISION_PLAYER_MISSILE = 4,
     COLLISION_ENEMY_FAR_BOUNDARY = 5,
-    COLLISION_PLAYER_ENEMY = 6;
+    COLLISION_PLAYER_ENEMY = 6,
+    COLLISION_PLAYER_GIFT = 7,
+    COLLISION_GIFT_BOUNDARY = 8;
 
 
 // -- Parameters for background module --
@@ -58,8 +60,8 @@ localparam unsigned     BACKGROUND_LETTER_SIZE_MULTIPLIER = 3;
 
 
 // -- Parameters for hit detection module --
-localparam unsigned     HIT_DETECTION_NUMBER_OF_OBJECTS = 9;
-localparam unsigned     HIT_DETECTION_COLLISION_WIDTH = 7;
+localparam unsigned     HIT_DETECTION_NUMBER_OF_OBJECTS = 10;
+localparam unsigned     HIT_DETECTION_COLLISION_WIDTH = 9;
 
 
 // -- Parameters for missile module --
@@ -116,7 +118,8 @@ localparam logic unsigned [PLAYER_LIVES_AMOUNT_WIDTH - 1:0] PLAYER_LIVES_AMOUNT 
 localparam unsigned PLAYER_DAMAGED_FRAME_AMOUNT_WIDTH = 5;
 localparam logic unsigned [PLAYER_DAMAGED_FRAME_AMOUNT_WIDTH - 1:0] PLAYER_DAMAGED_FRAME_AMOUNT = 30;
 // Missile parameters
-localparam logic [SHOOTING_COOLDOWN_WIDTH - 1:0] PLAYER_SHOT_COOLDOWN = 15;
+localparam logic [SHOOTING_COOLDOWN_WIDTH - 1:0] PLAYER_SHOT_COOLDOWN = 30;
+localparam logic [SHOOTING_COOLDOWN_WIDTH - 1:0] PLAYER_ALTERNATIVE_SHOT_COOLDOWN = 15;
 localparam logic [MISSILE_SHOT_AMOUNT_WIDTH-1:0] PLAYER_SHOT_AMOUNT = 7;
 localparam fixed_point  PLAYER_MISSILE_X_SPEED = fixed_point'(0);
 localparam fixed_point  PLAYER_MISSILE_Y_SPEED = fixed_point'(-256);
@@ -214,5 +217,18 @@ localparam fixed_point  ASTEROIDS_MOVE_MAXIMUM_SPEED_MULTIPLIER = 4;
 
 
 // -- Parameters for video unit module --
-localparam unsigned     VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH = 4;
-localparam logic unsigned [VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH - 1:0] VIDEO_UNIT_NUMBER_OF_OBJECTS = 11;
+localparam unsigned     VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH = 5;
+localparam logic unsigned [VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH - 1:0] VIDEO_UNIT_NUMBER_OF_OBJECTS = 12;
+
+
+// -- Parameters for gift module --
+localparam coordinate   GIFT_X_SIZE = 32;
+localparam coordinate   GIFT_Y_SIZE = 32;
+localparam unsigned     GIFT_RANDOM_AMOUNT_WIDTH = 2;
+localparam logic unsigned [GIFT_RANDOM_AMOUNT_WIDTH - 1:0] GIFT_RANDOM_AMOUNT = 2;
+localparam RGB          GIFT_COLOR_RED = 8'b10000000;
+localparam RGB          GIFT_COLOR_BLUE = 8'b00000010;
+localparam coordinate   GIFT_INITIAL_X = 50;
+localparam coordinate   GIFT_ALTERNATIVE_X = 580;
+localparam coordinate   GIFT_INITIAL_Y = 22;
+localparam coordinate   GIFT_Y_SPEED = 32;

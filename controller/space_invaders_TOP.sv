@@ -12,7 +12,8 @@
 	10) monsters module - high level monsters module, combine the chicken's parameters, amount , position and speed and missiles
 	11) asteroids module - high level asteroids module, combine the asteroids's parameters, amount , position and speed
 	12) boss module - high level boss enemy module, combine the boss's parameters, amount of lives, position and speed and missiles
-	13) background - the background of the game, include the end game announcements
+    13) gift module - high level gift power up module, combine the gift's parameters, position and speed
+	14) background - the background of the game, include the end game announcements
 
 written by Nir Eilam and Gil Kapel, May 30th, 2021 */
 
@@ -57,9 +58,10 @@ module space_invaders_TOP
     RGB BossRGB;
 	RGB Boss_missleRGB;
 	RGB end_game_RGB;
-	
+    RGB giftRGB;
+
     RGB [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] obj_RGB;
-    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, livesRGB, scoreRGB, timerRGB, end_game_RGB};
+    assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, giftRGB, livesRGB, scoreRGB, timerRGB, end_game_RGB};
     logic player_missleDR;
     logic monster_missleDR;
     logic playerDR;
@@ -71,14 +73,15 @@ module space_invaders_TOP
     logic BossDR;	
     logic Boss_missleDR;
 	logic end_gameDR;
+    logic giftDR;
     logic [0:1] bordersDR;
     assign bordersDR = {bordersDR[0], bordersDR[1]}; //bordersDR[0] = all around borders, bordersDR[1] = player end zone
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1 - 2] draw_requests_for_hits;
-    assign draw_requests_for_hits = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR};
+    assign draw_requests_for_hits = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR, giftDR};
     logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
     assign draw_requests = {draw_requests_for_hits, livesDR, scoreDR, timerDR, end_gameDR};
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
-    assign hit_request = {draw_requests_for_hits, bordersDR};
+    assign hit_request = {bordersDR, draw_requests_for_hits};
 
     keycode keyCode;
     logic make;
@@ -89,6 +92,7 @@ module space_invaders_TOP
 
     logic monster_died_pulse;
     logic all_monsters_dead;
+    logic powerup;
 
     logic [0:1] sound_requests;
     assign sound_requests = {collision[COLLISION_ENEMY_MISSILE], collision[COLLISION_PLAYER_MISSILE] | collision[COLLISION_PLAYER_ENEMY]};
@@ -115,12 +119,14 @@ module space_invaders_TOP
 	logic enable_monst;
 	logic enable_boss;
 	logic enable_astero;
+    logic enable_gift;
 	logic game_won;
 	logic game_over;
 	logic resetN_player;
 	logic resetN_monst;
 	logic resetN_asteroids;
 	logic resetN_Boss;
+    logic resetN_gift;
 	game_stage stage_num;
 	logic asteroid_exploded;
 	logic boss_dead;
@@ -139,10 +145,12 @@ module space_invaders_TOP
 		.enable_monst   (enable_monst),
 		.enable_boss	(enable_boss),
 		.enable_astero  (enable_astero),
+        .enable_gift    (enable_gift),
 		.resetN_player	(resetN_player),
 		.resetN_monst	(resetN_monst),
 		.resetN_astero	(resetN_asteroids),
 		.resetN_Boss	(resetN_Boss),
+        .resetN_gift    (resetN_gift),
 		.stage_num		(stage_num));
     video_unit video_unit_inst (
         .clk            (clk),
@@ -211,6 +219,7 @@ module space_invaders_TOP
         .pixelX         (pixelX),
         .pixelY         (pixelY),
         .collision      (collision),
+        .powerup        (powerup),
         .playerDR       (playerDR),
         .playerRGB      (playerRGB),
 		.player_dead	(player_dead),
@@ -261,6 +270,18 @@ module space_invaders_TOP
 		.boss_dead		(boss_dead),
         .missleDR       (Boss_missleDR),
         .missleRGB      (Boss_missleRGB));
+
+    gift gift_inst(
+        .clk(clk),
+        .resetN(resetN & resetN_gift),
+        .enable(enable_gift),
+        .startOfFrame(startOfFrame),
+        .collision(collision),
+        .pixelX(pixelX),
+        .pixelY(pixelY),
+        .giftDR(giftDR),
+        .giftRGB(giftRGB),
+        .powerup(powerup));
 		
     background background_inst (
         .clk            (clk),

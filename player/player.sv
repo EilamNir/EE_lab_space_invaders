@@ -18,6 +18,7 @@ module  player (
     input coordinate pixelX,
     input coordinate pixelY,
     input logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision,
+    input logic powerup,
 
     output logic playerDR,
     output RGB playerRGB,
@@ -44,6 +45,8 @@ module  player (
     logic [PLAYER_LIVES_AMOUNT_WIDTH - 1:0] remaining_lives;
     logic player_faded;  // when the player is hit, his draw will flick and he will be ivonerable for a few frames
     logic player_damaged;
+    logic double_missile_speed;
+    logic [SHOOTING_COOLDOWN_WIDTH - 1:0] shooting_cooldown;
 
     logic upIsPress;
     keyToggle_decoder #(.KEY_VALUE(UP_KEY)) control_up_inst (
@@ -211,13 +214,13 @@ module  player (
         .RGBout(livesRGB)
     );
 
-    shooting_cooldown #(
-        .SHOOTING_COOLDOWN(PLAYER_SHOT_COOLDOWN)
-    ) shooting_cooldown_inst(   // delay the shooting to make the missile look like it wasn't a part of the player draw and prevent shooting when the player is hit
+    // Have a delay between shooting, so there will not be constant shooting.
+    shooting_cooldown shooting_cooldown_inst(
         .clk           (clk),
         .resetN        (resetN),
         .startOfFrame  (startOfFrame & (enable)),
-        .fire_command  (shotKeyIsPressed & (~player_damaged)),
+        .fire_command  (shotKeyIsPressed & (~player_damaged)), // prevent shooting when the player is hit
+        .shooting_cooldown(shooting_cooldown),
         .shooting_pusle(shooting_pusle)
         );
 
@@ -238,10 +241,19 @@ module  player (
         .pixelY         (pixelY),
         .spaceShip_X    (topLeftX),
         .spaceShip_Y    (topLeftY),
+        .double_y_speed (double_missile_speed),
         .missleDR       (missleDR),
         .missleRGB      (missleRGB)
         );
 
+    player_powerup player_powerup_inst (
+        .clk(clk),
+        .resetN(resetN),
+        .powerup(powerup),
+        .giftIsHit(collision[COLLISION_PLAYER_GIFT]),
+        .shooting_cooldown(shooting_cooldown),
+        .double_missile_speed(double_missile_speed)
+        );
 
 
 endmodule

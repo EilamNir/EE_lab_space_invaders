@@ -1,12 +1,11 @@
 /* boss module
 
-	control the speed, location and draw request of the player
-	control the missiles of each monster by the missile unit
-	the monsters will be initialzed to a certian number of groups, 
-	each group has a starting pattern which will change randomly duo to coliisions
+	control the speed, location and draw request of the boss
+	control the missiles of the boss by the missile unit
+	the boss has a starting pattern which will change randomly duo to coliisions
 	
-	two important outpouts are that one monster died and all of the monsters died
-	all monsters died will be use for determine that a stage is over (win stage)
+	one important outpout is that the boss died
+	the boss died will be use for determine that a stage is over (win stage)
 	
 written by Nir Eilam and Gil Kapel, May 18th, 2021 */
 
@@ -74,13 +73,12 @@ module boss(
         .drawingRequest(squareDR)
     );
 
-    shooting_cooldown #(
-        .SHOOTING_COOLDOWN(90)
-    ) shooting_cooldown_inst(
+    shooting_cooldown shooting_cooldown_inst(
         .clk           (clk),
         .resetN        (resetN),
         .startOfFrame  (startOfFrame & (enable)),
         .fire_command  (~(boss_dead)),
+        .shooting_cooldown(90),
         .shooting_pusle(shooting_pusle)
         );
 
@@ -104,6 +102,7 @@ module boss(
                 .pixelY         (pixelY),
                 .spaceShip_X    (topLeftX),
                 .spaceShip_Y    (topLeftY),
+                .double_y_speed (1'b0),
                 .missleDR       (missiles_draw_requests[i])
                 );
         end

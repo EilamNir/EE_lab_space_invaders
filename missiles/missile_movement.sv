@@ -13,6 +13,7 @@ module  missile_movement
 
     input coordinate spaceShip_X,
     input coordinate spaceShip_Y,
+    input logic double_y_speed,
 
     output coordinate  topLeftX, // output the top left corner
     output coordinate  topLeftY,  // can be negative , if the object is partly outside
@@ -40,7 +41,7 @@ module  missile_movement
             missile_active <= 1'b0;
         end else begin
 
-            if (collision) begin
+            if (collision || (topLeftY_FixedPoint < 0)) begin
                 topLeftX_FixedPoint <= 0;
                 topLeftY_FixedPoint <= 0;
                 // Remove the missile from the screen
@@ -59,7 +60,7 @@ module  missile_movement
                 end else if (missile_active == 1'b1) begin
                     // If no shot was fired in this frame and the missile is active, move the missile according to its speed
                     topLeftX_FixedPoint  <= topLeftX_FixedPoint + X_SPEED;
-                    topLeftY_FixedPoint  <= topLeftY_FixedPoint + Y_SPEED;
+                    topLeftY_FixedPoint  <= topLeftY_FixedPoint + (Y_SPEED << double_y_speed);
                 end
             end
 

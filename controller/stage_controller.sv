@@ -20,6 +20,7 @@ module stage_controller
     output logic enable_monst,
 	output logic enable_boss,
     output logic enable_astero,
+    output logic enable_gift,
 	output game_stage stage_num // for use of other models to determine what to do each stage
 );
 
@@ -42,6 +43,7 @@ always_comb
         enable_monst   = 1'b0;
         enable_boss    = 1'b0;
         enable_astero  = 1'b0;
+        enable_gift    = 1'b0;
         game_won 	   = 1'b0;
 		
 		case (pres_gameStage)
@@ -58,6 +60,7 @@ always_comb
 				stage_num = game_stage'(2);
 				if(win_stage) next_gameStage = STAGE3;
 				enable_monst = 1'b1;
+				enable_gift = 1'b1;
 			end
 			STAGE3: begin
 				stage_num = game_stage'(3);
