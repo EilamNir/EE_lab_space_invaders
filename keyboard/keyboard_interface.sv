@@ -1,3 +1,9 @@
+/* keyboard interface module
+	recieve the keyboard input and translate it to key code and make & brake bits
+	using bitrec and byterec
+written by Nir Eilam and Gil Kapel, May 30th, 2021 */
+
+
 module keyboard_interface
 (
     input logic clk,

@@ -1,4 +1,12 @@
+/*
+	this edited bit map is a small chikcen bit map (only 1 bit per pixel) 
+	that determine the collision between two chickens and allow a conflict 
+	between two chicken draw requests in case that one of the object's draw requests
+	points on a transperent pixel
+	
+written by Nir Eilam and Gil Kapel, May 25th, 2021 */
 
+ 
 module chicken_silhouette (
     input logic clk,
     input logic resetN,

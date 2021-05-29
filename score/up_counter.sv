@@ -1,3 +1,9 @@
+/* up counter module
+
+	simple counter that rise up until a max value for digit that can be change
+	using a carry bit	
+
+written by Nir Eilam and Gil Kapel, May 20th, 2021 */
 
 module up_counter (
     input logic clk,

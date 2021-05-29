@@ -1,3 +1,13 @@
+/* boss module
+
+	control the speed, location and draw request of the boss
+	control the missiles of the boss by the missile unit
+	the boss has a starting pattern which will change randomly duo to coliisions
+	
+	one important outpout is that the boss died
+	the boss died will be use for determine that a stage is over (win stage)
+	
+written by Nir Eilam and Gil Kapel, May 18th, 2021 */
 
 module boss(
     input logic clk,

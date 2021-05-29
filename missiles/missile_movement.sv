@@ -1,3 +1,6 @@
+/* Missile movement module
+	determine the coordinates to draw the next shot duo to speed, current position or collisions with other objects
+written by Nir Eilam and Gil Kapel, May 30th, 2021 */
 
 module  missile_movement
 (

@@ -1,3 +1,11 @@
+/* draw digits module
+	
+	a module to print to the screen digits and a counter to rise the digits up each amount added
+	this module can support each max digit count we need, for this game we use only decimal counting (also for the timer)
+	this module will use the hexess module to translate a number to hex code
+	
+written by Nir Eilam and Gil Kapel, May 20th, 2021 */
+
  
 module draw_digits (
     input logic clk,

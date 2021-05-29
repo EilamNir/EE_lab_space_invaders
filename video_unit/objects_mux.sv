@@ -1,3 +1,12 @@
+/* object mux module
+	
+	mux for the video unit 
+	gets draw requests and object rgb and determines which to show first
+	if more then one request will be in the same pixel,
+	the mux will "choose" the first one - that makes the draw request order important!
+	
+written by Nir Eilam May 3th, 2021 */
+
 module  objects_mux (
     input logic clk,
     input logic resetN,

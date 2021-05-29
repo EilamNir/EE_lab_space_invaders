@@ -1,3 +1,14 @@
+/* asteroids module
+
+	control the speed, location and draw request of the asteroids
+	the asteroids will be initialzed to a certian number of groups, 
+	each group has a starting pattern which will change randomly duo to coliisions
+	the asteroids has a gravity effect that makes them go faster throw time until a max speed limit
+	
+	two important outpouts are that one asteroid exploded and all of the asteroids exploded
+	all asteroids exploded will be use for determine that a stage is over (win stage)
+	
+written by Nir Eilam and Gil Kapel, May 18th, 2021 */
 
 module asteroids(
     input logic clk,

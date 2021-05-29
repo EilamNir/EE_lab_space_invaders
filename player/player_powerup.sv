@@ -1,3 +1,9 @@
+/* player powerup module
+
+    decide on the shooting cooldown and missile speed of the player,
+    based on if the player took a power up or not and which power up they took
+
+written by Nir Eilam and Gil Kapel, May 18th, 2021 */
 
 module player_powerup (
     input logic clk,

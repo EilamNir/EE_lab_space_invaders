@@ -1,3 +1,11 @@
+/* monster move module
+
+	control the speed, location and draw request of the monsters using random bit
+	if the monster was hit by the boundry it will bounced back to the other side,
+	if it hits by a missile a singal flag will be raised
+	
+written by Nir Eilam and Gil Kapel, May 18th, 2021 */
+
 
 module  monsters_move (
 

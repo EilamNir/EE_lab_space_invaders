@@ -1,3 +1,10 @@
+/* gift move module
+
+    control the speed, location and draw request of the gift using random bit for start location
+    if the gift was hit by the boundry or the player it will stop and vanish,
+    the coliision with a missile won't effect this module
+
+written by Nir Eilam and Gil Kapel, May 25th, 2021 */
 
 module  gift_move (
 

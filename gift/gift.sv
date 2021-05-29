@@ -1,3 +1,13 @@
+/* gift module
+
+    control the speed, location and draw request of the gift
+    the gift will spawn at a random edge of the screen, with a random color related to a random power up
+    when the player collides with the gift, it will vanish, and the player will get a power up
+    (the player module takes care of implementing the power up)
+
+    the coliision with a missile won't effect the gift
+
+written by Nir Eilam and Gil Kapel, May 18th, 2021 */
 
 module gift(
     input logic clk,

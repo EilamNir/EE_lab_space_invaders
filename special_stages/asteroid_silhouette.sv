@@ -1,3 +1,10 @@
+/*
+	this edited bit map is a small asteroid bit map (only 1 bit per pixel) 
+	that determine the collision between two asteroids and allow a conflict 
+	between two asteroids draw requests in case that one of the object's draw requests
+	points on a transperent pixel
+	
+written by Nir Eilam and Gil Kapel, May 25th, 2021 */
 
 module asteroid_silhouette (
     input logic clk,
