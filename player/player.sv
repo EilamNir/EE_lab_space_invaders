@@ -1,3 +1,11 @@
+/* player module
+	determine which key will make the player move and shotKeyIsPressed
+	control the speed, location, draw request and shooting of the player
+	the lives control in this moudle will count each time there is a coliision between the player 
+	and an enemy missile or asteroid and sent a pulse when the amount reaches a certian amount
+	
+written by Nir Eilam and Gil Kapel, May 18th, 2021 */
+
 
 module  player (
     input logic clk,
@@ -20,7 +28,7 @@ module  player (
     output logic livesDR,
     output RGB livesRGB,
 
-    output logic player_dead
+    output logic player_dead // single pulse that stays static after rising up
 );
 
     `include "parameters.sv"
@@ -30,11 +38,11 @@ module  player (
     coordinate offsetX;
     coordinate offsetY;
     logic squareDR;
-    edge_code HitEdgeCode;
+    edge_code HitEdgeCode;  //control a hit with the edge of the player draw
     logic shooting_pusle;
     RGB bitmapRGB;
     logic [PLAYER_LIVES_AMOUNT_WIDTH - 1:0] remaining_lives;
-    logic player_faded;
+    logic player_faded;  // when the player is hit, his draw will flick and he will be ivonerable for a few frames
     logic player_damaged;
 
     logic upIsPress;
@@ -205,7 +213,7 @@ module  player (
 
     shooting_cooldown #(
         .SHOOTING_COOLDOWN(PLAYER_SHOT_COOLDOWN)
-    ) shooting_cooldown_inst(
+    ) shooting_cooldown_inst(   // delay the shooting to make the missile look like it wasn't a part of the player draw and prevent shooting when the player is hit
         .clk           (clk),
         .resetN        (resetN),
         .startOfFrame  (startOfFrame & (enable)),

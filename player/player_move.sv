@@ -1,3 +1,7 @@
+/* player move module
+	control the speed, location and draw request of the player
+	this module will handle the case of multiple keys pressed by cancel or sum the signals
+written by Nir Eilam and Gil Kapel, May 18th, 2021 */
 
 module  player_move (
 

@@ -1,3 +1,21 @@
+/* Top module
+	this module connect all of the smaller modules:
+	1) clock diveder
+	2) keyboard_interface - recieve the keyboard input and translate it to key code and make & brake bits
+	3) game_controller - control the high level game and stages
+	4) video_unit - controls all of the draw requests and extract the output for the screen using vga controller 
+	5) sound_unit - controls all of the sound requests and extract the output for the speaker using sinus generator and an internal module within the fpga  
+	6) score - count and print the score the is accumulate during the game
+	7) timer - count the time that the game is play (stops at pause or end game stages
+	8) hit_detection - checks if two or more objects ask to be drawed in the same pixel at the same time and sent a relevent collision as an output
+	9) player module - high level player module, combine the player's parameters, key buttons, amount of lives, position and speed and missiles
+	10) monsters module - high level monsters module, combine the chicken's parameters, amount , position and speed and missiles
+	11) asteroids module - high level asteroids module, combine the asteroids's parameters, amount , position and speed
+	12) boss module - high level boss enemy module, combine the boss's parameters, amount of lives, position and speed and missiles
+	13) background - the background of the game, include the end game announcements
+
+written by Nir Eilam and Gil Kapel, May 30th, 2021 */
+
 module space_invaders_TOP
 (
     input logic CLOCK_50,
@@ -126,7 +144,62 @@ module space_invaders_TOP
 		.resetN_astero	(resetN_asteroids),
 		.resetN_Boss	(resetN_Boss),
 		.stage_num		(stage_num));
+    video_unit video_unit_inst (
+        .clk            (clk),
+        .resetN         (resetN),
+        .draw_requests  (draw_requests),
+        .obj_RGB        (obj_RGB),
+        .background_RGB (background_RGB),
+        .pixelX         (pixelX),
+        .pixelY         (pixelY),
+        .startOfFrame   (startOfFrame),
+        .oVGA           (OVGA));
 
+    sound_unit sound_unit_inst (
+        .clk			(clk),
+        .resetN			(resetN),
+        .sound_requests	(sound_requests),
+        .startOfFrame	(startOfFrame),
+        .AUD_ADCDAT		(AUD_ADCDAT),
+        .AUDOUT			(AUDOUT));
+
+    score score_inst (
+        .clk			(clk),
+        .resetN			(resetN),
+        .pixelX			(pixelX),
+        .pixelY			(pixelY),
+		.stage_num 	  	(stage_num),
+        .monster_died_pulse	(monster_died_pulse),
+		.boss_died_pulse	(boss_dead),
+		.asteroid_exploded_pulse(asteroid_exploded),
+        .game_over          (game_over),
+
+        .scoreDR		(scoreDR),
+        .scoreRGB		(scoreRGB),
+        .ss				({HEX2, HEX1, HEX0})
+    );
+	
+	 timer timer_inst (
+        .clk			(clk),
+        .resetN			(resetN),
+		.enable			(start_game & !pause & !game_over & !game_won),
+        .pixelX			(pixelX),
+        .pixelY			(pixelY),
+        .game_over      (game_over),
+
+        .timerDR		(timerDR),
+        .timerRGB		(timerRGB),
+        .ss				({HEX5, HEX4, HEX3})
+    );
+
+    hit_detection hit_detection_inst (
+        .clk            (clk),
+        .resetN         (resetN),
+        .startOfFrame   (startOfFrame),
+        .hit_request    (hit_request),
+        .collision      (collision),
+        .HitPulse       (HitPulse));
+		
     player player_inst (
         .clk            (clk),
         .resetN         (resetN & resetN_player),
@@ -188,14 +261,6 @@ module space_invaders_TOP
 		.boss_dead		(boss_dead),
         .missleDR       (Boss_missleDR),
         .missleRGB      (Boss_missleRGB));
-
-    hit_detection hit_detection_inst (
-        .clk            (clk),
-        .resetN         (resetN),
-        .startOfFrame   (startOfFrame),
-        .hit_request    (hit_request),
-        .collision      (collision),
-        .HitPulse       (HitPulse));
 		
     background background_inst (
         .clk            (clk),
@@ -209,52 +274,5 @@ module space_invaders_TOP
 		.end_game_RGB	(end_game_RGB),
         .background_RGB (background_RGB));
 
-    video_unit video_unit_inst (
-        .clk            (clk),
-        .resetN         (resetN),
-        .draw_requests  (draw_requests),
-        .obj_RGB        (obj_RGB),
-        .background_RGB (background_RGB),
-        .pixelX         (pixelX),
-        .pixelY         (pixelY),
-        .startOfFrame   (startOfFrame),
-        .oVGA           (OVGA));
-
-    sound_unit sound_unit_inst (
-        .clk			(clk),
-        .resetN			(resetN),
-        .sound_requests	(sound_requests),
-        .startOfFrame	(startOfFrame),
-        .AUD_ADCDAT		(AUD_ADCDAT),
-        .AUDOUT			(AUDOUT));
-
-    score score_inst (
-        .clk			(clk),
-        .resetN			(resetN),
-        .pixelX			(pixelX),
-        .pixelY			(pixelY),
-		.stage_num 	  	(stage_num),
-        .monster_died_pulse	(monster_died_pulse),
-		.boss_died_pulse	(boss_dead),
-		.asteroid_exploded_pulse(asteroid_exploded),
-        .game_over          (game_over),
-
-        .scoreDR		(scoreDR),
-        .scoreRGB		(scoreRGB),
-        .ss				({HEX2, HEX1, HEX0})
-    );
-	
-	    timer timer_inst (
-        .clk			(clk),
-        .resetN			(resetN),
-		.enable			(start_game & !pause & !game_over & !game_won),
-        .pixelX			(pixelX),
-        .pixelY			(pixelY),
-        .game_over      (game_over),
-
-        .timerDR		(timerDR),
-        .timerRGB		(timerRGB),
-        .ss				({HEX5, HEX4, HEX3})
-    );
 
 endmodule

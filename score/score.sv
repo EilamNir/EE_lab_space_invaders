@@ -1,3 +1,8 @@
+/* score module
+
+	a score counter, add amount duo to different enemies and different stages
+	
+written by Nir Eilam and Gil Kapel, May 20th, 2021 */
 
 module score (
     input logic clk,
@@ -17,9 +22,13 @@ module score (
 
     `include "parameters.sv"
 
-	logic [2:0] add_amount;
-	assign add_amount = ({monster_died_pulse, boss_died_pulse, asteroid_exploded_pulse} != 0) ? stage_num : 1'b0;
-    
+	logic [2:0] point_amount;
+	// add score duo to the current stage
+	// every enemy killed should award points based on the stage number.
+	// monsters should not award points on the boss stage.
+	assign point_amount = ({(monster_died_pulse & (stage_num != 4)), boss_died_pulse, asteroid_exploded_pulse} != 0) ? stage_num : 1'b0;
+	
+	// draw the score digits in the right buttom of the screen (and big drawing when the game is over)
 	draw_digits #(
 		.DIGIT_COLOR(SCORE_COLOR),
 		.SMALL_TOPLEFT_X(SCORE_SMALL_TOPLEFT_X),
@@ -34,7 +43,7 @@ module score (
 		.resetN			(resetN),
 		.pixelX			(pixelX),	
 		.pixelY			(pixelY),
-		.add_amount		(add_amount),
+		.add_amount		(point_amount),
 		.game_over	 	(game_over),
 		
 		.digitDR		(scoreDR),

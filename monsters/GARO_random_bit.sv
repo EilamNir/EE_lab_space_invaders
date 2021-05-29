@@ -1,3 +1,11 @@
+/* Random algorithem
+	use the combintoric gate to delay the output:
+	using 31 xor gates that effects one another each clk cycle and make a semi random output
+	depends on the total time of the combintoric action to occur 
+	
+	this algorithem is based on a method researched by by Markus Dichtl1 and Jovan Dj. Golic
+	reference:    https://link.springer.com/content/pdf/10.1007%2F978-3-540-74735-2_4.pdf
+written by Nir Eilam and Gil Kapel, May 28th, 2021 */
 
 module GARO_random_bit (
     input logic clk,

@@ -1,3 +1,11 @@
+/* asteroid move module
+
+	control the speed, location and draw request of the asteroid
+	the asteroid ignore the middle boundry between the player and the monsters
+	if the asteroid was hit by the boundry it will bounced back to the top of the screen,
+	if it hits by a missile a singal flag will be raised
+	
+written by Nir Eilam and Gil Kapel, May 25th, 2021 */
 
 module  asteroids_move (
 

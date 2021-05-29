@@ -2,6 +2,9 @@
 
 // Implements a slow clock as an one-second counter with
 // a one-second output pulse and a 0.5 Hz duty50 output
+
+// update by Nir Eilam and Gil Kapel, May 22th, 2021 */
+
  
  module one_sec_counter(
 	input  logic clk, 

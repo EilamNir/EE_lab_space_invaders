@@ -1,3 +1,13 @@
+/* Hit detection module
+	checks if two or more objects ask to be drawed in the same pixel at the same time and sent a relevent collision as an output
+	there are 7 options of different collision:
+	- player with boundaries, with enemy_missiles and with the enemy itself
+	- any enemy withe the boundaries, with the player missile
+	- missiles of both sides with the boundary of the game (make them disappear)
+	
+	this module makes the collision in a combintoric way and send a synchronic hit pulse as an output
+written by Nir Eilam and Gil Kapel, may 18th, 2021 */
+
 
 module hit_detection(
     input logic	clk,
@@ -11,7 +21,7 @@ module hit_detection(
 
 	`include "parameters.sv"
 
-    logic eneny_missile;
+    logic enemy_missile;
 	logic player_missile;
 	logic any_missile;
 	logic edge_boundaries;
@@ -24,9 +34,9 @@ module hit_detection(
 	logic constrained_enemies;
 	logic unconstrained_enemies;
 	logic any_enemy;
-    assign eneny_missile = hit_request[3] | hit_request[6];
+    assign enemy_missile = hit_request[3] | hit_request[6];
     assign player_missile = hit_request[1];
-    assign any_missile = eneny_missile | player_missile;
+    assign any_missile = enemy_missile | player_missile;
     assign edge_boundaries = hit_request[7];
     assign middle_boundary = hit_request[8];
     assign all_boundaries = edge_boundaries | middle_boundary;
@@ -42,7 +52,7 @@ module hit_detection(
 	assign collision[COLLISION_ENEMY_ANY_BOUNDARY] = constrained_enemies & all_boundaries;
 	assign collision[COLLISION_MISSILE_FAR_BOUNDARY] = any_missile & edge_boundaries;
 	assign collision[COLLISION_PLAYER_ANY_BOUNDARY] = player & all_boundaries;
-    assign collision[COLLISION_PLAYER_MISSILE] = player & eneny_missile;
+    assign collision[COLLISION_PLAYER_MISSILE] = player & enemy_missile;
 	assign collision[COLLISION_ENEMY_FAR_BOUNDARY] = unconstrained_enemies & edge_boundaries;
 	assign collision[COLLISION_PLAYER_ENEMY] = player & any_enemy;
 
