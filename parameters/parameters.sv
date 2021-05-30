@@ -60,8 +60,8 @@ localparam unsigned     BACKGROUND_LETTER_SIZE_MULTIPLIER = 3;
 
 
 // -- Parameters for hit detection module --
-localparam unsigned     HIT_DETECTION_NUMBER_OF_OBJECTS = 10;
-localparam unsigned     HIT_DETECTION_COLLISION_WIDTH = 9;
+localparam unsigned     HIT_DETECTION_NUMBER_OF_OBJECTS = 10; // If you change this, change hit_request_t at types.sv too
+localparam unsigned     HIT_DETECTION_COLLISION_WIDTH = 9; // If you change this, change collision_t at types.sv too
 
 
 // -- Parameters for missile module --
@@ -168,7 +168,7 @@ localparam unsigned     SIZE_MULTIPLIER = 3;
 // -- Parameters for score module --
 localparam unsigned 	SCORE_COLOR = 8'b00010000;
 localparam unsigned     SCORE_DIGIT_AMOUNT_WIDTH = 2;
-localparam logic unsigned [SCORE_DIGIT_AMOUNT_WIDTH-1:0] SCORE_DIGIT_AMOUNT = 3;
+localparam logic unsigned [SCORE_DIGIT_AMOUNT_WIDTH-1:0] SCORE_DIGIT_AMOUNT = 3; // If you change this, change score_hex_t at types.sv too
 // Initial parameters for each score digit in derived from these parameters.
 // For actual parameter for each score digit, look at the score module.
 localparam coordinate   SCORE_SMALL_TOPLEFT_X = 600;
@@ -178,7 +178,7 @@ localparam coordinate   SCORE_LARGE_TOPLEFT_Y = 349;
 
 // -- Parameters for timer module --
 localparam unsigned     TIMER_DIGIT_AMOUNT_WIDTH = 2;
-localparam logic unsigned [TIMER_DIGIT_AMOUNT_WIDTH-1:0] TIMER_DIGIT_AMOUNT = 3;
+localparam logic unsigned [TIMER_DIGIT_AMOUNT_WIDTH-1:0] TIMER_DIGIT_AMOUNT = 3; // If you change this, change timer_hex_t at types.sv too
 localparam unsigned 	TIMER_COLOR = 8'b10000000;
 localparam coordinate   TIMER_SMALL_TOPLEFT_X = 330;
 localparam coordinate   TIMER_SMALL_TOPLEFT_Y = 466;
@@ -218,7 +218,7 @@ localparam fixed_point  ASTEROIDS_MOVE_MAXIMUM_SPEED_MULTIPLIER = 4;
 
 // -- Parameters for video unit module --
 localparam unsigned     VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH = 5;
-localparam logic unsigned [VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH - 1:0] VIDEO_UNIT_NUMBER_OF_OBJECTS = 12;
+localparam logic unsigned [VIDEO_UNIT_NUMBER_OF_OBJECTS_WIDTH - 1:0] VIDEO_UNIT_NUMBER_OF_OBJECTS = 12; // If you change this, change video_logic_t and video_RGB_t at types.sv too
 
 
 // -- Parameters for gift module --

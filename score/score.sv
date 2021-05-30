@@ -17,7 +17,7 @@ module score (
 
     output logic scoreDR,
     output RGB scoreRGB,
-    output hex_dig [SCORE_DIGIT_AMOUNT - 1:0] ss // Output for 7Seg display
+    output score_hex_t ss // Output for 7Seg display
 );
 
     `include "parameters.sv"

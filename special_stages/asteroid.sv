@@ -8,7 +8,7 @@ module asteroid(
     input logic clk,
     input logic resetN,
     input logic startOfFrame,
-    input logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision,
+    input collision_t collision,
 
     input coordinate pixelX,
     input coordinate pixelY,

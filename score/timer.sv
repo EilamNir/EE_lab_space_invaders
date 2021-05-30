@@ -13,7 +13,7 @@ module timer (
 	
     output logic timerDR,
     output RGB timerRGB,
-	output hex_dig [TIMER_DIGIT_AMOUNT - 1:0] ss // Output for 7Seg display
+	output timer_hex_t ss // Output for 7Seg display
 );
 	
 	`include "parameters.sv"

@@ -9,8 +9,8 @@ module video_unit
 (
     input logic clk,
     input logic resetN,
-    input logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests,
-    input RGB [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] obj_RGB,
+    input video_logic_t draw_requests,
+    input video_RGB_t obj_RGB,
     input RGB background_RGB,
     output coordinate pixelX,
     output coordinate pixelY,

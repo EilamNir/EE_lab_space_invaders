@@ -16,7 +16,7 @@ module monsters(
     input logic resetN,
     input logic enable,
     input logic startOfFrame,
-	input logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision,
+	input collision_t collision,
 	input game_stage stage_num,
     input coordinate pixelX,
     input coordinate pixelY,

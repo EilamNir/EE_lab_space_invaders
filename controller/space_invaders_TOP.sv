@@ -60,7 +60,7 @@ module space_invaders_TOP
 	RGB end_game_RGB;
     RGB giftRGB;
 
-    RGB [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] obj_RGB;
+    video_RGB_t obj_RGB;
     assign obj_RGB = {playerRGB, player_missleRGB, monsterRGB, monster_missleRGB, asteroidsRGB, BossRGB, Boss_missleRGB, giftRGB, livesRGB, scoreRGB, timerRGB, end_game_RGB};
     logic player_missleDR;
     logic monster_missleDR;
@@ -78,17 +78,17 @@ module space_invaders_TOP
     assign bordersDR = {bordersDR[0], bordersDR[1]}; //bordersDR[0] = all around borders, bordersDR[1] = player end zone
     logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1 - 2] draw_requests_for_hits;
     assign draw_requests_for_hits = {playerDR, player_missleDR, monsterDR, monster_missleDR, asteroidsDR, BossDR, Boss_missleDR, giftDR};
-    logic [0:VIDEO_UNIT_NUMBER_OF_OBJECTS - 1] draw_requests;
+    video_logic_t draw_requests;
     assign draw_requests = {draw_requests_for_hits, livesDR, scoreDR, timerDR, end_gameDR};
-    logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request;
+    hit_request_t hit_request;
     assign hit_request = {bordersDR, draw_requests_for_hits};
 
     keycode keyCode;
     logic make;
     logic brake;
 
-    logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] HitPulse;
-    logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision;
+    collision_t HitPulse;
+    collision_t collision;
 
     logic monster_died_pulse;
     logic all_monsters_dead;
@@ -152,6 +152,7 @@ module space_invaders_TOP
 		.resetN_Boss	(resetN_Boss),
         .resetN_gift    (resetN_gift),
 		.stage_num		(stage_num));
+
     video_unit video_unit_inst (
         .clk            (clk),
         .resetN         (resetN),

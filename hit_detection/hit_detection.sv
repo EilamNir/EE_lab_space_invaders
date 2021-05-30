@@ -13,10 +13,10 @@ module hit_detection(
     input logic	clk,
     input logic	resetN,
     input logic	startOfFrame,  // short pulse every start of frame 30Hz 
-    input logic [0:HIT_DETECTION_NUMBER_OF_OBJECTS - 1] hit_request,
+    input hit_request_t hit_request,
 	
-    output logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision,
-    output logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] HitPulse 
+    output collision_t collision,
+    output collision_t HitPulse 
 	);
 
 	`include "parameters.sv"
@@ -61,7 +61,7 @@ module hit_detection(
 	assign collision[COLLISION_GIFT_BOUNDARY] = gift & edge_boundaries;
 
 
-	logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] flags ; // a semaphore to set the output only once per frame / regardless of the number of collisions 
+	collision_t flags ; // a semaphore to set the output only once per frame / regardless of the number of collisions 
 
 	always_ff@(posedge clk or negedge resetN)	
 	begin
