@@ -17,7 +17,7 @@ module  player (
     input logic startOfFrame,
     input coordinate pixelX,
     input coordinate pixelY,
-    input logic [HIT_DETECTION_COLLISION_WIDTH - 1:0] collision,
+    input collision_t collision,
     input logic powerup,
 
     output logic playerDR,
