@@ -2247,11 +2247,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(pt 440 -8)
-	(pt 440 -24)
-	(bus)
-)
-(connector
 	(text "resetN" (rect 26 -16 56 1)(font "Intel Clear" ))
 	(pt 16 0)
 	(pt 64 0)
@@ -2269,12 +2264,6 @@ agreement for further details.
 	(text "enable_gift" (rect 170 8 224 25)(font "Intel Clear" ))
 	(pt 232 24)
 	(pt 160 24)
-)
-(connector
-	(text "hit_request[9]" (rect 450 -40 516 -23)(font "Intel Clear" ))
-	(pt 440 -24)
-	(pt 560 -24)
-	(bus)
 )
 (connector
 	(text "draw_requests[0]" (rect 474 168 556 185)(font "Intel Clear" ))
